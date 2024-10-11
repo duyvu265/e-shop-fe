@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -42,9 +40,9 @@ const Slider = () => {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-80px)] overflow-hidden">
+    <div className="h-[calc(100vh-80px)] overflow-hidden ">
       <div
-        className="w-max h-full flex transition-all ease-in-out duration-1000"
+        className="w-full h-full flex transition-all ease-in-out duration-1000"
         style={{ transform: `translateX(-${current * 100}vw)` }}
       >
         {slides.map((slide) => (
