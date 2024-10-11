@@ -27,8 +27,6 @@ const mockProducts = Array.from({ length: 20 }, (_, index) => ({
 const ProductList = ({ categoryId, limit, searchParams }) => {
   const [products, setProducts] = useState(mockProducts);
   const [pagination, setPagination] = useState({ currentPage: 0, hasPrev: false, hasNext: false });
-
-  // Chỉ gọi fetchProducts nếu cần thiết
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -89,12 +87,12 @@ const ProductList = ({ categoryId, limit, searchParams }) => {
               )?.description || ""}
             </div>
           )}
-          <button className="rounded-2xl ring-1 ring-lama text-lama w-max py-2 px-4 text-xs hover:bg-lama hover:text-white">
+          <button className="rounded-2xl ring-1 ring-#F35C7A text-#F35C7A w-max py-2 px-4 text-xs hover:bg-#F35C7A hover:text-white">
             Add to Cart
           </button>
         </Link>
       ))}
-      {searchParams?.cart || searchParams?.name ? (
+      {searchParams?.cat || searchParams?.name ? (
         <Pagination
           currentPage={pagination?.currentPage}
           hasPrev={pagination?.hasPrev}
