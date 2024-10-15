@@ -6,14 +6,15 @@ import ListPages from './components/Pages/ListPages';
 import LoginPage from './components/Pages/Auth/LoginPage';
 import RegisterPage from './components/Pages/Auth/RegisterPage';
 import ForgetPasswordPage from './components/Pages/Auth/ForgetPasswordPage';
+import Dashboard from './components/Pages/admin/Dashboard';
 
 
 const AppRouter = () => {
   return (
     <>
-      <Navbar />  
-      <Outlet /> 
-      <Footer /> 
+      <Navbar />
+      <Outlet />
+      <Footer />
     </>
   );
 }
@@ -21,13 +22,14 @@ const AppRouter = () => {
 const App = () => {
   return (
     <Routes>
-      <Route element={<AppRouter />}>  
+      <Route element={<AppRouter />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/list" element={<ListPages />} />
-      </Route>   
+      </Route>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forget-password" element={<ForgetPasswordPage />} />
+      <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
   );
 };
