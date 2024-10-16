@@ -8,6 +8,7 @@ const PRODUCT_PER_PAGE = 8;
 const ProductList = ({ categoryId, limit, searchParams }) => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const [products, setProducts] = useState([]);
+  const [sortedProducts, setSortedProducts] = useState([]);
 
   const [pagination, setPagination] = useState({
     currentPage: 0,
@@ -18,17 +19,7 @@ const ProductList = ({ categoryId, limit, searchParams }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/products/`, {
-          // params: {
-          //   categoryId,
-          //   limit: limit || PRODUCT_PER_PAGE,
-          //   page: searchParams?.page || 0,
-          //   name: searchParams?.name || "",
-          //   min: searchParams?.min || 0,
-          //   max: searchParams?.max || 999999,
-          //   type: searchParams?.type || "physical,digital",
-          // },
-        });
+        const response = await axios.get(`${apiUrl}/products/`);
         console.log("response",response);
         
         setProducts(response?.data?.items);
@@ -45,11 +36,20 @@ const ProductList = ({ categoryId, limit, searchParams }) => {
     if (categoryId || searchParams) {
       fetchProducts();
     }
-  }, [categoryId, limit, searchParams, apiUrl]); 
+  }, [categoryId, limit, searchParams, apiUrl ,]);
+
+  useEffect(() => {
+    const sortProducts = (products) => {
+      return products.sort((a, b) => a.price.price - b.price.price); 
+    };
+
+    setSortedProducts(sortProducts([...products]));
+  }, [products]);
+  
 
   return (
     <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
-      {products?.map((product) => (
+      {sortedProducts.map((product) => (
         <Link
           to={"/" + product?.slug}
           className="w-full flex flex-col gap-4 sm:w-[40%] lg:w-[18%]"
