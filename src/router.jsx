@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './components/Pages/HomePage';
@@ -8,7 +8,6 @@ import RegisterPage from './components/Pages/Auth/RegisterPage';
 import ForgetPasswordPage from './components/Pages/Auth/ForgetPasswordPage';
 import Dashboard from './components/Pages/admin/Dashboard';
 
-
 const AppRouter = () => {
   return (
     <>
@@ -17,7 +16,7 @@ const AppRouter = () => {
       <Footer />
     </>
   );
-}
+};
 
 const App = () => {
   return (
@@ -25,11 +24,13 @@ const App = () => {
       <Route element={<AppRouter />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/list/" element={<ListPages />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forget-password" element={<ForgetPasswordPage />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

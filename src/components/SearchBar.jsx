@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useDispatch } from 'react-redux';
 import SearchIcon from '../assets/Search.png';
+import { setSearchQuery } from '../features/SearchSlice/SearchSlice';
 
 function SearchBar() {
   const [searchValue, setSearchValue] = useState('');
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchValue) {
-      navigate(`/list/search?query=${encodeURIComponent(searchValue)}`);
+      dispatch(setSearchQuery(searchValue)); 
     }
   };
 
