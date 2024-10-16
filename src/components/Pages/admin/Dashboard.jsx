@@ -9,9 +9,9 @@ function Dashboard() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen max w-screen">
       <div
-        className={`bg-white transition-all duration-300 ${
+        className={`bg-white transition-all duration-400 ${
           collapsed ? 'w-16' : 'w-64'
         } h-full sticky top-0`}
       >

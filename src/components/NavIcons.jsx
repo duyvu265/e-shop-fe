@@ -66,6 +66,8 @@ function NavIcons() {
   const { isLoggedIn, userInfo } = useSelector(state => state.user);
   const cart = fakeCartData;
 
+  
+
   const toggleProfileMenu = () => {
     if (isLoggedIn) {
       setProfileOpen(!isProfileOpen);
@@ -134,7 +136,7 @@ function NavIcons() {
         />
         {fakeNotifications.length > 0 && isLoggedIn && (
           <div className='absolute -top-4 -right-4 w-6 h-6 bg-[#F35C7A] rounded-full text-white text-sm flex items-center justify-center'>
-            {fakeNotifications.length ? fakeNotifications.length : ''}
+            {fakeNotifications.length}
           </div>
         )}
         {isNotificationOpen && (
@@ -152,13 +154,13 @@ function NavIcons() {
           className="cursor-pointer"
           onClick={toggleCartMenu}
         />
-        {cart.length > 0 && isLoggedIn && (
+        {cart.lineItems.length > 0 && isLoggedIn && (
           <div className='absolute -top-4 -right-4 w-6 h-6 bg-[#F35C7A] rounded-full text-white text-sm flex items-center justify-center'>
-            {cart.lineItems.length ? cart.lineItems.length : ''}
+            {cart.lineItems.length}
           </div>
         )}
         {isCartOpen && (
-          <CartModal lineItems={fakeCartData.lineItems} />
+          <CartModal lineItems={cart.lineItems} />
         )}
       </div>
     </div>

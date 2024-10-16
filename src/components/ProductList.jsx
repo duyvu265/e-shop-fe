@@ -4,55 +4,48 @@ import Pagination from "./Pagination";
 import { Link } from "react-router-dom";
 
 const PRODUCT_PER_PAGE = 8;
-const mockProducts = Array.from({ length: 20 }, (_, index) => ({
-  _id: `product-${index + 1}`,
-  slug: `product-${index + 1}`,
-  name: `Product ${index + 1}`,
-  price: { price: (Math.random() * 100).toFixed(2) },
-  media: {
-    mainMedia: {
-      image: {
-        url: `https://via.placeholder.com/150?text=Product+${index + 1}`,
-      },
-    },
-    items: [
-      { image: { url: `https://via.placeholder.com/150?text=Product+${index + 1}+Image+1` } },
-      { image: { url: `https://via.placeholder.com/150?text=Product+${index + 1}+Image+2` } },
-    ],
-  },
-  additionalInfoSections: [
-    { title: "shortDesc", description: `This is a short description for Product ${index + 1}.` },
-  ],
-}));
+
 const ProductList = ({ categoryId, limit, searchParams }) => {
-  const [products, setProducts] = useState(mockProducts);
-  const [pagination, setPagination] = useState({ currentPage: 0, hasPrev: false, hasNext: false });
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const [products, setProducts] = useState([]);
+
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    hasPrev: false,
+    hasNext: false,
+  });
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`/api/products`, {
-          params: {
-            categoryId,
-            limit: limit || PRODUCT_PER_PAGE,
-            page: searchParams?.page || 0,
-            name: searchParams?.name || "",
-            min: searchParams?.min || 0,
-            max: searchParams?.max || 999999,
-            type: searchParams?.type || "physical,digital",
-          },
+        const response = await axios.get(`${apiUrl}/products/`, {
+          // params: {
+          //   categoryId,
+          //   limit: limit || PRODUCT_PER_PAGE,
+          //   page: searchParams?.page || 0,
+          //   name: searchParams?.name || "",
+          //   min: searchParams?.min || 0,
+          //   max: searchParams?.max || 999999,
+          //   type: searchParams?.type || "physical,digital",
+          // },
         });
+        console.log("response",response);
+        
         setProducts(response?.data?.items);
-        setPagination({ currentPage: response?.data?.currentPage, hasPrev: response?.data?.hasPrev, hasNext: response?.data?.hasNext });
+        setPagination({
+          currentPage: response?.data?.currentPage,
+          hasPrev: response?.data?.hasPrev,
+          hasNext: response?.data?.hasNext,
+        });
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
 
-    // Gọi fetchProducts nếu cần
     if (categoryId || searchParams) {
       fetchProducts();
     }
-  }, [categoryId, limit, searchParams]);
+  }, [categoryId, limit, searchParams, apiUrl]); 
 
   return (
     <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
@@ -65,13 +58,13 @@ const ProductList = ({ categoryId, limit, searchParams }) => {
           <div className="relative w-full h-64">
             <img
               src={product?.media?.mainMedia?.image?.url || "/product.png"}
-              alt=""
-              className="absolute object-cover rounded-md z-10 hover:opacity-0 transition-opacity easy duration-500 w-full h-full"
+              alt={product?.name}
+              className="absolute object-cover rounded-md z-10 hover:opacity-0 transition-opacity ease duration-500 w-full h-full"
             />
             {product?.media?.items && (
               <img
                 src={product?.media?.items[1]?.image?.url || "/product.png"}
-                alt=""
+                alt={product?.name}
                 className="absolute object-cover rounded-md w-full h-full"
               />
             )}
@@ -87,7 +80,7 @@ const ProductList = ({ categoryId, limit, searchParams }) => {
               )?.description || ""}
             </div>
           )}
-          <button className="rounded-2xl ring-1 ring-#F35C7A text-#F35C7A w-max py-2 px-4 text-xs hover:bg-#F35C7A hover:text-white">
+          <button className="rounded-2xl ring-1 ring-[#F35C7A] text-[#F35C7A] w-max py-2 px-4 text-xs hover:bg-[#F35C7A] hover:text-white">
             Add to Cart
           </button>
         </Link>
@@ -104,4 +97,3 @@ const ProductList = ({ categoryId, limit, searchParams }) => {
 };
 
 export default ProductList;
-

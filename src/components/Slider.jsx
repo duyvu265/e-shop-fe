@@ -40,14 +40,14 @@ const Slider = () => {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-80px)] overflow-hidden ">
+    <div className="h-[calc(100vh-80px)] overflow-hidden relative">
       <div
-        className="w-full h-full flex transition-all ease-in-out duration-1000"
-        style={{ transform: `translateX(-${current * 100}vw)` }}
+        className="w-full h-full flex transition-transform ease-in-out duration-1000"
+        style={{ transform: `translateX(-${current * 100}%)` }} // Thay đổi từ vw sang %
       >
         {slides.map((slide) => (
           <div
-            className={`${slide.bg} w-screen h-full flex flex-col gap-16 xl:flex-row`}
+            className={`${slide.bg} flex-shrink-0 w-full h-full flex flex-col gap-16 xl:flex-row`} // Thay đổi w-screen thành w-full và thêm flex-shrink-0
             key={slide.id}
           >
             {/* TEXT CONTAINER */}
@@ -58,8 +58,8 @@ const Slider = () => {
               <h1 className="text-5xl lg:text-6xl 2xl:text-8xl font-semibold">
                 {slide.title}
               </h1>
-              <Link href={slide.url}>
-                <button className="rounded-md bg-black text-white py-3 px-4 ">
+              <Link to={slide.url}>
+                <button className="rounded-md bg-black text-white py-3 px-4">
                   SHOP NOW
                 </button>
               </Link>
@@ -78,7 +78,7 @@ const Slider = () => {
       <div className="absolute m-auto left-1/2 bottom-8 flex gap-4">
         {slides.map((slide, index) => (
           <div
-            className={`w-3 h-3  rounded-full ring-1 ring-gray-600 cursor-pointer flex items-center justify-center ${current === index ? "scale-150" : ""
+            className={`w-3 h-3 rounded-full ring-1 ring-gray-600 cursor-pointer flex items-center justify-center ${current === index ? "scale-150" : ""
               }`}
             key={slide.id}
             onClick={() => setCurrent(index)}

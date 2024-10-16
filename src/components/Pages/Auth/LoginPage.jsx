@@ -1,43 +1,78 @@
+
 import { useState, useEffect } from 'react';
 import logoIcon from '../../../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
-import { auth, provider } from '../../../firebase'; 
-import { signInWithPopup } from 'firebase/auth';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { GoogleLogin } from '@react-oauth/google';
+import { useDispatch } from 'react-redux'; 
+import { loginSuccess } from '../../../features/user/userSlice/UserSlice';
 
 const Login = () => {
   const [signState, setSignState] = useState("Sign In");
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch(); 
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('savedEmail');
+    const savedPassword = localStorage.getItem('savedPassword');
     if (savedEmail) {
       setEmail(savedEmail);
+      setPassword(savedPassword || '');
       setRememberMe(true);
     }
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (rememberMe) {
       localStorage.setItem('savedEmail', email);
+      localStorage.setItem('savedPassword', password);
     } else {
       localStorage.removeItem('savedEmail');
+      localStorage.removeItem('savedPassword');
     }
-    navigate('/');
-    console.log("Submitted:", { email, password });
+
+    try {
+      const endpoint = signState === "Sign In" ? `${apiUrl}/login/` : `${apiUrl}/register/`;
+      const data = signState === "Sign Up" 
+        ? { username: name, email, password } 
+        : { email, password };
+      const response = await axios.post(endpoint, data);
+    
+      if (response.data.userInfo) {
+        dispatch(loginSuccess(response.data.userInfo)); 
+        toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
+        navigate('/');
+      } else {
+        toast.error("Thông tin người dùng không hợp lệ!");
+      }
+    } catch (error) {
+      console.error("Error during authentication:", error.response?.data || error.message);
+      toast.error(error.response?.data?.error || "Có lỗi xảy ra! Vui lòng thử lại.");
+    }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      console.log("Google User:", user);
-      navigate('/');
+      const idToken = credentialResponse.credential;
+      const response = await axios.post(`${apiUrl}/google-login/`, { idToken });
+
+      if (response.data.userInfo) {
+        dispatch(loginSuccess(response.data.userInfo)); 
+        toast.success("Đăng Nhập bằng Google thành công!");
+        navigate('/');
+      } else {
+        toast.error("Thông tin người dùng không hợp lệ!");
+      }
     } catch (error) {
-      console.error("Error during Google Sign In:", error);
+      console.error("Error during Google Sign In:", error.response?.data || error.message);
+      toast.error(error.response?.data?.error || "Có lỗi xảy ra khi đăng nhập bằng Google!");
     }
   };
 
@@ -47,17 +82,25 @@ const Login = () => {
       <div className="w-full max-w-md bg-white bg-opacity-90 rounded-lg p-10 mx-auto shadow-lg">
         <h1 className="text-2xl font-medium mb-7 text-blue-600">{signState}</h1>
         <form onSubmit={handleSubmit}>
-          {signState === "Sign Up" && <input type='text' placeholder='Your name' className="w-full h-12 bg-gray-200 text-black mb-3 rounded px-4" />}
-          <input 
-            type='email' 
-            placeholder='Email' 
+          {signState === "Sign Up" && (
+            <input
+              type='text'
+              placeholder='Your name'
+              className="w-full h-12 bg-gray-200 text-black mb-3 rounded px-4"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          )}
+          <input
+            type='email'
+            placeholder='Email'
             className="w-full h-12 bg-gray-200 text-black mb-3 rounded px-4"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <input 
-            type='password' 
-            placeholder='Password' 
+          <input
+            type='password'
+            placeholder='Password'
             className="w-full h-12 bg-gray-200 text-black mb-3 rounded px-4"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -68,8 +111,8 @@ const Login = () => {
           <div className="flex items-center justify-between text-gray-600 text-sm mt-4">
             {signState === "Sign In" && (
               <div className="flex items-center gap-1">
-                <input 
-                  type='checkbox' 
+                <input
+                  type='checkbox'
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="w-4 h-4"
@@ -82,18 +125,24 @@ const Login = () => {
         </form>
         <div className="mt-10 text-gray-700 text-center">
           {signState === "Sign In" ? (
-            <p>Mới đến Shopee? <span onClick={() => setSignState("Sign Up")} className="text-blue-600 cursor-pointer font-medium">Đăng Ký Ngay</span></p>
+            <p>Mới đến Shop? <span onClick={() => setSignState("Sign Up")} className="text-blue-600 cursor-pointer font-medium">Đăng Ký Ngay</span></p>
           ) : (
             <p>Đã có tài khoản? <span onClick={() => setSignState("Sign In")} className="text-blue-600 cursor-pointer font-medium">Đăng Nhập Ngay</span></p>
           )}
         </div>
         <div className="mt-6">
-          <button onClick={handleGoogleSignIn} className="w-full h-12 bg-blue-500 text-white rounded mt-2 hover:bg-blue-600">Google</button>
-          <button className="w-full h-12 bg-blue-700 text-white rounded mt-2 hover:bg-blue-800">Facebook</button>
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              console.log('Login Failed');
+              toast.error("Có lỗi xảy ra khi đăng nhập bằng Google!");
+            }}
+          />
+          <button className="w-full h-12 bg-blue-700 text-white rounded mt-2 hover:bg-blue-800">F...</button>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Login;

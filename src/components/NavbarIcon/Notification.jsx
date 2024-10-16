@@ -1,7 +1,7 @@
 
 function Notifications({ fakeNotifications }) {
   return (
-    <div className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-md overflow-hidden">
+    <div className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-md overflow-hidden z-50">
       <h2 className="font-semibold p-2 border-b">Thông báo</h2>
       <div className="max-h-60 overflow-y-auto">
         {fakeNotifications.length > 0 ? (
