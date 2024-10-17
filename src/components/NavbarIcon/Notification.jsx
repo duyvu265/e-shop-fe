@@ -1,11 +1,16 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-function Notifications({ fakeNotifications }) {
+function Notifications({notifications,loading}) {
+
   return (
     <div className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-md overflow-hidden z-50">
       <h2 className="font-semibold p-2 border-b">Thông báo</h2>
       <div className="max-h-60 overflow-y-auto">
-        {fakeNotifications.length > 0 ? (
-          fakeNotifications.map((notification) => (
+        {loading ? ( 
+          <p className="p-2 text-gray-500">Đang tải thông báo...</p>
+        ) : notifications.length > 0 ? ( 
+          notifications.map((notification) => (
             <div key={notification.id} className="p-2 border-b hover:bg-gray-100">
               <p>{notification.message}</p>
               <span className="text-sm text-gray-500">

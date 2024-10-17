@@ -3,6 +3,7 @@ import axios from "axios";
 import Pagination from "./Pagination";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const ProductList = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -10,6 +11,7 @@ const ProductList = () => {
   const [sortedProducts, setSortedProducts] = useState([]);
   const searchQuery = useSelector((state) => state.search.query);
   const categoryId = useSelector((state) => state.category.id);
+  const likedProducts = useSelector((state) => state.user.likedList) || [];
   const [pagination, setPagination] = useState({
     currentPage: 0,
     hasPrev: false,
@@ -23,15 +25,11 @@ const ProductList = () => {
 
         if (searchQuery) {
           response = await axios.get(`${apiUrl}/products/search`, {
-            params: {
-              search: searchQuery,
-            },
+            params: { search: searchQuery },
           });
         } else if (categoryId) {
           response = await axios.get(`${apiUrl}/products/category`, {
-            params: {
-              categoryId,
-            },
+            params: { categoryId },
           });
         } else {
           response = await axios.get(`${apiUrl}/products/`);
@@ -59,49 +57,82 @@ const ProductList = () => {
     setSortedProducts(sortProducts([...products]));
   }, [products]);
 
+  const handleAddToCart = async (id) => {
+    try {
+      await axios.post(`${apiUrl}/cart/`, { productId: id });
+      alert("Product added to cart!");
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+    }
+  };
+
+  const handleLikeProduct = async (id) => {
+    try {
+      await axios.post(`${apiUrl}/like/`, { productId: id });
+      alert("Product liked!");
+    } catch (error) {
+      console.error("Error liking product:", error);
+    }
+  };
+
   return (
     <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
       {Array.isArray(sortedProducts) && sortedProducts.length > 0 ? (
-        sortedProducts.map((product) => (
-          <Link
-            to={"/" + product?.slug}
-            className="w-full flex flex-col gap-4 sm:w-[40%] lg:w-[18%]"
-            key={product?.id}
-          >
-            <div className="relative w-full h-64">
-              <img
-                src={product?.product_images?.image1?.url || "/product.png"}
-                alt={product?.name}
-                className="absolute object-cover rounded-md z-10 hover:opacity-0 transition-opacity ease duration-500 w-full h-full"
-              />
-              {product?.product_images?.image2 && (
+        sortedProducts.map((product) => {
+          const isLiked = likedProducts.some(likedProduct => likedProduct.id === product.id);
+
+          return (
+            <div className="flex flex-col w-full sm:w-[40%] lg:w-[18%]" key={product.id}>
+              <Link to={"/" + product.slug} className="relative w-full h-64">
                 <img
-                  src={product?.product_images?.image2?.url || "/product.png"} 
-                  alt={product?.name}
-                  className="absolute object-cover rounded-md w-full h-full"
+                  src={product.product_images?.image1?.url || "/product.png"}
+                  alt={product.name}
+                  className="absolute object-cover rounded-md z-10 hover:opacity-0 transition-opacity ease duration-500 w-full h-full"
                 />
-              )}
+                {product.product_images?.image2 && (
+                  <img
+                    src={product.product_images.image2.url || "/product.png"}
+                    alt={product.name}
+                    className="absolute object-cover rounded-md w-full h-full"
+                  />
+                )}
+              </Link>
+              <div className="flex justify-between mt-4">
+                <span className="font-medium">{product.name}</span>
+                <span className="font-semibold">${product.price}</span>
+              </div>
+              <div className="text-sm text-gray-500">
+                {product.description || ""}
+              </div>
+              <div className="mt-4 flex gap-2">
+                <button
+                  className="rounded-2xl ring-1 ring-[#F35C7A] text-[#F35C7A] w-max py-2 px-4 text-xs hover:bg-[#F35C7A] hover:text-white"
+                  onClick={() => handleAddToCart(product.id)}
+                >
+                  Add to Cart
+                </button>
+                <button
+                  className="rounded-2xl ring-1 ring-[#F35C7A] text-[#F35C7A] w-max py-2 px-4 text-xs hover:bg-[#F35C7A] hover:text-white"
+                  onClick={() => handleLikeProduct(product.id)}
+                >
+                  {isLiked ? (
+                    <FaHeart className="text-red-500" />
+                  ) : (
+                    <FaRegHeart className="text-gray-500" />
+                  )}
+                </button>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="font-medium">{product?.name}</span>
-              <span className="font-semibold">${product?.price}</span>
-            </div>
-            <div className="text-sm text-gray-500">
-              {product?.description || ""}
-            </div>
-            <button className="rounded-2xl ring-1 ring-[#F35C7A] text-[#F35C7A] w-max py-2 px-4 text-xs hover:bg-[#F35C7A] hover:text-white">
-              Add to Cart
-            </button>
-          </Link>
-        ))
+          );
+        })
       ) : (
         <p>No products found.</p>
       )}
       {(searchQuery || categoryId) ? (
         <Pagination
-          currentPage={pagination?.currentPage}
-          hasPrev={pagination?.hasPrev}
-          hasNext={pagination?.hasNext}
+          currentPage={pagination.currentPage}
+          hasPrev={pagination.hasPrev}
+          hasNext={pagination.hasNext}
         />
       ) : null}
     </div>

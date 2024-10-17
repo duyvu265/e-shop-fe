@@ -31,32 +31,36 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (rememberMe) {
-      localStorage.setItem('savedEmail', email);
-      localStorage.setItem('savedPassword', password);
+        localStorage.setItem('savedEmail', email);
+        localStorage.setItem('savedPassword', password);
     } else {
-      localStorage.removeItem('savedEmail');
-      localStorage.removeItem('savedPassword');
+        localStorage.removeItem('savedEmail');
+        localStorage.removeItem('savedPassword');
     }
 
     try {
-      const endpoint = signState === "Sign In" ? `${apiUrl}/login/` : `${apiUrl}/register/`;
-      const data = signState === "Sign Up" 
-        ? { username: name, email, password } 
-        : { email, password };
-      const response = await axios.post(endpoint, data);
-    
-      if (response.data.userInfo) {
-        dispatch(loginSuccess(response.data.userInfo)); 
-        toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
-        navigate('/');
-      } else {
-        toast.error("Thông tin người dùng không hợp lệ!");
-      }
+        const endpoint = signState === "Sign In" ? `${apiUrl}/login/` : `${apiUrl}/register/`;
+        const data = signState === "Sign Up" 
+            ? { username: name, email, password } 
+            : { email, password };
+        
+        const response = await axios.post(endpoint, data);
+        console.log("Response data:", response.data);
+
+        if (response.data.userInfo) {
+            dispatch(loginSuccess(response.data.userInfo)); 
+            toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
+            // Chỉnh sửa để sử dụng response.data.access
+            localStorage.setItem('token', response.data.access);
+            navigate('/');
+        } else {
+            toast.error("Thông tin người dùng không hợp lệ!");
+        }
     } catch (error) {
-      console.error("Error during authentication:", error.response?.data || error.message);
-      toast.error(error.response?.data?.error || "Có lỗi xảy ra! Vui lòng thử lại.");
+        console.error("Error during authentication:", error);
+        toast.error(error.response?.data?.error || "Có lỗi xảy ra! Vui lòng thử lại.");
     }
-  };
+};
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
@@ -66,6 +70,7 @@ const Login = () => {
       if (response.data.userInfo) {
         dispatch(loginSuccess(response.data.userInfo)); 
         toast.success("Đăng Nhập bằng Google thành công!");
+        localStorage.setItem('token', response.access);
         navigate('/');
       } else {
         toast.error("Thông tin người dùng không hợp lệ!");

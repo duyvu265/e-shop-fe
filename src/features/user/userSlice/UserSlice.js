@@ -4,7 +4,7 @@ const initialState = {
   userInfo: null,
   isLoggedIn: false,
   cart: [],
-  wishlist: [],
+  likedList: [], 
   orderHistory: [],
   notifications: [],
   loading: false,
@@ -34,6 +34,7 @@ const userSlice = createSlice({
       state.loading = false;
       state.isLoggedIn = true;
       state.userInfo = action.payload;
+      state.likedList=action.payload.liked_products ;
     },
     loginFailure: (state, action) => {
       state.loading = false;
@@ -42,9 +43,6 @@ const userSlice = createSlice({
     logout: (state) => {
       state.userInfo = null;
       state.isLoggedIn = false;
-      state.cart = [];
-      state.wishlist = [];
-      state.orderHistory = [];
     },
     addNotification: (state, action) => {
       state.notifications.push(action.payload);
@@ -52,7 +50,6 @@ const userSlice = createSlice({
     clearNotifications: (state) => {
       state.notifications = [];
     },
-
     addToCart: (state, action) => {
       const itemExists = state.cart.find(item => item.id === action.payload.id);
       if (!itemExists) {
@@ -65,14 +62,14 @@ const userSlice = createSlice({
     clearCart: (state) => {
       state.cart = [];
     },
-    addToWishlist: (state, action) => {
-      const itemExists = state.wishlist.find(item => item.id === action.payload.id);
+    addToLikedList: (state, action) => { 
+      const itemExists = state.likedList.find(item => item.id === action.payload.id);
       if (!itemExists) {
-        state.wishlist.push(action.payload);
+        state.likedList.push(action.payload);
       }
     },
-    removeFromWishlist: (state, action) => {
-      state.wishlist = state.wishlist.filter(item => item.id !== action.payload);
+    removeFromLikedList: (state, action) => { 
+      state.likedList = state.likedList.filter(item => item.id !== action.payload);
     },
     updateUserInfo: (state, action) => {
       state.userInfo = { ...state.userInfo, ...action.payload };
@@ -87,8 +84,9 @@ export const {
   registerStart, registerSuccess, registerFailure,
   loginStart, loginSuccess, loginFailure, logout,
   addToCart, removeFromCart, clearCart,
-  addToWishlist, removeFromWishlist,
+  addToLikedList, removeFromLikedList, 
   updateUserInfo, fetchOrderHistorySuccess,
 } = userSlice.actions;
 
 export default userSlice.reducer;
+
