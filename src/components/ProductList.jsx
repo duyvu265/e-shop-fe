@@ -24,7 +24,6 @@ const ProductList = () => {
     const fetchProducts = async () => {
       try {
         let response;
-
         if (searchQuery) {
           response = await axios.get(`${apiUrl}/products/search`, {
             params: { search: searchQuery },
@@ -84,7 +83,7 @@ const ProductList = () => {
 
           return (
             <div className="flex flex-col w-full sm:w-[40%] lg:w-[18%]" key={product.id}>
-              <Link to={"/" + product.slug} className="relative w-full h-64">
+              <Link to={`/products/${product.id}`} className="relative w-full h-64">
                 <img
                   src={product.product_items[0]?.product_images?.image1?.url || "/product.png"}
                   alt={product.name}

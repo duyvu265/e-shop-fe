@@ -1,81 +1,56 @@
 import { useEffect, useState } from "react";
 import Add from "./Add";
 
-const mockVariants = [
-  {
-    _id: "variant1",
-    choices: { Color: "Red", Size: "M" },
-    stock: { inStock: true, quantity: 5 },
-  },
-  {
-    _id: "variant2",
-    choices: { Color: "Blue", Size: "M" },
-    stock: { inStock: true, quantity: 3 },
-  },
-  {
-    _id: "variant3",
-    choices: { Color: "Green", Size: "L" },
-    stock: { inStock: false, quantity: 0 },
-  },
-];
-
-const mockProductOptions = [
-  {
-    name: "Color",
-    choices: [
-      { description: "Red", value: "#ff0000" },
-      { description: "Blue", value: "#0000ff" },
-      { description: "Green", value: "#00ff00" },
-    ],
-  },
-  {
-    name: "Size",
-    choices: [
-      { description: "S" },
-      { description: "M" },
-      { description: "L" },
-    ],
-  },
-];
-
-const CustomizeProducts = ({ productId }) => {
+const CustomizeProducts = ({ productId, product_items }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedVariant, setSelectedVariant] = useState();
 
   useEffect(() => {
-    const variant = mockVariants.find((v) => {
-      const variantChoices = v.choices;
-      if (!variantChoices) return false;
+    const variant = product_items.find((v) => {
+      const variantChoices = {
+        Color: v.color,
+        Size: v.size,
+      };
       return Object.entries(selectedOptions).every(
         ([key, value]) => variantChoices[key] === value
       );
     });
     setSelectedVariant(variant);
-  }, [selectedOptions]);
+  }, [selectedOptions, product_items]);
 
   const handleOptionSelect = (optionType, choice) => {
     setSelectedOptions((prev) => ({ ...prev, [optionType]: choice }));
   };
 
   const isVariantInStock = (choices) => {
-    return mockVariants.some((variant) => {
-      const variantChoices = variant.choices;
-      if (!variantChoices) return false;
-
+    return product_items.some((variant) => {
+      const variantChoices = {
+        Color: variant.color,
+        Size: variant.size,
+      };
       return (
         Object.entries(choices).every(
           ([key, value]) => variantChoices[key] === value
         ) &&
-        variant.stock?.inStock &&
-        variant.stock?.quantity &&
-        variant.stock?.quantity > 0
+        variant.qty_in_stock > 0
       );
     });
   };
 
+  const productOptions = [
+    {
+      name: "Color",
+      choices: [...new Set(product_items.map(v => ({ description: v.color, value: v.colorHex })))],
+    },
+    {
+      name: "Size",
+      choices: [...new Set(product_items.map(v => v.size))].map(size => ({ description: size })),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
-      {mockProductOptions.map((option) => (
+      {productOptions.map((option) => (
         <div className="flex flex-col gap-4" key={option.name}>
           <h4 className="font-medium">Choose a {option.name}</h4>
           <ul className="flex items-center gap-3">
@@ -117,8 +92,8 @@ const CustomizeProducts = ({ productId }) => {
                     backgroundColor: selected
                       ? "#f35c7a"
                       : disabled
-                      ? "#FBCFE8"
-                      : "white",
+                        ? "#FBCFE8"
+                        : "white",
                     color: selected || disabled ? "white" : "#f35c7a",
                     boxShadow: disabled ? "none" : "",
                   }}
@@ -134,10 +109,8 @@ const CustomizeProducts = ({ productId }) => {
       ))}
       <Add
         productId={productId}
-        variantId={
-          selectedVariant ? selectedVariant._id : "00000000-0000-0000-0000-000000000000"
-        }
-        stockNumber={selectedVariant?.stock?.quantity || 0}
+        variantId={selectedVariant?._id}
+        stockNumber={selectedVariant?.qty_in_stock || 0}
       />
     </div>
   );

@@ -44,13 +44,12 @@ const Login = () => {
             : { email, password };
         
         const response = await axios.post(endpoint, data);
-        console.log("Response data:", response.data);
 
         if (response.data.userInfo) {
-            dispatch(loginSuccess(response.data)); // Cập nhật với thông tin user và token
+            dispatch(loginSuccess(response.data)); 
             localStorage.setItem('token', response.data.access);
             toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
-            navigate('/'); // Điều hướng tới trang chính
+            navigate('/'); 
         } else {
             toast.error("Thông tin người dùng không hợp lệ!");
         }
@@ -137,7 +136,6 @@ const Login = () => {
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={() => {
-              console.log('Login Failed');
               toast.error("Có lỗi xảy ra khi đăng nhập bằng Google!");
             }}
           />

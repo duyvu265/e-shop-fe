@@ -47,8 +47,8 @@ const userSlice = createSlice({
     logout: (state) => {
       state.userInfo = null;
       state.isLoggedIn = false;
-      state.accessToken = null; // Xóa token khi đăng xuất
-      state.refreshToken = null; // Xóa token khi đăng xuất
+      state.accessToken = null; 
+      state.refreshToken = null; 
     },
     addNotification: (state, action) => {
       state.notifications.push(action.payload);
