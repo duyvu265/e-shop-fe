@@ -3,8 +3,10 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   userInfo: null,
   isLoggedIn: false,
+  accessToken: null, // Token truy cập
+  refreshToken: null, // Token làm mới
   cart: [],
-  likedList: [], 
+  likedList: [],
   orderHistory: [],
   notifications: [],
   loading: false,
@@ -33,8 +35,10 @@ const userSlice = createSlice({
     loginSuccess: (state, action) => {
       state.loading = false;
       state.isLoggedIn = true;
-      state.userInfo = action.payload;
-      state.likedList=action.payload.liked_products ;
+      state.userInfo = action.payload.userInfo; 
+      state.likedList = action.payload.userInfo.liked_products || []; 
+      state.accessToken = action.payload.access; 
+      state.refreshToken = action.payload.refresh;
     },
     loginFailure: (state, action) => {
       state.loading = false;
@@ -43,6 +47,8 @@ const userSlice = createSlice({
     logout: (state) => {
       state.userInfo = null;
       state.isLoggedIn = false;
+      state.accessToken = null; // Xóa token khi đăng xuất
+      state.refreshToken = null; // Xóa token khi đăng xuất
     },
     addNotification: (state, action) => {
       state.notifications.push(action.payload);
@@ -62,13 +68,13 @@ const userSlice = createSlice({
     clearCart: (state) => {
       state.cart = [];
     },
-    addToLikedList: (state, action) => { 
+    addToLikedList: (state, action) => {
       const itemExists = state.likedList.find(item => item.id === action.payload.id);
       if (!itemExists) {
         state.likedList.push(action.payload);
       }
     },
-    removeFromLikedList: (state, action) => { 
+    removeFromLikedList: (state, action) => {
       state.likedList = state.likedList.filter(item => item.id !== action.payload);
     },
     updateUserInfo: (state, action) => {
@@ -89,4 +95,3 @@ export const {
 } = userSlice.actions;
 
 export default userSlice.reducer;
-

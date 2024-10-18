@@ -7,22 +7,24 @@ import { logout } from '../features/user/userSlice/UserSlice';
 import { useNavigate } from 'react-router-dom';
 import CartModal from './NavbarIcon/CartModal';
 import Notifications from './NavbarIcon/Notification';
-import axios from 'axios';
+import apiClient from '../services/apiClient';
+
 function NavIcons() {
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [isCartOpen, setCartOpen] = useState(false);
   const [isNotificationOpen, setNotificationOpen] = useState(false);
   const { isLoggedIn, userInfo } = useSelector(state => state.user);
-  const apiUrl = import.meta.env.VITE_API_URL;
   const [notifications, setNotifications] = useState([]);
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/notifications`);
+        const response = await apiClient.get('/notifications/'); 
+        console.log(response.data); 
         setNotifications(response.data);
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -30,14 +32,16 @@ function NavIcons() {
         setLoading(false);
       }
     };
-
+  
     fetchNotifications();
-  }, [apiUrl]);
-
+  }, [apiClient]);
+  
   useEffect(() => {
     const fetchCarts = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/fetchCarts`);
+        const response = await apiClient.get('/cart/get/');
+        console.log(response.data); 
+        
         setCart(response.data);
       } catch (error) {
         console.error("Error fetching Cart:", error);
@@ -45,11 +49,10 @@ function NavIcons() {
         setLoading(false);
       }
     };
-
+  
     fetchCarts();
-  }, [apiUrl]);
-
-
+  }, [apiClient]);
+  
   const toggleProfileMenu = () => {
     if (isLoggedIn) {
       setProfileOpen(!isProfileOpen);
@@ -133,13 +136,13 @@ function NavIcons() {
           className="cursor-pointer"
           onClick={toggleCartMenu}
         />
-        {cart?.lineItems?.length > 0 && isLoggedIn && (
+        {cart?.length > 0 && isLoggedIn && (
           <div className='absolute -top-4 -right-4 w-6 h-6 bg-[#F35C7A] rounded-full text-white text-sm flex items-center justify-center'>
-            {cart?.lineItems?.length}
+            {cart.length}
           </div>
         )}
         {isCartOpen && (
-          <CartModal lineItems={cart?.lineItems} />
+          <CartModal lineItems={cart} />
         )}
       </div>
     </div>

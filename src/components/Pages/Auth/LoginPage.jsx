@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import logoIcon from '../../../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
@@ -48,11 +47,10 @@ const Login = () => {
         console.log("Response data:", response.data);
 
         if (response.data.userInfo) {
-            dispatch(loginSuccess(response.data.userInfo)); 
-            toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
-            // Chỉnh sửa để sử dụng response.data.access
+            dispatch(loginSuccess(response.data)); // Cập nhật với thông tin user và token
             localStorage.setItem('token', response.data.access);
-            navigate('/');
+            toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
+            navigate('/'); // Điều hướng tới trang chính
         } else {
             toast.error("Thông tin người dùng không hợp lệ!");
         }
@@ -68,10 +66,10 @@ const Login = () => {
       const response = await axios.post(`${apiUrl}/google-login/`, { idToken });
 
       if (response.data.userInfo) {
-        dispatch(loginSuccess(response.data.userInfo)); 
+        dispatch(loginSuccess(response.data)); // Cập nhật với thông tin user và token
+        localStorage.setItem('token', response.data.access);
         toast.success("Đăng Nhập bằng Google thành công!");
-        localStorage.setItem('token', response.access);
-        navigate('/');
+        navigate('/'); // Điều hướng tới trang chính
       } else {
         toast.error("Thông tin người dùng không hợp lệ!");
       }
