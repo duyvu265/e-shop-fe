@@ -1,6 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { removeFromCart } from '../../features/user/userSlice/UserSlice';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const CartModal = ({ lineItems }) => {
   const dispatch = useDispatch();
@@ -115,9 +116,9 @@ const CartModal = ({ lineItems }) => {
           </p>
 
           <div className="flex justify-between text-sm">
-            <button className="rounded-md py-3 px-4 ring-1 ring-gray-300">
+            <Link to={"/view-cart"} className="rounded-md py-3 px-4 ring-1 ring-gray-300">
               View Cart
-            </button>
+            </Link>
             <button
               className="rounded-md py-3 px-4 bg-black text-white"
               onClick={handleCheckout}

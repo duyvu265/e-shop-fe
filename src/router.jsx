@@ -9,6 +9,8 @@ import ForgetPasswordPage from './components/Pages/Auth/ForgetPasswordPage';
 import Dashboard from './components/Pages/admin/Dashboard';
 import OrderPage from './components/Pages/OrderPage/OrderPage';
 import ProfilePage from './components/Pages/ProfilePage/ProfilePage';
+import Reviews from './components/Reviews';
+import CustomizeProducts from './components/CustomizeProducts';
 
 const AppRouter = () => {
   return (
@@ -26,8 +28,10 @@ const App = () => {
       <Route element={<AppRouter />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/list/" element={<ListPages />} />
-        <Route path="/OrderPage/:id" element={<OrderPage />} />
-        <Route path="/ProfilePage" element={<ProfilePage />} />
+        <Route path="/orderPage/:id" element={<OrderPage />} />
+        <Route path="/profilePage" element={<ProfilePage />} />
+        <Route path="/reviews" element={<Reviews />} />
+        <Route path="/customize-products" element={<CustomizeProducts />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />
