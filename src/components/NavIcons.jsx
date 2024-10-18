@@ -14,8 +14,9 @@ function NavIcons() {
   const [isCartOpen, setCartOpen] = useState(false);
   const [isNotificationOpen, setNotificationOpen] = useState(false);
   const { isLoggedIn, userInfo } = useSelector(state => state.user);
+
   const [notifications, setNotifications] = useState([]);
-  const [cart, setCart] = useState([]);
+  const [carts, setCarts] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,8 +24,7 @@ function NavIcons() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await apiClient.get('/notifications/'); 
-        console.log(response.data); 
+        const response = await apiClient.get('/notifications/');
         setNotifications(response.data);
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -32,27 +32,25 @@ function NavIcons() {
         setLoading(false);
       }
     };
-  
+
     fetchNotifications();
   }, [apiClient]);
-  
+
   useEffect(() => {
     const fetchCarts = async () => {
       try {
         const response = await apiClient.get('/cart/get/');
-        console.log(response.data); 
-        
-        setCart(response.data);
+        setCarts(response.data);
       } catch (error) {
         console.error("Error fetching Cart:", error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchCarts();
   }, [apiClient]);
-  
+
   const toggleProfileMenu = () => {
     if (isLoggedIn) {
       setProfileOpen(!isProfileOpen);
@@ -102,7 +100,8 @@ function NavIcons() {
         />
         {isProfileOpen && (
           <div className="absolute bg-white shadow-lg p-2 ">
-            <p>Xin chào, {userInfo?.name}</p>
+            <p>Xin chào, {userInfo?.username} </p>
+            <a href="/profilePage" className="text-blue-500 hover:underline">Xem hồ sơ</a>
             <button onClick={handleLogout}>Đăng xuất</button>
           </div>
         )}
@@ -136,13 +135,13 @@ function NavIcons() {
           className="cursor-pointer"
           onClick={toggleCartMenu}
         />
-        {cart?.length > 0 && isLoggedIn && (
+        {carts?.length > 0 && isLoggedIn && (
           <div className='absolute -top-4 -right-4 w-6 h-6 bg-[#F35C7A] rounded-full text-white text-sm flex items-center justify-center'>
-            {cart.length}
+            {carts.length}
           </div>
         )}
         {isCartOpen && (
-          <CartModal lineItems={cart} />
+          <CartModal lineItems={carts} />
         )}
       </div>
     </div>

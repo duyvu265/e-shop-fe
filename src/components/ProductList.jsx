@@ -69,7 +69,7 @@ const ProductList = () => {
 
   const handleLikeProduct = async (id) => {
     try {
-      await axios.post(`${apiClient}/like/`, { product_id: id });
+      await apiClient.post(`${apiClient}/like/`, { product_id: id });
       alert("Product liked!");
     } catch (error) {
       console.error("Error liking product:", error);

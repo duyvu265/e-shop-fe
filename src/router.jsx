@@ -7,6 +7,8 @@ import LoginPage from './components/Pages/Auth/LoginPage';
 import RegisterPage from './components/Pages/Auth/RegisterPage';
 import ForgetPasswordPage from './components/Pages/Auth/ForgetPasswordPage';
 import Dashboard from './components/Pages/admin/Dashboard';
+import OrderPage from './components/Pages/OrderPage/OrderPage';
+import ProfilePage from './components/Pages/ProfilePage/ProfilePage';
 
 const AppRouter = () => {
   return (
@@ -24,6 +26,8 @@ const App = () => {
       <Route element={<AppRouter />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/list/" element={<ListPages />} />
+        <Route path="/OrderPage/:id" element={<OrderPage />} />
+        <Route path="/ProfilePage" element={<ProfilePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />
