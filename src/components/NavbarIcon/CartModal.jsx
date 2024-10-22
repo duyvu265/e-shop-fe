@@ -22,39 +22,28 @@ const CartModal = ({ lineItems }) => {
     );
   };
 
-  const handleQuantityChange = (itemId, increment) => {
-    const updatedItems = lineItems.map(item => {
-      if (item.product_id === itemId) {
-        const newQuantity = increment ? item.quantity + 1 : Math.max(item.quantity - 1, 1);
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
-    });
-  };
-
-
   const calculateSubtotal = () => {
-    return lineItems.reduce((total, product) => {
+    return lineItems?.products?.reduce((total, product) => {
       return total + product.product_items.reduce((itemTotal, item) => {
-        return itemTotal + parseFloat(item.price) * product.quantity;
+        return itemTotal + parseFloat(item.price);
       }, 0);
     }, 0).toFixed(2); 
   };
 
   return (
     <div className="absolute w-max p-4 rounded-md shadow-lg bg-white top-12 right-0 flex flex-col gap-6 z-20">
-      {lineItems?.length === 0 ? (
+      {lineItems?.products?.length === 0 ? (
         <div>Your Cart is Empty</div>
       ) : (
         <>
           <h2 className="text-xl">Shopping Cart</h2>
           <div className="flex flex-col gap-8 max-h-64 overflow-y-auto">
-            {lineItems?.map((product) => (
+            {lineItems?.products?.map((product) => (
               <div className="flex flex-col gap-4" key={product?.product_id}>
                 <h3 className="font-semibold">{product?.product_name}</h3>
                 <p>{product?.description}</p>
 
-                {product?.product_items?.map((item, index) => (
+                {product?.product_items?.map((item) => (
                   <div className="flex gap-4" key={`${product?.product_id}-${item?.sku}`}>
                     {item?.images && item?.images.length > 0 && (
                       <img
@@ -78,21 +67,6 @@ const CartModal = ({ lineItems }) => {
                         </div>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <button 
-                            className="text-blue-500 cursor-pointer" 
-                            onClick={() => handleQuantityChange(product?.product_id, false)}
-                          >
-                            -
-                          </button>
-                          <span className="text-gray-500">{product?.quantity}</span>
-                          <button 
-                            className="text-blue-500 cursor-pointer" 
-                            onClick={() => handleQuantityChange(product?.product_id, true)}
-                          >
-                            +
-                          </button>
-                        </div>
                         <span
                           className="text-blue-500 cursor-pointer"
                           onClick={() => handleRemoveItem(product?.product_id)}

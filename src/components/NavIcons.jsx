@@ -3,7 +3,7 @@ import notificationIcon from '../assets/notification.png';
 import cartIcon from '../assets/cart.png';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../features/user/userSlice/UserSlice';
+import { logout, setCart, setNotifications } from '../features/user/userSlice/UserSlice';
 import { useNavigate } from 'react-router-dom';
 import CartModal from './NavbarIcon/CartModal';
 import Notifications from './NavbarIcon/Notification';
@@ -14,10 +14,10 @@ function NavIcons() {
   const [isCartOpen, setCartOpen] = useState(false);
   const [isNotificationOpen, setNotificationOpen] = useState(false);
   const { isLoggedIn, userInfo } = useSelector(state => state.user);
+  const { cart, notifications } = useSelector(state => state.user);
+  const [loadingNotifications, setLoadingNotifications] = useState(true);
+  const [loadingCarts, setLoadingCarts] = useState(true);
 
-  const [notifications, setNotifications] = useState([]);
-  const [carts, setCarts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -29,27 +29,28 @@ function NavIcons() {
       } catch (error) {
         console.error("Error fetching notifications:", error);
       } finally {
-        setLoading(false);
+        setLoadingNotifications(false);
       }
     };
 
-    fetchNotifications();
-  }, [apiClient]);
-
-  useEffect(() => {
     const fetchCarts = async () => {
       try {
         const response = await apiClient.get('/cart/get/');
-        setCarts(response.data);
+        dispatch(setCart(response.data));
+        console.log("cart fetched", response.data);
+
       } catch (error) {
         console.error("Error fetching Cart:", error);
       } finally {
-        setLoading(false);
+        setLoadingCarts(false);
       }
     };
 
-    fetchCarts();
-  }, [apiClient]);
+    if (isLoggedIn) {
+      fetchNotifications();
+      fetchCarts();
+    }
+  }, [isLoggedIn, dispatch]);
 
   const toggleProfileMenu = () => {
     if (isLoggedIn) {
@@ -86,9 +87,12 @@ function NavIcons() {
     setProfileOpen(false);
     navigate("/");
   };
+  console.log("Cart products:", cart.products);
+  console.log("Total quantity:", cart?.products?.reduce((acc, item) => acc + (item?.quantity || 0), 0));
+
 
   return (
-    <div className="flex items-center gap-4 xl:gap-6 ">
+    <div className="flex items-center gap-4 xl:gap-6">
       <div className="relative z-20">
         <img
           src={profileIcon}
@@ -99,13 +103,14 @@ function NavIcons() {
           onClick={toggleProfileMenu}
         />
         {isProfileOpen && (
-          <div className="absolute bg-white shadow-lg p-2 ">
-            <p>Xin chào, {userInfo?.username} </p>
+          <div className="absolute bg-white shadow-lg p-2">
+            <p>Xin chào, {userInfo?.username}</p>
             <a href="/profilePage" className="text-blue-500 hover:underline">Xem hồ sơ</a>
             <button onClick={handleLogout}>Đăng xuất</button>
           </div>
         )}
       </div>
+
       <div className="relative">
         <img
           src={notificationIcon}
@@ -121,7 +126,7 @@ function NavIcons() {
           </div>
         )}
         {isNotificationOpen && (
-          <Notifications notifications={notifications} loading={loading} />
+          <Notifications notifications={notifications} loading={loadingNotifications} />
         )}
       </div>
 
@@ -135,17 +140,20 @@ function NavIcons() {
           className="cursor-pointer"
           onClick={toggleCartMenu}
         />
-        {carts?.length > 0 && isLoggedIn && (
+        {cart?.products?.length > 0 && isLoggedIn && (
           <div className='absolute -top-4 -right-4 w-6 h-6 bg-[#F35C7A] rounded-full text-white text-sm flex items-center justify-center'>
-            {carts.length}
+            {cart?.products?.reduce((acc, item) => acc + item?.quantity, 0) || 0}
           </div>
         )}
+
+
         {isCartOpen && (
-          <CartModal lineItems={carts} />
+          <CartModal lineItems={cart || {}} loading={loadingCarts} />
         )}
       </div>
     </div>
   );
+
 }
 
 export default NavIcons;

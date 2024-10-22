@@ -3,8 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   userInfo: null,
   isLoggedIn: false,
-  accessToken: null, // Token truy cập
-  refreshToken: null, // Token làm mới
+  accessToken: null,
+  refreshToken: null,
   cart: [],
   likedList: [],
   orderHistory: [],
@@ -35,9 +35,9 @@ const userSlice = createSlice({
     loginSuccess: (state, action) => {
       state.loading = false;
       state.isLoggedIn = true;
-      state.userInfo = action.payload.userInfo; 
-      state.likedList = action.payload.userInfo.liked_products || []; 
-      state.accessToken = action.payload.access; 
+      state.userInfo = action.payload.userInfo;
+      state.likedList = action.payload.userInfo.liked_products || [];
+      state.accessToken = action.payload.access;
       state.refreshToken = action.payload.refresh;
     },
     loginFailure: (state, action) => {
@@ -47,8 +47,9 @@ const userSlice = createSlice({
     logout: (state) => {
       state.userInfo = null;
       state.isLoggedIn = false;
-      state.accessToken = null; 
-      state.refreshToken = null; 
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.cart = []; 
     },
     addNotification: (state, action) => {
       state.notifications.push(action.payload);
@@ -56,10 +57,28 @@ const userSlice = createSlice({
     clearNotifications: (state) => {
       state.notifications = [];
     },
+    setNotifications: (state, action) => {  
+      state.notifications = action.payload;
+    },
+    setCart: (state, action) => {
+      state.cart = action.payload; 
+    },
     addToCart: (state, action) => {
-      const itemExists = state.cart.find(item => item.id === action.payload.id);
-      if (!itemExists) {
-        state.cart.push(action.payload);
+      const existingItem = state.cart.find(item => item.product_id === action.payload.product_id);
+      if (existingItem) {
+        existingItem.quantity += action.payload.quantity; 
+      } else {
+        state.cart.push({
+          ...action.payload,
+          quantity: action.payload.quantity,
+        });
+      }
+    },
+    
+    updateCartItemQuantity: (state, action) => {
+      const existingItem = state.cart.find(item => item.id === action.payload.id);
+      if (existingItem) {
+        existingItem.quantity = action.payload.quantity;
       }
     },
     removeFromCart: (state, action) => {
@@ -89,8 +108,9 @@ const userSlice = createSlice({
 export const {
   registerStart, registerSuccess, registerFailure,
   loginStart, loginSuccess, loginFailure, logout,
-  addToCart, removeFromCart, clearCart,
-  addToLikedList, removeFromLikedList, 
+  addToCart, removeFromCart, clearCart, setCart,
+  addNotification, clearNotifications, setNotifications, 
+  updateCartItemQuantity, addToLikedList, removeFromLikedList,
   updateUserInfo, fetchOrderHistorySuccess,
 } = userSlice.actions;
 
