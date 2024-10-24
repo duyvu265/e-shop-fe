@@ -1,56 +1,21 @@
 import profileIcon from '../assets/profile.png';
 import notificationIcon from '../assets/notification.png';
 import cartIcon from '../assets/cart.png';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout, setCart, setNotifications } from '../features/user/userSlice/UserSlice';
+import { logout } from '../features/user/userSlice/UserSlice';
 import { useNavigate } from 'react-router-dom';
 import CartModal from './NavbarIcon/CartModal';
 import Notifications from './NavbarIcon/Notification';
-import apiClient from '../services/apiClient';
 
 function NavIcons() {
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [isCartOpen, setCartOpen] = useState(false);
   const [isNotificationOpen, setNotificationOpen] = useState(false);
-  const { isLoggedIn, userInfo } = useSelector(state => state.user);
-  const { cart, notifications } = useSelector(state => state.user);
-  const [loadingNotifications, setLoadingNotifications] = useState(true);
-  const [loadingCarts, setLoadingCarts] = useState(true);
-
+  const { isLoggedIn, userInfo, cart, notifications } = useSelector(state => state.user);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await apiClient.get('/notifications/');
-        setNotifications(response.data);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      } finally {
-        setLoadingNotifications(false);
-      }
-    };
-
-    const fetchCarts = async () => {
-      try {
-        const response = await apiClient.get('/cart/get/');
-        dispatch(setCart(response.data));
-        console.log("cart fetched", response.data);
-
-      } catch (error) {
-        console.error("Error fetching Cart:", error);
-      } finally {
-        setLoadingCarts(false);
-      }
-    };
-
-    if (isLoggedIn) {
-      fetchNotifications();
-      fetchCarts();
-    }
-  }, [isLoggedIn, dispatch]);
 
   const toggleProfileMenu = () => {
     if (isLoggedIn) {
@@ -85,11 +50,8 @@ function NavIcons() {
   const handleLogout = () => {
     dispatch(logout());
     setProfileOpen(false);
-    navigate("/");
+    navigate("/login");
   };
-  console.log("Cart products:", cart.products);
-  console.log("Total quantity:", cart?.products?.reduce((acc, item) => acc + (item?.quantity || 0), 0));
-
 
   return (
     <div className="flex items-center gap-4 xl:gap-6">
@@ -126,11 +88,10 @@ function NavIcons() {
           </div>
         )}
         {isNotificationOpen && (
-          <Notifications notifications={notifications} loading={loadingNotifications} />
+          <Notifications notifications={notifications} />
         )}
       </div>
 
-      {/* Cart */}
       <div className="relative">
         <img
           src={cartIcon}
@@ -140,20 +101,17 @@ function NavIcons() {
           className="cursor-pointer"
           onClick={toggleCartMenu}
         />
-        {cart?.products?.length > 0 && isLoggedIn && (
+        {cart?.length > 0 && isLoggedIn && (
           <div className='absolute -top-4 -right-4 w-6 h-6 bg-[#F35C7A] rounded-full text-white text-sm flex items-center justify-center'>
-            {cart?.products?.reduce((acc, item) => acc + item?.quantity, 0) || 0}
+            {cart?.length}
           </div>
         )}
-
-
         {isCartOpen && (
-          <CartModal lineItems={cart || {}} loading={loadingCarts} />
+          <CartModal lineItems={cart || {}} />
         )}
       </div>
     </div>
   );
-
 }
 
 export default NavIcons;

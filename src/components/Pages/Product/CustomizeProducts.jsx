@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Add from "./Add";
+import ProductImages from "./ProductImages";
 
 const CustomizeProducts = ({ productId, product_items }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
@@ -40,7 +41,7 @@ const CustomizeProducts = ({ productId, product_items }) => {
   const productOptions = [
     {
       name: "Color",
-      choices: [...new Set(product_items.map(v => ({ description: v.color, value: v.colorHex })))],
+      choices: [...new Set(product_items.map(v => ({ description: v.color, value: v.product_images.image1.url })))],
     },
     {
       name: "Size",
@@ -50,6 +51,7 @@ const CustomizeProducts = ({ productId, product_items }) => {
 
   return (
     <div className="flex flex-col gap-6">
+      <ProductImages items={product_items.map(item => item.product_images.image1.url)} />
       {productOptions.map((option) => (
         <div className="flex flex-col gap-4" key={option.name}>
           <h4 className="font-medium">Choose a {option.name}</h4>
@@ -108,7 +110,7 @@ const CustomizeProducts = ({ productId, product_items }) => {
         </div>
       ))}
       <Add
-        productId={productId?productId:""}
+        productId={productId || ""}
         variantId={selectedVariant?._id}
         stockNumber={selectedVariant?.qty_in_stock || 0}
       />

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { GoogleLogin } from '@react-oauth/google';
-import { useDispatch } from 'react-redux'; 
+import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../../features/user/userSlice/UserSlice';
 
 const Login = () => {
@@ -14,7 +14,7 @@ const Login = () => {
   const [name, setName] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -30,34 +30,35 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (rememberMe) {
-        localStorage.setItem('savedEmail', email);
-        localStorage.setItem('savedPassword', password);
+      localStorage.setItem('savedEmail', email);
+      localStorage.setItem('savedPassword', password);
     } else {
-        localStorage.removeItem('savedEmail');
-        localStorage.removeItem('savedPassword');
+      localStorage.removeItem('savedEmail');
+      localStorage.removeItem('savedPassword');
     }
 
     try {
-        const endpoint = signState === "Sign In" ? `${apiUrl}/login/` : `${apiUrl}/register/`;
-        const data = signState === "Sign Up" 
-            ? { username: name, email, password } 
-            : { email, password };
-        
-        const response = await axios.post(endpoint, data);
+      const endpoint = signState === "Sign In" ? `${apiUrl}/login/` : `${apiUrl}/register/`;
+      const data = signState === "Sign Up"
+        ? { username: name, email, password }
+        : { email, password };
 
-        if (response.data.userInfo) {
-            dispatch(loginSuccess(response.data)); 
-            localStorage.setItem('token', response.data.access);
-            toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
-            navigate('/'); 
-        } else {
-            toast.error("Thông tin người dùng không hợp lệ!");
-        }
+      const response = await axios.post(endpoint, data);
+
+      if (response.data.userInfo) {
+        dispatch(loginSuccess(response.data));
+        localStorage.setItem('token', response.data.access);
+        localStorage.setItem('refreshToken', response.data.refresh);
+        toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
+        navigate('/');
+      } else {
+        toast.error("Thông tin người dùng không hợp lệ!");
+      }
     } catch (error) {
-        console.error("Error during authentication:", error);
-        toast.error(error.response?.data?.error || "Có lỗi xảy ra! Vui lòng thử lại.");
+      console.error("Error during authentication:", error);
+      toast.error(error.response?.data?.error || "Có lỗi xảy ra! Vui lòng thử lại.");
     }
-};
+  };
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
@@ -65,10 +66,13 @@ const Login = () => {
       const response = await axios.post(`${apiUrl}/google-login/`, { idToken });
 
       if (response.data.userInfo) {
-        dispatch(loginSuccess(response.data)); // Cập nhật với thông tin user và token
+        dispatch(loginSuccess(response.data));
+        console.log(response.data);
+        
         localStorage.setItem('token', response.data.access);
+        localStorage.setItem('refreshToken', response.data.refresh);
         toast.success("Đăng Nhập bằng Google thành công!");
-        navigate('/'); // Điều hướng tới trang chính
+        navigate('/');
       } else {
         toast.error("Thông tin người dùng không hợp lệ!");
       }

@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import apiClient from "../services/apiClient";
-import { addToCart, addToLikedList, loginSuccess, setCart } from "../features/user/userSlice/UserSlice";
+import { addToLikedList } from "../features/user/userSlice/UserSlice";
 
 const ProductList = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -15,7 +15,7 @@ const ProductList = () => {
   const searchQuery = useSelector((state) => state.search.query);
   const categoryId = useSelector((state) => state.category.id);
   const likedProducts = useSelector((state) => state.user.likedList) || [];
-  const { isLoggedIn, userInfo } = useSelector(state => state.user);
+  const { isLoggedIn } = useSelector(state => state.user);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -27,21 +27,8 @@ const ProductList = () => {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const refreshToken = localStorage.getItem("refreshToken");
-    if (token) {
-      const likedList = JSON.parse(localStorage.getItem("likedList"));
-      dispatch(loginSuccess({
-        userInfo: { ...userInfo, liked_products: likedList || [] },
-        access: token,
-        refresh: refreshToken
-      }));
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
     const fetchProducts = async () => {
-      setLoading(true); 
+      setLoading(true);
       try {
         let response;
         if (searchQuery) {
@@ -64,9 +51,8 @@ const ProductList = () => {
         });
       } catch (error) {
         console.error("Error fetching products:", error);
-        alert("Có lỗi xảy ra khi tải sản phẩm.");
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -81,27 +67,6 @@ const ProductList = () => {
     setSortedProducts(sortProducts([...products]));
   }, [products]);
 
-  const handleAddToCart = async (product_id) => {
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const response = await apiClient.post(`/cart/add/`, { product_id });
-      if (response.status === 200) {
-        dispatch(addToCart({
-          id: product_id,
-          quantity: 1,
-          ...response.data
-        }));
-        dispatch(setCart(response.data));
-      }
-    } catch (error) {
-      console.error("Error adding product to cart:", error);
-    }
-  };
-
   const handleLikeProduct = async (id) => {
     if (!isLoggedIn) {
       navigate("/login");
@@ -111,7 +76,6 @@ const ProductList = () => {
       const response = await apiClient.post(`/like/`, { product_id: id });
       if (response.status === 200) {
         dispatch(addToLikedList({ id, ...response.data }));
-        alert("Product liked!");
       }
     } catch (error) {
       console.error("Error liking product:", error);
@@ -127,57 +91,43 @@ const ProductList = () => {
       {Array.isArray(sortedProducts) && sortedProducts.length > 0 ? (
         sortedProducts.map((product) => {
           const isLiked = likedProducts.some(likedProduct => likedProduct.id === product.id);
+          const productImages = product.images; // Lấy danh sách hình ảnh
 
           return (
-            <div className="flex flex-col w-full sm:w-[40%] lg:w-[18%] relative" key={product.id}>
-              <Link to={`/products/${product.id}`} className="relative w-full h-64">
-                <img
-                  src={product.product_items[0]?.product_images?.image1?.url || "/product.png"}
-                  alt={product.name}
-                  className="absolute object-cover rounded-md z-10 hover:opacity-0 transition-opacity ease duration-500 w-full h-full"
-                />
-                {product.product_items[0]?.product_images?.image2 && (
+            <div className="flex flex-col w-full sm:w-[40%] lg:w-[18%] relative group border border-transparent transition duration-300" key={product.id}>
+              <Link to={`/products/${product.id}`} className="relative w-full h-64 group">
+                {productImages.length > 0 ? (
                   <img
-                    src={product.product_items[0]?.product_images.image2.url || "/product.png"}
+                    src={productImages[0]} // Hiển thị hình ảnh đầu tiên
                     alt={product.name}
-                    className="absolute object-cover rounded-md w-full h-full"
+                    className="absolute object-cover rounded-md z-10 w-full h-full transition-opacity duration-500 group-hover:opacity-0"
+                  />
+                ) : (
+                  <img
+                    src="/product.png" // Hình ảnh mặc định nếu không có hình
+                    alt={product.name}
+                    className="absolute object-cover rounded-md z-10 w-full h-full transition-opacity duration-500 group-hover:opacity-0"
+                  />
+                )}
+                {productImages.length > 1 && (
+                  <img
+                    src={productImages[1]} // Hiển thị hình ảnh thứ hai nếu có
+                    alt={product.name}
+                    className="absolute object-cover rounded-md w-full h-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   />
                 )}
               </Link>
               <div className="flex justify-between mt-4">
                 <span className="font-medium">{product.name}</span>
-                <span className="font-semibold">${product.product_items[0]?.price}</span>
+                <span className="font-semibold">${product.price}</span>
               </div>
               <div className="text-sm text-gray-500">
                 {product.description || ""}
               </div>
-              <div className="mt-2 text-sm text-gray-600">
-                <p>SKU: {product.product_items[0]?.SKU || "N/A"}</p>
-                <p>Quantity in Stock: {product.product_items[0]?.qty_in_stock || "N/A"}</p>
-                <p>Color: {product.product_items[0]?.color || "N/A"}</p>
-                <p>Size: {product.product_items[0]?.size || "N/A"}</p>
-              </div>
-              <div className="mt-4 flex justify-between space-x-2">
-                <button
-                  className="rounded-2xl ring-1 ring-[#F35C7A] text-[#F35C7A] w-max py-2 px-4 text-xs hover:bg-[#F35C7A] hover:text-white relative group"
-                  onClick={() => handleAddToCart(product?.product_items[0].id)}
-                >
-                  Add to Cart
-                  <div className="color-options hidden group-hover:block absolute bg-white border border-gray-300 p-2 rounded shadow-lg">
-                    <h4 className="font-semibold">Choose a Color</h4>
-                    <div className="flex">
-                      <div className="w-5 h-5 rounded-full border-2 border-lightblue mr-1 bg-blue-500"></div>
-                      <div className="w-5 h-5 rounded-full border-2 border-lightblue mr-1 bg-white"></div>
-                    </div>
-                  </div>
-                  <div className="size-options hidden group-hover:block absolute bg-white border border-gray-300 p-2 rounded shadow-lg">
-                    <h4 className="font-semibold">Choose a Size</h4>
-                    <button className="border border-gray-300 rounded px-2 py-1 mr-1">S</button>
-                    <button className="border border-gray-300 rounded px-2 py-1 bg-pink-500 text-white">M</button>
-                  </div>
-                </button>
-                <button
-                  className="rounded-2xl ring-1 ring-[#F35C7A] text-[#F35C7A] w-max py-2 px-4 text-xs hover:bg-[#F35C7A] hover:text-white"
+              <div className="mt-4 flex justify-between items-center">
+                <span className="text-sm text-gray-600">{product.discountCode || "Không có mã giảm giá"}</span>
+                <div
+                  className="rounded-2xl ring-1 ring-[#F35C7A] text-[#F35C7A] w-max p-2 text-xs hover:bg-[#F35C7A] hover:text-white cursor-pointer"
                   onClick={() => handleLikeProduct(product.id)}
                 >
                   {isLiked ? (
@@ -185,7 +135,7 @@ const ProductList = () => {
                   ) : (
                     <FaRegHeart className="text-gray-500" />
                   )}
-                </button>
+                </div>
               </div>
             </div>
           );

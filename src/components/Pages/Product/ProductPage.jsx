@@ -11,7 +11,6 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
 
-  
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -44,18 +43,18 @@ const ProductPage = () => {
     return <div>Product not found</div>;
   }
 
+  const minPrice = Math.min(...product.product_items.map(item => parseFloat(item.price))).toFixed(2);
+
   return (
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16">
-      {/* IMG */}
       <div className="w-full lg:w-1/2 lg:sticky top-20 h-max">
-        <ProductImages items={product.product_items.map(item => item.product_images.image1)} />
+        <ProductImages items={product.product_items.map(item => item.product_images.image1.url)} />
       </div>
-      {/* TEXTS */}
       <div className="w-full lg:w-1/2 flex flex-col gap-6">
         <h1 className="text-4xl font-medium">{product.name}</h1>
         <p className="text-gray-500">{product.description}</p>
         <div className="h-[2px] bg-gray-100" />
-        <h2 className="font-medium text-2xl">${Math.min(...product.product_items.map(item => parseFloat(item.price))).toFixed(2)}</h2>
+        <h2 className="font-medium text-2xl">${minPrice}</h2>
         <div className="h-[2px] bg-gray-100" />
         {product.product_items.length > 0 ? (
           <CustomizeProducts
@@ -64,13 +63,12 @@ const ProductPage = () => {
           />
         ) : (
           <Add
-            productId={productId}
-            variantId={selectedVariant?._id}
-            stockNumber={selectedVariant?.stock?.quantity || 0}
+            productId={product.id} 
+            variantId={null} 
+            stockNumber={0} 
           />
         )}
         <div className="h-[2px] bg-gray-100" />
-        {/* REVIEWS */}
         <h1 className="text-2xl">User Reviews</h1>
         <Reviews productId={product.id} />
       </div>

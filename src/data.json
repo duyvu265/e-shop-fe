@@ -1,0 +1,158 @@
+[
+  {
+      "id": 2,
+      "name": "\u00c1o d\u00e0i",
+      "description": "chi ti\u1ebft s\u1ea3n ph\u1ea9m \u00c1o d\u00e0i",
+      "is_active": false,
+      "created_at": "2024-10-14T03:10:36.749Z",
+      "updated_at": "2024-10-14T03:10:36.749Z",
+      "category": {
+          "id": 4,
+          "category_name": "\u00e1o"
+      },
+      "images": [
+          "https://watermark.lovepik.com/photo/20211208/large/lovepik-fashionable-womens-clothing-picture_501667331.jpg"
+      ]
+  },
+  {
+      "id": 6,
+      "name": "\u00c1o d\u00e0i m\u1eabu gold 2024",
+      "description": "\u00c1o d\u00e0i m\u1eabu gold 2024",
+      "is_active": true,
+      "created_at": "2024-10-16T09:38:38.885Z",
+      "updated_at": "2024-10-16T09:38:38.885Z",
+      "category": {
+          "id": 4,
+          "category_name": "\u00e1o"
+      },
+      "images": [
+          "https://blog.dktcdn.net/files/chup-anh-quan-ao.jpg",
+          "https://achaumedia.vn/wp-content/uploads/2020/05/dich-vu-chup-anh-san-pham-quan-ao-300x300.jpg"
+      ]
+  },
+  {
+      "id": 9,
+      "name": "\u00c1o 3 l\u1ed7",
+      "description": "\u00c1o 3 l\u1ed7",
+      "is_active": true,
+      "created_at": "2024-10-16T09:38:38.885Z",
+      "updated_at": "2024-10-16T09:38:38.885Z",
+      "category": {
+          "id": 4,
+          "category_name": "\u00e1o"
+      },
+      "images": [
+          "https://watermark.lovepik.com/photo/20211208/large/lovepik-fashionable-womens-clothing-picture_501667331.jpg",
+          "https://watermark.lovepik.com/photo/20211208/large/lovepik-fashionable-womens-clothing-picture_501667331.jpg"
+      ]
+  },
+  {
+      "id": 10,
+      "name": "\u00c1o 3 l\u1ed7 model m\u00f9a h\u00e8",
+      "description": "\u00c1o 3 l\u1ed7 model m\u00f9a h\u00e8",
+      "is_active": true,
+      "created_at": "2024-10-16T09:38:38.885Z",
+      "updated_at": "2024-10-16T09:38:38.885Z",
+      "category": {
+          "id": 4,
+          "category_name": "\u00e1o"
+      },
+      "images": []
+  },
+  {
+      "id": 1,
+      "name": "Qu\u1ea7n thun 001",
+      "description": "description Qu\u1ea7n thun 001",
+      "is_active": false,
+      "created_at": "2024-10-14T03:09:19.441Z",
+      "updated_at": "2024-10-14T03:09:19.441Z",
+      "category": {
+          "id": 3,
+          "category_name": "qu\u1ea7n"
+      },
+      "images": [
+          "https://resource.nhuahvt.com/0x0/tmp/anh-san-pham-nam-phang-1596647478.jpg",
+          "https://mabustudio.com/wp-content/uploads/2020/01/chup-trai-quan-ao-3.jpg"
+      ]
+  },
+  {
+      "id": 3,
+      "name": "qu\u1ea7n \u00e2u model 1",
+      "description": "chi ti\u1ebft v\u1ec1 qu\u1ea7n \u00e2u m\u1eabu 01",
+      "is_active": true,
+      "created_at": "2024-10-16T09:23:57.159Z",
+      "updated_at": "2024-10-16T09:34:23.151Z",
+      "category": {
+          "id": 3,
+          "category_name": "qu\u1ea7n"
+      },
+      "images": [
+          "https://nhatminhdecor.com/wp-content/uploads/2019/01/chup-anh-voi-mau-that-800x800.jpg",
+          "https://watermark.lovepik.com/photo/20211208/large/lovepik-fashionable-womens-clothing-picture_501667331.jpg"
+      ]
+  },
+  {
+      "id": 4,
+      "name": "qu\u1ea7n \u00e2u",
+      "description": "m\u00f4 t\u1ea3 qu\u1ea7n \u00e2u 01",
+      "is_active": true,
+      "created_at": "2024-10-16T09:35:21.271Z",
+      "updated_at": "2024-10-16T09:35:21.271Z",
+      "category": {
+          "id": 3,
+          "category_name": "qu\u1ea7n"
+      },
+      "images": [
+          "https://hthaostudio.com/wp-content/uploads/2021/12/Anh-SP-quan-Jean-9-min.jpg",
+          "https://lavenderstudio.com.vn/wp-content/uploads/2021/06/cach-chup-hinh-san-pham-quan-ao-dep-1.jpg"
+      ]
+  },
+  {
+      "id": 5,
+      "name": "qu\u1ea7n \u00e2u",
+      "description": "m\u00f4 t\u1ea3 qu\u1ea7n \u00e2u 01",
+      "is_active": true,
+      "created_at": "2024-10-16T09:37:16.677Z",
+      "updated_at": "2024-10-16T09:37:16.677Z",
+      "category": {
+          "id": 3,
+          "category_name": "qu\u1ea7n"
+      },
+      "images": [
+          "https://pos.nvncdn.com/4e732c-26/art/artCT/20210510_LQurOt2vEZXrgsRaG9WqNnyQ.jpg",
+          "https://watermark.lovepik.com/photo/20211208/large/lovepik-fashionable-womens-clothing-picture_501667331.jpg"
+      ]
+  },
+  {
+      "id": 7,
+      "name": "Qu\u1ea7n thun m\u1eabu 02 model m\u00f9a h\u00e8",
+      "description": "chi ti\u1ebft m\u00f4 t\u1ea3 s\u1ea3n ph\u1ea9m :Qu\u1ea7n thun m\u1eabu 02 model m\u00f9a h\u00e8",
+      "is_active": true,
+      "created_at": "2024-10-16T09:38:38.885Z",
+      "updated_at": "2024-10-16T09:38:38.885Z",
+      "category": {
+          "id": 3,
+          "category_name": "qu\u1ea7n"
+      },
+      "images": [
+          "https://watermark.lovepik.com/photo/20211208/large/lovepik-fashionable-womens-clothing-picture_501667331.jpg",
+          "https://watermark.lovepik.com/photo/20211208/large/lovepik-fashionable-womens-clothing-picture_501667331.jpg"
+      ]
+  },
+  {
+      "id": 8,
+      "name": "qu\u1ea7n \u00e2u",
+      "description": "chi ti\u1ebft m\u00f4 t\u1ea3 s\u1ea3n ph\u1ea9m :Qu\u1ea7n thun m\u1eabu 03 model m\u00f9a h\u00e8",
+      "is_active": true,
+      "created_at": "2024-10-16T09:38:38.885Z",
+      "updated_at": "2024-10-16T09:38:38.885Z",
+      "category": {
+          "id": 3,
+          "category_name": "qu\u1ea7n"
+      },
+      "images": [
+          "https://pos.nvncdn.com/4e732c-26/art/artCT/20210510_LQurOt2vEZXrgsRaG9WqNnyQ.jpg",
+          "https://achaumedia.vn/wp-content/uploads/2020/05/dich-vu-chup-anh-san-pham-quan-ao-300x300.jpg https://achaumedia.vn/wp-content/uploads/2020/05/dich-vu-chup-anh-san-pham-quan-ao-300x300.jpg"
+      ]
+  }
+]
