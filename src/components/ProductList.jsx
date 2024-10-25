@@ -75,7 +75,7 @@ const ProductList = () => {
     try {
       const response = await apiClient.post(`/like/`, { product_id: id });
       if (response.status === 200) {
-        dispatch(addToLikedList({ id, ...response.data }));
+        dispatch(addToLikedList({ id }));
       }
     } catch (error) {
       console.error("Error liking product:", error);
