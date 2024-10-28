@@ -2,7 +2,9 @@ import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedAdminRoutes = () => {
-  const { isLogedIn } = useSelector(state => state.adminAuth);
+  const  isLogedIn  = useSelector(state => state?.adminAuth);
+  console.log(isLogedIn);
+  
   if (isLogedIn === undefined) {
 
     return null; 

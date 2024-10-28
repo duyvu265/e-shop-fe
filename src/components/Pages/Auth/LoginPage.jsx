@@ -36,21 +36,25 @@ const Login = () => {
       localStorage.removeItem('savedEmail');
       localStorage.removeItem('savedPassword');
     }
-
+  
     try {
       const endpoint = signState === "Sign In" ? `${apiUrl}/login/` : `${apiUrl}/register/`;
       const data = signState === "Sign Up"
         ? { username: name, email, password }
         : { email, password };
-
+  
       const response = await axios.post(endpoint, data);
-
+  
       if (response.data.userInfo) {
         dispatch(loginSuccess(response.data));
         localStorage.setItem('token', response.data.access);
         localStorage.setItem('refreshToken', response.data.refresh);
         toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
-        navigate('/');
+        if (response.data.userInfo.user_type === "admin") {         
+          navigate('admin/dashboard');
+        } else {
+          navigate('/');
+        }
       } else {
         toast.error("Thông tin người dùng không hợp lệ!");
       }
@@ -59,6 +63,7 @@ const Login = () => {
       toast.error(error.response?.data?.error || "Có lỗi xảy ra! Vui lòng thử lại.");
     }
   };
+  
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {

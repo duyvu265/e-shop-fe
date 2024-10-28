@@ -11,12 +11,8 @@ const adminAuthSlice = createSlice({
             const { access, refresh, userInfo } = action.payload; 
             
             state.isLogedIn = true;
-            state.adminData = userInfo;
-
-            const { email } = userInfo; 
-            const loginData = { email };
-            
-            localStorage.setItem('adminAuthData', JSON.stringify(loginData));
+            state.adminData = userInfo;            
+            // localStorage.setItem('adminAuthData', JSON.stringify(loginData));
             localStorage.setItem('accessToken', access); 
             localStorage.setItem('refreshToken', refresh);
         },
@@ -32,6 +28,7 @@ const adminAuthSlice = createSlice({
             localStorage.removeItem('refreshToken');
             state.isLogedIn = false;
             state.adminData = {};
+            
         },
 
         updateAdmin: (state, action) => {

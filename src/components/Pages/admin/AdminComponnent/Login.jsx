@@ -3,49 +3,49 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { login } from '../../../../features/Admin/adminAuthSlice';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const dispatch = useDispatch();
-  const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const { email, password } = loginData;
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setLoginData(prev => ({ ...prev, [name]: value }));
+    const { name, value } = e.target;
+    if (name === 'email') setEmail(value);
+    else if (name === 'password') setPassword(value);
+  };
+
+  const handleLoginSuccess = (userInfo) => {
+    if (userInfo.userInfo.user_type !== "admin") {
+      toast.error('Your account is deactivated by super admin');
+    } else {
+      dispatch(login(userInfo));
+      navigate("/admin/dashboard");
+    }
+  };
+
+  const handleLoginError = (err) => {
+    console.error(err);
+    const message = err.response?.data?.message || 'An error occurred while logging in';
+    toast.error(message);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post(`${apiUrl}/v1/admin/login/`, {
-        email,
-        password,
-      });
-
-      const userInfo = response.data;
-
-      if (userInfo.userInfo.user_type !== "admin") {
-        toast.error('Your account is deactivated by super admin');
-      } else {
-        dispatch(login(userInfo));
-        console.log(userInfo);
-        
-      }
+      const response = await axios.post(`${apiUrl}/v1/admin/login/`, { email, password });
+      handleLoginSuccess(response.data);
     } catch (err) {
-      console.error(err);
-      if (err.response && err.response.data) {
-        toast.error(err.response.data.message || 'An error occurred while logging in');
-      } else {
-        toast.error('An error occurred while logging in');
-      }
+      handleLoginError(err);
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center h-screen bg-gray-100 w-full h-full">
       <div className="w-full max-w-md">
         <div className="bg-white shadow-lg rounded-lg p-6">
           <h3 className="text-center text-2xl font-bold mb-4">Login</h3>
@@ -58,7 +58,7 @@ const Login = () => {
                 type="email"
                 placeholder="Enter email"
                 name="email"
-                value={loginData.email}
+                value={email}
                 onChange={handleChange}
                 required
               />
@@ -71,7 +71,7 @@ const Login = () => {
                 type="password"
                 placeholder="Enter password"
                 name="password"
-                value={loginData.password}
+                value={password}
                 onChange={handleChange}
                 required
               />

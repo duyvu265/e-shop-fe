@@ -20,7 +20,7 @@ const AppCustom = () => {
   );
 };
 
-const AppRouter = () => {
+const UserRouter = () => {
   
   return (
     <Routes>
@@ -34,9 +34,8 @@ const AppRouter = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forget-password" element={<ForgetPasswordPage />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
 
-export default AppRouter;
+export default UserRouter;
