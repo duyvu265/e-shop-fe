@@ -10,7 +10,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const { email, password } = loginData;
-
   const handleChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -28,10 +27,12 @@ const Login = () => {
 
       const userInfo = response.data;
 
-      if (userInfo.status !== 'active') {
+      if (userInfo.userInfo.user_type !== "admin") {
         toast.error('Your account is deactivated by super admin');
       } else {
         dispatch(login(userInfo));
+        console.log(userInfo);
+        
       }
     } catch (err) {
       console.error(err);

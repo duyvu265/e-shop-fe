@@ -1,21 +1,18 @@
-import { useSelector } from 'react-redux'
-import { Navigate, Outlet } from 'react-router-dom'
-import usersSlice from '../features/Admin/usersSlice';
+import { useSelector } from 'react-redux';
+import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedAdminRoutes = () => {
+  const { isLogedIn } = useSelector(state => state.adminAuth);
+  if (isLogedIn === undefined) {
 
-  const { isLogedIn } = useSelector(state => state.adminAuth)
-  const { products, error } = useSelector((state) => state.products);
-
-  if (!isLogedIn) {
-    <Navigate to={'/admin/login'} />
-    return null
-  } else if (isLogedIn) {
-    return <Outlet />
-  } else if (isLogedIn === false) {
-    return <Navigate to={'/admin/login'} />
+    return null; 
   }
 
-}
+  if (!isLogedIn) {
+    return <Navigate to={'/admin/login'} />;
+  }
 
-export default ProtectedAdminRoutes
+  return <Outlet />;
+};
+
+export default ProtectedAdminRoutes;

@@ -25,7 +25,6 @@ import AdminLayout from './../Layout/Admin/AdminLayout';
 import Login from './../components/Pages/admin/AdminComponnent/Login';
 import ProtectedAdminRoutes from './Midleware';
 
-
 const AdminRoutes = () => {
   return (
     <>

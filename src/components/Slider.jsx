@@ -1,53 +1,41 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-const slides = [
-  {
-    id: 1,
-    title: "Summer Sale Collections",
-    description: "Sale! Up to 50% off!",
-    img: "https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800",
-    url: "/",
-    bg: "bg-gradient-to-r from-yellow-50 to-pink-50",
-  },
-  {
-    id: 2,
-    title: "Winter Sale Collections",
-    description: "Sale! Up to 50% off!",
-    img: "https://images.pexels.com/photos/1021693/pexels-photo-1021693.jpeg?auto=compress&cs=tinysrgb&w=800",
-    url: "/",
-    bg: "bg-gradient-to-r from-pink-50 to-blue-50",
-  },
-  {
-    id: 3,
-    title: "Spring Sale Collections",
-    description: "Sale! Up to 50% off!",
-    img: "https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=800",
-    url: "/",
-    bg: "bg-gradient-to-r from-blue-50 to-yellow-50",
-  },
-];
+import axios from "axios";
 
 const Slider = () => {
+  const [slides, setSlides] = useState([]);
   const [current, setCurrent] = useState(0);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/li-banners/`);
+        const activeSlides = response.data.filter(slide => slide.status);
+        setSlides(activeSlides);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+
     const interval = setInterval(() => {
       setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
     }, 4000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [slides.length]); 
 
   return (
     <div className="h-[calc(100vh-80px)] overflow-hidden relative">
       <div
         className="w-full h-full flex transition-transform ease-in-out duration-1000"
-        style={{ transform: `translateX(-${current * 100}%)` }} // Thay đổi từ vw sang %
+        style={{ transform: `translateX(-${current * 100}%)` }}
       >
         {slides.map((slide) => (
           <div
-            className={`${slide.bg} flex-shrink-0 w-full h-full flex flex-col gap-16 xl:flex-row`} // Thay đổi w-screen thành w-full và thêm flex-shrink-0
+            className=" from-yellow-50 to-pink-50 flex-shrink-0 w-full h-full flex flex-col gap-16 xl:flex-row"
             key={slide.id}
           >
             {/* TEXT CONTAINER */}
@@ -58,7 +46,7 @@ const Slider = () => {
               <h1 className="text-5xl lg:text-6xl 2xl:text-8xl font-semibold">
                 {slide.title}
               </h1>
-              <Link to={slide.url}>
+              <Link to="/">
                 <button className="rounded-md bg-black text-white py-3 px-4">
                   SHOP NOW
                 </button>
@@ -67,8 +55,8 @@ const Slider = () => {
             {/* IMAGE CONTAINER */}
             <div className="h-1/2 xl:w-1/2 xl:h-full relative">
               <img
-                src={slide.img}
-                alt=""
+                src={slide.image}
+                alt={slide.title}
                 className="object-cover w-full h-full"
               />
             </div>
