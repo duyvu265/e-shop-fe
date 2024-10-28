@@ -8,6 +8,7 @@ const Banners = () => {
   const dispatch = useDispatch();
   const { adminData } = useSelector((state) => state.adminAuth);
   const { banner, error } = useSelector(state => state.banner);
+console.log(banner);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -53,17 +54,17 @@ const Banners = () => {
                     <div className="p-4 flex justify-between items-center">
                       <div>
                         <h5 className="text-lg font-bold">{title}</h5>
-                        <h6 className="text-gray-600">Status: {status}</h6>
+                        <h6 className="text-gray-600">Status: {status ?"Active":"InActive"}</h6>
                       </div>
                       <div>
                         <button
                           className={`btn btn-sm mx-1 ${status === 'active' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white`}
                           onClick={() => handleStatus({ id, status })}
-                          disabled={(adminData.userType !== 'super admin' && id <= 2)}
+                          disabled={(adminData.userType !== 'admin' && id <= 2)}
                         >
                           {status === 'active' ? 'Hide' : 'Show'}
                         </button>
-                        {adminData.userType === 'super admin' && (
+                        {adminData.userType === 'admin' && (
                           <button
                             className="btn btn-sm bg-red-500 hover:bg-red-600 text-white mx-1"
                             onDoubleClick={() => handleDelete(id)}

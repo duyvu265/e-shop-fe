@@ -5,7 +5,7 @@ import apiClient from './../../services/apiClient';
 export const getBanner = createAsyncThunk(
     'banner/fetchBanner',
     async ({ signal }) => {
-        const response = await apiClient.get('/banner', { signal });
+        const response = await apiClient.get('/li-banners', { signal });
         console.log(response.data);
         return response.data;
     }
@@ -14,7 +14,7 @@ export const getBanner = createAsyncThunk(
 export const addBanner = createAsyncThunk(
     'banner/addBanner',
     async ({ bannerData }) => {
-        const response = await apiClient.post('/banner', bannerData);
+        const response = await apiClient.post('v1/admin/banner', bannerData);
         return { data: response.data, status: response.status };
     }
 );
@@ -22,7 +22,7 @@ export const addBanner = createAsyncThunk(
 export const updateBanner = createAsyncThunk(
     'banner/updateBanner',
     async ({ id, updateData }) => {
-        const response = await apiClient.patch(`/banner/${id}`, updateData);
+        const response = await apiClient.patch(`v1/admin/banner/${id}`, updateData);
         return { data: response.data, id };
     }
 );
@@ -30,7 +30,7 @@ export const updateBanner = createAsyncThunk(
 export const deleteBanner = createAsyncThunk(
     'banner/deleteBanner',
     async ({ id }) => {
-        await apiClient.delete(`/banner/${id}`);
+        await apiClient.delete(`v1/admin/banner/${id}`);
         return { id };
     }
 );

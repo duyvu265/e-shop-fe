@@ -9,6 +9,7 @@ import Pagination from "../../../Pagination";
 const Products = () => {
     const dispatch = useDispatch();
     const { products, error } = useSelector((state) => state.productsSlice);
+    console.log(products)
 
     useEffect(() => {
         const controller = new AbortController();

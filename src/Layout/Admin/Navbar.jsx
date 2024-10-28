@@ -1,5 +1,5 @@
 import React, { memo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaUser } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { logout } from "../../features/user/userSlice/UserSlice";
@@ -7,17 +7,19 @@ import { logout } from "../../features/user/userSlice/UserSlice";
 const Navbar = ({ toggle, setToggle }) => {
   const dispatch = useDispatch();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Trạng thái cho dropdown
-
+const navigate=useNavigate()
   const handleToggle = () => {
     setToggle(!toggle);
   };
 
   const handleLogout = () => {
     dispatch(logout());
+    navigate("/admin/login");
+
   };
 
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen); // Đóng/mở dropdown
+    setIsDropdownOpen(!isDropdownOpen); 
   };
 
   return (
