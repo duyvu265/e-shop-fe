@@ -10,7 +10,7 @@ import Pagination from "../../../Pagination";
 
 const Coupon = () => {
   const dispatch = useDispatch();
-  const { coupon, error } = useSelector((state) => state.coupon);
+  const { coupon, error } = useSelector((state) => state.couponSlice);
 
   useEffect(() => {
     const controller = new AbortController();

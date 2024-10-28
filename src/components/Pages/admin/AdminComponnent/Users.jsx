@@ -22,7 +22,7 @@ const Users = () => {
     };
   }, [dispatch]);
 
-  const { users, error } = useSelector(state => state.users);
+  const { users, error } = useSelector(state => state.usersSlice);
 
   const [userData, setUserData] = useState([]);
   const [page, setPage] = useState(1);

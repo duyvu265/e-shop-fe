@@ -39,7 +39,7 @@ const ProductsTable = ({ currentProducts }) => {
             </tr>
           </thead>
           <tbody>
-            {currentProducts.map((product) => {
+            {currentProducts?.map((product) => {
               const { id, image, title, category, price, status } = product;
 
               return (

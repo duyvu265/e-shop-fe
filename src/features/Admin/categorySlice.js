@@ -6,7 +6,7 @@ import apiClient from "../../services/apiClient";
 export const fetchCategory = createAsyncThunk(
   "category/fetchCategory",
   async ({ signal }) => {
-    const response = await axios.get(`${apiClient}/category?_sort=id&_order=desc`, { signal });
+    const response = await axios.get(`${apiClient}/category`, { signal });
     return response.data; 
   }
 );

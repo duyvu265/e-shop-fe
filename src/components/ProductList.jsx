@@ -91,27 +91,26 @@ const ProductList = () => {
       {Array.isArray(sortedProducts) && sortedProducts.length > 0 ? (
         sortedProducts.map((product) => {
           const isLiked = likedProducts.some(likedProduct => likedProduct.id === product.id);
-          const productImages = product.images; // Lấy danh sách hình ảnh
-
+          const productImages = product.images; 
           return (
             <div className="flex flex-col w-full sm:w-[40%] lg:w-[18%] relative group border border-transparent transition duration-300" key={product.id}>
               <Link to={`/products/${product.id}`} className="relative w-full h-64 group">
                 {productImages.length > 0 ? (
                   <img
-                    src={productImages[0]} // Hiển thị hình ảnh đầu tiên
+                    src={productImages[0]} 
                     alt={product.name}
                     className="absolute object-cover rounded-md z-10 w-full h-full transition-opacity duration-500 group-hover:opacity-0"
                   />
                 ) : (
                   <img
-                    src="/product.png" // Hình ảnh mặc định nếu không có hình
+                    src="/product.png" 
                     alt={product.name}
                     className="absolute object-cover rounded-md z-10 w-full h-full transition-opacity duration-500 group-hover:opacity-0"
                   />
                 )}
                 {productImages.length > 1 && (
                   <img
-                    src={productImages[1]} // Hiển thị hình ảnh thứ hai nếu có
+                    src={productImages[1]} 
                     alt={product.name}
                     className="absolute object-cover rounded-md w-full h-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   />

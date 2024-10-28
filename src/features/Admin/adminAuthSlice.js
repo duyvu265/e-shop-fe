@@ -12,7 +12,6 @@ const adminAuthSlice = createSlice({
             
             state.isLogedIn = true;
             state.adminData = userInfo;            
-            // localStorage.setItem('adminAuthData', JSON.stringify(loginData));
             localStorage.setItem('accessToken', access); 
             localStorage.setItem('refreshToken', refresh);
         },

@@ -69,16 +69,13 @@ const startTokenRefreshInterval = () => {
   setInterval(async () => {
     const tokenExpiry = localStorage.getItem('tokenExpiry');
     const currentTime = new Date().getTime();
-
-    // Chỉ refresh token nếu nó sắp hết hạn (trước 5 giây)
     if (tokenExpiry && currentTime >= tokenExpiry - 5000) {
       console.log("Token gần hết hạn, bắt đầu refresh...");
       await refreshTokens();
     }
-  }, minute * 3); // Lặp lại mỗi 3 phút
+  }, minute * 3); 
 };
 
-// Bắt đầu quá trình refresh token định kỳ
 startTokenRefreshInterval();
 
 export default apiClient;

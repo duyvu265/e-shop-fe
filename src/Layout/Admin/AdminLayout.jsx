@@ -8,25 +8,23 @@ const AdminLayout = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
 
   return (
-    <div className={`sb-nav-fixed ${sidebarToggle ? "sb-sidenav-toggled" : ""}`}>
+    <div className={`relative h-screen ${sidebarToggle ? "translate-x-0" : ""}`}>
       <Navbar toggle={sidebarToggle} setToggle={setSidebarToggle} />
 
-      <div id="layoutSidenav" className="flex">
-        {/* Sidebar */}
+      <div id="layoutSidenav" className="flex h-full">
         <div
           id="layoutSidenav_nav"
-          className={`flex-none transition-transform duration-150 transform ${sidebarToggle ? "translate-x-0" : "-translate-x-[225px]"} z-[1038] w-[225px] h-screen bg-gray-800`}
+          className={`flex-none transition-transform duration-150 transform ${sidebarToggle ? "translate-x-0" : "-translate-x-[225px]"} z-[1038] w-[225px] h-full bg-gray-800`}
         >
           <Sidebar />
         </div>
-
-        {/* Content */}
         <div
           id="layoutSidenav_content"
-          className="relative flex flex-col justify-between flex-grow min-h-[calc(100vh-56px)] transition-[margin] duration-150 ease-in-out ml-[-225px]"
+          className="relative flex flex-col justify-between flex-grow h-full transition-[margin] duration-150 ease-in-out"
+          style={{ width: `calc(100vw - ${sidebarToggle ? '225px' : '0px'})` }} 
         >
           <main className="flex-grow">
-            <div className="container-fluid px-4">
+            <div className="px-4 h-full w-full">
               <Outlet />
             </div>
           </main>

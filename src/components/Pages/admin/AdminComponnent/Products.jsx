@@ -8,7 +8,7 @@ import Pagination from "../../../Pagination";
 
 const Products = () => {
     const dispatch = useDispatch();
-    const { products, error } = useSelector((state) => state.products);
+    const { products, error } = useSelector((state) => state.productsSlice);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -32,7 +32,7 @@ const Products = () => {
 
     useEffect(() => {
         setProductsData(products);
-        setPage(1); // Reset to the first page whenever products change
+        setPage(1); 
     }, [products]);
 
     // Search function

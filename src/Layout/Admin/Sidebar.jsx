@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import {
   FaFolderPlus,
   FaGift,
@@ -15,7 +15,7 @@ import { NavLink } from "react-router-dom";
 import dummyImage from '../../Assets/profile.png';
 
 const Sidebar = () => {
-  const { adminData } = useSelector(state => state.adminAuth);
+  const { adminData } = useSelector(state => state?.adminAuth);
   return (
     <nav className="bg-gray-800 h-full flex flex-col justify-between">
       <div className="px-4 py-4">

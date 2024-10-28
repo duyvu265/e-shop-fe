@@ -19,7 +19,7 @@ const Customers = () => {
     };
   }, [dispatch]);
 
-  const { customers, error } = useSelector(state => state.customers);
+  const { customers, error } = useSelector(state => state.customersSlice);
   const [customersData, setCustomersData] = useState([]);
 
   // Pagination

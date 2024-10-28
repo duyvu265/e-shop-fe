@@ -29,8 +29,8 @@ const Category = () => {
   const dataLimit = 4;
   const lastIndex = page * dataLimit;
   const firstIndex = lastIndex - dataLimit;
-  const totalData = categoryData.length;
-  const currentCategory = categoryData.slice(firstIndex, lastIndex);
+  const totalData = categoryData?.length;
+  const currentCategory = categoryData?.slice(firstIndex, lastIndex);
 
   useEffect(() => {
     setCategoryData(category);

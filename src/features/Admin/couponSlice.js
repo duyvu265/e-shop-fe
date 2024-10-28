@@ -1,37 +1,52 @@
-import { toast } from 'react-toastify';
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios"; 
+import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 
 export const fetchCoupon = createAsyncThunk(
     'coupon/fetchCoupon',
     async ({ signal }) => {
-        const response = await axios.get(`${apiClient}/coupon?_sort=id&_order=desc`, { signal });
-        return response.data; 
+        try {
+            const response = await apiClient.get('/coupon', { signal });
+            return response.data; 
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
 export const addCoupon = createAsyncThunk(
     'coupon/addCoupon',
     async ({ postData }) => {
-        const response = await axios.post(`${apiClient}/coupon`, postData,);
-        return response.data; 
+        try {
+            const response = await apiClient.post('/coupon', postData);
+            return response.data; 
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
 export const updateCouponStatus = createAsyncThunk(
     'coupon/updateCouponStatus',
     async ({ id, updateData }) => {
-        const response = await axios.patch(`${apiClient}/coupon/${id}`, updateData, );
-        return { id, data: response.data }; 
+        try {
+            const response = await apiClient.patch(`/coupon/${id}`, updateData);
+            return { id, data: response.data }; 
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
 export const updateCoupon = createAsyncThunk(
     'coupon/updateCoupon',
     async ({ id, updateData }) => {
-        const response = await axios.patch(`${apiClient}/coupon/${id}`, updateData, );
-        return { id, data: response.data, status: response.status }; 
+        try {
+            const response = await apiClient.patch(`/coupon/${id}`, updateData);
+            return { id, data: response.data, status: response.status }; 
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
@@ -48,13 +63,12 @@ const couponSlice = createSlice({
         });
         builder.addCase(fetchCoupon.rejected, (state, action) => {
             const error = action.error;
-
             if (error.name !== "AbortError") {
                 state.error = error.message;
                 state.coupon = [];
             }
         });
-        
+
         builder.addCase(addCoupon.pending, () => {
             toast.dismiss();
             toast.info('Adding Coupon');
@@ -69,7 +83,7 @@ const couponSlice = createSlice({
             toast.dismiss();
             toast.error(error);
         });
-        
+
         builder.addCase(updateCouponStatus.pending, () => {
             toast.dismiss();
             toast.info('Updating');
@@ -89,7 +103,6 @@ const couponSlice = createSlice({
             toast.error(error);
         });
 
-   
         builder.addCase(updateCoupon.pending, () => {
             toast.dismiss();
             toast.info('Updating');
@@ -111,4 +124,4 @@ const couponSlice = createSlice({
     }
 });
 
-export default couponSlice.reducer; 
+export default couponSlice.reducer;

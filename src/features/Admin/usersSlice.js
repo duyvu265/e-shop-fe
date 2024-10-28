@@ -1,47 +1,57 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { toast } from 'react-toastify'
+import { toast } from 'react-toastify';
 import apiClient from "../../services/apiClient";
 
 export const fetchUsers = createAsyncThunk(
     'users/fetchUsers',
-    async ({signal}) => {
-        const res = await fetch(`${apiClient}/users?_sort=id&_order=desc`, {signal})
-        const data = await res.json()
-        return data
+    async ({ signal }) => {
+        try {
+            const res = await apiClient.get(`/users`, { signal });
+            return res.data;
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
-)
+);
 
 export const addUser = createAsyncThunk(
     'users/addUser',
     async (userData) => {
-        const res = await fetch(`${apiClient}/users`, )
-        const data = await res.json()
-        const status = res.ok;
-
-        return { data, status}
+        try {
+            const res = await apiClient.post(`/users`, userData);
+            return { data: res.data, status: res.status >= 200 && res.status < 300 };
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
-)
+);
 
 export const updateUser = createAsyncThunk(
     'users/updateUser',
-    async ({id, updateData}) => {
-        const res = await fetch(`${apiClient}/users/${id}`, )
-        const data = await res.json()
-        const status = res.ok
-        return { id, data, status }
+    async ({ id, updateData }) => {
+        try {
+            const res = await apiClient.patch(`/users/${id}`, updateData);
+            return { id, data: res.data, status: res.status >= 200 && res.status < 300 };
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
-)
+);
 
 export const deleteUser = createAsyncThunk(
     'users/deleteUser',
     async (id) => {
-        const res = await fetch(`${apiClient}/users/${id}`, );
-        if (!res.ok){
-            throw new Error(res.statusText)
+        try {
+            const res = await apiClient.delete(`/users/${id}`);
+            if (res.status >= 200 && res.status < 300) {
+                return id;
+            }
+            throw new Error(res.statusText);
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
         }
-        return id
     }
-)
+);
 
 const usersSlice = createSlice({
     name: 'users',
@@ -52,72 +62,67 @@ const usersSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(fetchUsers.fulfilled, (state, action) => {
             state.error = false;
-            state.users = action.payload
+            state.users = action.payload;
         });
         builder.addCase(fetchUsers.rejected, (state, action) => {
-            const error = action.error
-            
+            const error = action.error;
             if (error.name !== "AbortError") {
                 state.error = error.message;
-                state.users = []
+                state.users = [];
             }
         });
 
         builder.addCase(addUser.pending, () => {
             toast.dismiss();
-            toast.info('Adding User')
+            toast.info('Adding User');
         });
         builder.addCase(addUser.fulfilled, (state, action) => {
             toast.dismiss();
-            toast.success('User Added')
-
+            toast.success('User Added');
             const { data } = action.payload;
-            state.users.unshift(data)
+            state.users.unshift(data);
         });
         builder.addCase(addUser.rejected, (state, action) => {
-            const error = action.error
+            const error = action.error;
             toast.dismiss();
-            toast.error(error.message)
+            toast.error(error.message);
         });
 
         builder.addCase(updateUser.pending, () => {
-            toast.dismiss()
-            toast.info('updating')
+            toast.dismiss();
+            toast.info('Updating...');
         });
         builder.addCase(updateUser.fulfilled, (state, action) => {
-            toast.dismiss()
-            toast.success('update complete')
-
-            const { id, data } = action.payload
-            const targetIndex = state.users.findIndex(user => user.id === Number(id))
-
-            
-            state.users[targetIndex] = { ...state.users[targetIndex], ...data }
-            
+            toast.dismiss();
+            toast.success('Update Complete');
+            const { id, data } = action.payload;
+            const targetIndex = state.users.findIndex(user => user.id === Number(id));
+            if (targetIndex >= 0) {
+                state.users[targetIndex] = { ...state.users[targetIndex], ...data };
+            }
         });
         builder.addCase(updateUser.rejected, (state, action) => {
-            const error = action.error
-            toast.dismiss()
-            toast.error(error.message)
+            const error = action.error;
+            toast.dismiss();
+            toast.error(error.message);
         });
 
         builder.addCase(deleteUser.pending, () => {
-            toast.dismiss()
-            toast.info('deleteing')
+            toast.dismiss();
+            toast.info('Deleting...');
         });
         builder.addCase(deleteUser.fulfilled, (state, action) => {
-            toast.dismiss()
-            toast.success('delete success')
-
-            const id = action.payload
-            state.users = state.users.filter(user => user.id !== id )
+            toast.dismiss();
+            toast.success('Delete Success');
+            const id = action.payload;
+            state.users = state.users.filter(user => user.id !== id);
         });
         builder.addCase(deleteUser.rejected, (state, action) => {
-            const error = action.error
-            toast.dismiss()
-            toast.error(error.message)
+            const error = action.error;
+            toast.dismiss();
+            toast.error(error.message);
         });
     }
-})
+});
 
-export default usersSlice.reducer
+export default usersSlice.reducer;

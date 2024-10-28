@@ -1,37 +1,55 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios"; 
 import { toast } from "react-toastify";
 import apiClient from "../../services/apiClient";
 
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
     async ({ signal }) => {
-        const response = await axios.get(`${apiClient}/products?_sort=id&_order=desc`, { signal });
-        return response.data; 
+        try {
+            const response = await apiClient.get(`/products`, { signal });
+            return response.data; 
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
 export const updateProduct = createAsyncThunk(
     'products/updateProduct',
     async ({ id, updateData }) => {
-        const response = await axios.patch(`${apiClient}/products/${id}`, updateData, );
-        return { data: response.data, id, status: response.status }; 
+        try {
+            const response = await apiClient.patch(`/products/${id}`, updateData);
+            return { data: response.data, id, status: response.status >= 200 && response.status < 300 };
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
 export const addProduct = createAsyncThunk(
     'products/addProduct',
-    async ({ productDetails }) => {
-        const response = await axios.post(`${apiClient}/products`, productDetails, );
-        return { data: response.data, status: response.status }; 
+    async (productDetails) => {
+        try {
+            const response = await apiClient.post(`/products`, productDetails);
+            return { data: response.data, status: response.status >= 200 && response.status < 300 };
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
 export const deleteProduct = createAsyncThunk(
     'products/deleteProduct',
-    async ({ id }) => {
-        await axios.delete(`${apiClient}/products/${id}`,); 
-        return id; 
+    async (id) => {
+        try {
+            const response = await apiClient.delete(`/products/${id}`);
+            if (response.status >= 200 && response.status < 300) {
+                return id;
+            }
+            throw new Error(response.statusText);
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
@@ -42,7 +60,6 @@ const productsSlice = createSlice({
         products: []
     },
     extraReducers: (builder) => {
-
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
             state.error = false;
             state.products = action.payload;
@@ -63,8 +80,9 @@ const productsSlice = createSlice({
             toast.success('Update Complete');
             const { data, id } = action.payload;
             const targetIndex = state.products.findIndex(product => product.id === Number(id));
-
-            state.products[targetIndex] = { ...state.products[targetIndex], ...data };
+            if (targetIndex >= 0) {
+                state.products[targetIndex] = { ...state.products[targetIndex], ...data };
+            }
         });
         builder.addCase(updateProduct.rejected, (state, action) => {
             const error = action.error;
@@ -106,4 +124,4 @@ const productsSlice = createSlice({
     }
 });
 
-export default productsSlice.reducer; 
+export default productsSlice.reducer;

@@ -1,20 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios"; 
 import { toast } from "react-toastify";
 import apiClient from './../../services/apiClient';
 
-export const fetchBanner = createAsyncThunk(
+export const getBanner = createAsyncThunk(
     'banner/fetchBanner',
     async ({ signal }) => {
-        const response = await axios.get(`${apiClient}/banner?_sort=id&_order=desc`, { signal });
-        return response.data; 
+        const response = await apiClient.get('/banner', { signal });
+        console.log(response.data);
+        return response.data;
     }
 );
 
 export const addBanner = createAsyncThunk(
     'banner/addBanner',
     async ({ bannerData }) => {
-        const response = await axios.post(`${apiClient}/banner`, bannerData, );
+        const response = await apiClient.post('/banner', bannerData);
         return { data: response.data, status: response.status };
     }
 );
@@ -22,19 +22,18 @@ export const addBanner = createAsyncThunk(
 export const updateBanner = createAsyncThunk(
     'banner/updateBanner',
     async ({ id, updateData }) => {
-        const response = await axios.patch(`${apiClient}/banner/${id}`, updateData, );
-        return { data: response.data, id }; 
+        const response = await apiClient.patch(`/banner/${id}`, updateData);
+        return { data: response.data, id };
     }
 );
 
 export const deleteBanner = createAsyncThunk(
     'banner/deleteBanner',
     async ({ id }) => {
-        await axios.delete(`${apiClient}/banner/${id}`, ); 
+        await apiClient.delete(`/banner/${id}`);
         return { id };
     }
 );
-
 
 const bannerSlice = createSlice({
     name: 'banner',
@@ -43,12 +42,11 @@ const bannerSlice = createSlice({
         error: false
     },
     extraReducers: (builder) => {
-
-        builder.addCase(fetchBanner.fulfilled, (state, action) => {
+        builder.addCase(getBanner.fulfilled, (state, action) => {
             state.error = false;
             state.banner = action.payload;
         });
-        builder.addCase(fetchBanner.rejected, (state, action) => {
+        builder.addCase(getBanner.rejected, (state, action) => {
             const error = action.error;
             if (error.name !== "AbortError") {
                 state.error = error.message;
@@ -69,7 +67,6 @@ const bannerSlice = createSlice({
             toast.dismiss();
             toast.error(error);
         });
-
         builder.addCase(updateBanner.pending, () => {
             toast.dismiss();
             toast.info('Updating...');
@@ -88,7 +85,6 @@ const bannerSlice = createSlice({
             toast.dismiss();
             toast.error(error);
         });
-
         builder.addCase(deleteBanner.pending, () => {
             toast.dismiss();
             toast.info('Deleting...');
@@ -107,5 +103,4 @@ const bannerSlice = createSlice({
     }
 });
 
-// Xuất reducer
-export default bannerSlice.reducer; 
+export default bannerSlice.reducer;

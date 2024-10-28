@@ -1,21 +1,28 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios"; // Import axios
 import { toast } from "react-toastify";
 import apiClient from "../../services/apiClient";
 
 export const fetchCustomers = createAsyncThunk(
     'customers/fetchCustomers',
     async ({ signal }) => {
-        const response = await axios.get(`${apiClient}/customers?_sort=id&_order=desc`, { signal });
-        return response.data; 
+        try {
+            const response = await apiClient.get(`/customers`, { signal });
+            return response.data; 
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
 export const updateCustomer = createAsyncThunk(
     'customers/updateCustomer',
     async ({ id, updateData }) => {
-        const response = await axios.patch(`${apiClient}/customers/${id}`, updateData, );
-        return { id, data: response.data }; 
+        try {
+            const response = await apiClient.patch(`/customers/${id}`, updateData);
+            return { id, data: response.data }; 
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
     }
 );
 
@@ -60,4 +67,4 @@ const customersSlice = createSlice({
     }
 });
 
-export default customersSlice.reducer; 
+export default customersSlice.reducer;

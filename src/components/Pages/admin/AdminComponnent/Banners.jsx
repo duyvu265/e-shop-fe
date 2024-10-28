@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteBanner, fetchBanner, updateBanner } from './../../../../features/Admin/bannerSlice';
+import { deleteBanner, getBanner, updateBanner } from './../../../../features/Admin/bannerSlice';
 import AddLinkButton from './AddLinkButton';
 
 
@@ -13,7 +13,7 @@ const Banners = () => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    dispatch(fetchBanner({ signal }));
+    dispatch(getBanner({ signal }));
 
     return () => {
       controller.abort();
@@ -44,7 +44,7 @@ const Banners = () => {
             />
           </div>
           <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            {banner.map(ban => {
+            {banner?.map(ban => {
               const { id, title, status, image } = ban;
               return (
                 <div key={id} className="mb-3">
