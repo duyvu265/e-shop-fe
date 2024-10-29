@@ -6,7 +6,6 @@ import Search from "./Search";
 import CategoryTable from './../Category/CategoryTable';
 import Pagination from "../../../Pagination";
 
-
 const Category = () => {
   const dispatch = useDispatch();
   const { category, error } = useSelector((state) => state.category);

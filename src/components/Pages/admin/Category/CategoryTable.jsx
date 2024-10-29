@@ -1,85 +1,80 @@
-import React  from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteCategory, updateCategoryStatus } from "../../../../features/Admin/categorySlice";
 
-
 const CategoryTable = ({ currentCategory }) => {
+  const dispatch = useDispatch();
+  const { adminData } = useSelector((state) => state.adminAuth);
 
-  const dispatch = useDispatch()
-  const { adminData } = useSelector(state => state.adminAuth)
-
-  const handleStatus = ({id, status}) => {
-    if ( status === 'hidden' ){
-      const updateData = {status: 'active'};
-      dispatch(updateCategoryStatus({id, updateData}))
-    } else if ( status === 'active' ){
-      const updateData = {status: 'hidden'};
-      dispatch(updateCategoryStatus({id, updateData}))
-    }
-  }
+  const handleStatus = ({ id, status }) => {
+    const updateData = { status: status === "hidden" ? "active" : "hidden" };
+    dispatch(updateCategoryStatus({ id, updateData }));
+  };
 
   const handleDelete = (id) => {
-    dispatch(deleteCategory(id))
-  }
+    dispatch(deleteCategory(id));
+  };
 
   return (
-    <>
-      <div className="table-responsive">
-        <table className="table align-items-center text-center ">
-          <thead className="thead-light ">
-            <tr>
-              <th>Id</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentCategory.map((cat) => {
-              const { id, category, status } = cat;
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white border border-gray-200 text-center">
+        <thead className="bg-gray-100 border-b">
+          <tr>
+            <th className="py-3 px-4 font-semibold text-gray-700">Id</th>
+            <th className="py-3 px-4 font-semibold text-gray-700">Category</th>
+            <th className="py-3 px-4 font-semibold text-gray-700">Category Name</th>
+            <th className="py-3 px-4 font-semibold text-gray-700">Image</th>
+            <th className="py-3 px-4 font-semibold text-gray-700">Status</th>
+            <th className="py-3 px-4 font-semibold text-gray-700">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentCategory?.map((cat) => {
+            const { id, category, category_name, image_url, status } = cat;
+            const isDisabled = adminData.userType !== "super admin" && id <= 4;
 
-              return (
-                <tr key={id}>
-                  <th>{id}</th>
-                  <td>{category}</td>
-                  <td>
-                    <div className="form-check form-switch d-flex justify-content-center align-items-center">
-                      <input
-                        className="form-check-input me-1"
-                        type="checkbox"
-                        role="switch"
-                        id="flexSwitchCheckDefault"
-                        defaultChecked={status === "active"}
-                        onChange={() => handleStatus({id, status})}
-                        disabled={ adminData.userType !== "super admin" && id <= 4}
-                      />
-                      <label
-                        className="form-check-label ms-1"
-                        htmlFor="flexSwitchCheckDefault"
-                      >
-                        {status}
-                      </label>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="d-flex justify-content-center">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-danger ms-1"
-                        onClick={() => handleDelete(id)}
-                        disabled={ adminData.userType !== "super admin" && id <= 4}
-                      >
-                        delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </>
+            return (
+              <tr key={id} className="border-b">
+                <td className="py-2 px-4">{id}</td>
+                <td className="py-2 px-4">{category}</td>
+                <td className="py-2 px-4">{category_name}</td>
+                <td className="py-2 px-4">
+                  <img src={image_url} alt={category_name} className="w-16 h-16 object-cover" />
+                </td>
+                <td className="py-2 px-4">
+                  <div className="flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      role="switch"
+                      id={`switch-${id}`}
+                      className="w-5 h-5 text-blue-600 bg-gray-200 rounded focus:ring-0"
+                      defaultChecked={status === "active"}
+                      onChange={() => handleStatus({ id, status })}
+                      disabled={isDisabled}
+                    />
+                    <label htmlFor={`switch-${id}`} className="ml-2 text-sm">
+                      {status}
+                    </label>
+                  </div>
+                </td>
+                <td className="py-2 px-4">
+                  <div className="flex justify-center">
+                    <button
+                      type="button"
+                      className="bg-red-500 text-white py-1 px-3 rounded text-sm hover:bg-red-600 focus:outline-none disabled:bg-red-300"
+                      onClick={() => handleDelete(id)}
+                      disabled={isDisabled}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

@@ -8,8 +8,7 @@ const adminAuthSlice = createSlice({
     },
     reducers: {
         login: (state, action) => {
-            const { access, refresh, userInfo } = action.payload; 
-            
+            const { access, refresh, userInfo } = action.payload;           
             state.isLogedIn = true;
             state.adminData = userInfo;            
             localStorage.setItem('accessToken', access); 

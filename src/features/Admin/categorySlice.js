@@ -1,29 +1,40 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import axios from "axios";
 import apiClient from "../../services/apiClient";
 
 export const fetchCategory = createAsyncThunk(
   "category/fetchCategory",
   async ({ signal }) => {
-    const response = await axios.get(`${apiClient}/category`, { signal });
-    return response.data; 
+    try {
+      const response = await apiClient.get('/categories', { signal });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data || error.message || "An error occurred");
+    }
   }
 );
 
 export const deleteCategory = createAsyncThunk(
   "category/deleteCategory",
-  async (id) => {
-    const response = await axios.delete(`${apiClient}/category/${id}`, );
-    return id; 
+  async (id, { signal }) => {
+    try {
+      await apiClient.delete(`/categories/${id}`, { signal });
+      return id;
+    } catch (error) {
+      throw new Error(error.response?.data || error.message || "Delete failed");
+    }
   }
 );
 
 export const updateCategoryStatus = createAsyncThunk(
   "category/updateCategoryStatus",
-  async ({ id, updateData }) => {
-    const response = await axios.patch(`${apiClient}/category/${id}`, updateData,);
-    return { id, data: response.data }; 
+  async ({ id, updateData }, { signal }) => {
+    try {
+      const response = await apiClient.patch(`/categories/${id}`, updateData, { signal });
+      return { id, data: response.data };
+    } catch (error) {
+      throw new Error(error.response?.data || error.message || "Update failed");
+    }
   }
 );
 
@@ -32,61 +43,75 @@ const categorySlice = createSlice({
   initialState: {
     category: [],
     error: false,
+    loading: false,
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchCategory.fulfilled, (state, action) => {
-      state.error = false;
-      state.category = action.payload;
-    });
-    builder.addCase(fetchCategory.rejected, (state, action) => {
-      const error = action.error;
+    builder
+      .addCase(fetchCategory.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(fetchCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = false;
+        state.category = action.payload;
+      })
+      .addCase(fetchCategory.rejected, (state, action) => {
+        state.loading = false;
+        const error = action.error;
 
-      if (error.name !== "AbortError") {
-        state.error = error.message;
-        state.category = [];
-      }
-    });
+        if (error.name !== "AbortError") {
+          state.error = error.message || "Fetch failed";
+          state.category = [];
+        }
+      })
 
-    builder.addCase(updateCategoryStatus.pending, () => {
-      toast.dismiss();
-      toast.info("Updating...");
-    });
-    builder.addCase(updateCategoryStatus.fulfilled, (state, action) => {
-      toast.dismiss();
-      toast.success("Update success");
+      .addCase(updateCategoryStatus.pending, (state) => {
+        toast.dismiss();
+        toast.info("Updating...");
+        state.loading = true;
+      })
+      .addCase(updateCategoryStatus.fulfilled, (state, action) => {
+        toast.dismiss();
+        toast.success("Update success");
+        state.loading = false;
 
-      const { id, data } = action.payload;
-      const targetIndex = state.category.findIndex(
-        (category) => category.id === id
-      );
+        const { id, data } = action.payload;
+        const targetIndex = state.category.findIndex(
+          (category) => category.id === id
+        );
 
-      if (targetIndex !== -1) {
-        state.category[targetIndex] = { ...state.category[targetIndex], ...data };
-      }
-    });
-    builder.addCase(updateCategoryStatus.rejected, (state, action) => {
-      const error = action.error;
-      toast.dismiss();
-      toast.error(error.message);
-    });
+        if (targetIndex !== -1) {
+          state.category[targetIndex] = { ...state.category[targetIndex], ...data };
+        }
+      })
+      .addCase(updateCategoryStatus.rejected, (state, action) => {
+        state.loading = false;
+        const error = action.error;
+        toast.dismiss();
+        toast.error(error.message || "Update failed");
+      })
 
-    builder.addCase(deleteCategory.pending, () => {
-      toast.dismiss();
-      toast.info("Deleting...");
-    });
-    builder.addCase(deleteCategory.fulfilled, (state, action) => {
-      toast.dismiss();
-      toast.success("Deleted");
+      .addCase(deleteCategory.pending, (state) => {
+        toast.dismiss();
+        toast.info("Deleting...");
+        state.loading = true;
+      })
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        toast.dismiss();
+        toast.success("Deleted");
+        state.loading = false;
 
-      state.category = state.category.filter(
-        (category) => category.id !== action.payload
-      );
-    });
-    builder.addCase(deleteCategory.rejected, (state, action) => {
-      const error = action.error;
-      toast.dismiss();
-      toast.error(error.message);
-    });
+        state.category = state.category.filter(
+          (category) => category.id !== action.payload
+        );
+      })
+      .addCase(deleteCategory.rejected, (state, action) => {
+        state.loading = false;
+        const error = action.error;
+        toast.dismiss();
+        toast.error(error.message || "Delete failed");
+      });
   },
   reducers: {},
 });

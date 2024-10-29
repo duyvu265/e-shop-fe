@@ -10,7 +10,7 @@ const Slider = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/li-banners/`);
+        const response = await axios.get(`${apiUrl}/banners/`);
         const activeSlides = response.data.filter(slide => slide.status);
         setSlides(activeSlides);
       } catch (error) {
