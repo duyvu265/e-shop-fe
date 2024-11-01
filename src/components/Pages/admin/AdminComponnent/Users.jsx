@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-
 import { fetchUsers } from '../../../../features/Admin/usersSlice';
 import AddLinkButton from './AddLinkButton';
 import Search from './Search';
@@ -10,6 +8,14 @@ import Pagination from '../../../Pagination';
 
 const Users = () => {
   const dispatch = useDispatch();
+  const { users, error } = useSelector(state => state.usersSlice.users);
+  const [userData, setUserData] = useState([]);
+  const [page, setPage] = useState(1);
+  const dataLimit = 5;
+  const totalData = userData?.length;
+  const totalPages = Math.ceil(totalData / dataLimit);
+
+  const currentUser = userData.slice((page - 1) * dataLimit, page * dataLimit);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -22,27 +28,25 @@ const Users = () => {
     };
   }, [dispatch]);
 
-  const { users, error } = useSelector(state => state.usersSlice);
-
-  const [userData, setUserData] = useState([]);
-  const [page, setPage] = useState(1);
-  const dataLimit = 5;
-  const lastIndex = page * dataLimit;
-  const firstIndex = lastIndex - dataLimit;
-  const totalData = userData.length;
-  const currentUser = userData.slice(firstIndex, lastIndex);
-
   useEffect(() => {
-    setUserData(users);
+    if (Array.isArray(users)) {
+      setUserData(users);
+    } else {
+      setUserData([]);
+    }
   }, [users]);
 
   const handleSearch = (e) => {
     const searchText = e.target.value;
-    const filteredUsers = users.filter(user =>
+    const filteredUsers = users?.filter(user =>
       user.username.toLowerCase().includes(searchText.toLowerCase())
     );
     setUserData(filteredUsers);
     setPage(1);
+  };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
   };
 
   if (error) {
@@ -57,10 +61,15 @@ const Users = () => {
           <Search handleSearch={handleSearch} />
         </div>
         <div className='card-body'>
-          {users.length ? (
+          {userData.length ? (
             <>
               <UsersTable users={currentUser} />
-              <Pagination page={page} setPage={setPage} total={totalData} limit={dataLimit} />
+              <Pagination
+                currentPage={page}
+                hasPrev={page > 1}
+                hasNext={page < totalPages}
+                onPageChange={handlePageChange}
+              />
             </>
           ) : (
             <div className='text-center my-5'>No users found</div>

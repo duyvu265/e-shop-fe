@@ -6,7 +6,7 @@ export const fetchUsers = createAsyncThunk(
     'users/fetchUsers',
     async ({ signal }) => {
         try {
-            const res = await apiClient.get(`/users`, { signal });
+            const res = await apiClient.get(`/user/li-users`, { signal });
             return res.data;
         } catch (error) {
             throw new Error(error.response?.data || error.message);
