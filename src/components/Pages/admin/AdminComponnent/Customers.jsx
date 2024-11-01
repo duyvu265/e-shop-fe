@@ -19,7 +19,7 @@ const Customers = () => {
     };
   }, [dispatch]);
 
-  const { customers, error } = useSelector(state => state.customersSlice);
+  const { customers = [], error } = useSelector(state => state.customersSlice.customers); 
   const [customersData, setCustomersData] = useState([]);
 
   // Pagination
@@ -27,17 +27,21 @@ const Customers = () => {
   const dataLimit = 5;
   const lastIndex = page * dataLimit;
   const firstIndex = lastIndex - dataLimit;
-  const totalData = customersData.length;
-  const currentCustomers = customersData.slice(firstIndex, lastIndex);
+  const totalData = customersData?.length;
+  const currentCustomers = customersData?.slice(firstIndex, lastIndex);
 
   useEffect(() => {
-    setCustomersData(customers);
+    if (Array.isArray(customers)) {
+      setCustomersData(customers);
+    } else {
+      setCustomersData([]); 
+    }
   }, [customers]);
 
   // Search function
   const handleSearch = (e) => {
     const searchText = e.target.value;
-    const filteredCustomer = customers.filter(customer =>
+    const filteredCustomer = customers?.filter(customer =>
       customer.username.toLowerCase().includes(searchText.toLowerCase())
     );
     setCustomersData(filteredCustomer);

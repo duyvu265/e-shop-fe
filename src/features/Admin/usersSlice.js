@@ -14,11 +14,23 @@ export const fetchUsers = createAsyncThunk(
     }
 );
 
+export const fetchCustomers = createAsyncThunk(
+    'users/fetchCustomers',
+    async ({ signal }) => {
+        try {
+            const res = await apiClient.get(`/user/li-customers`, { signal });
+            return res.data;
+        } catch (error) {
+            throw new Error(error.response?.data || error.message);
+        }
+    }
+);
+
 export const addUser = createAsyncThunk(
     'users/addUser',
     async (userData) => {
         try {
-            const res = await apiClient.post(`/users`, userData);
+            const res = await apiClient.post(`/user/create/`, userData); 
             return { data: res.data, status: res.status >= 200 && res.status < 300 };
         } catch (error) {
             throw new Error(error.response?.data || error.message);
@@ -30,7 +42,7 @@ export const updateUser = createAsyncThunk(
     'users/updateUser',
     async ({ id, updateData }) => {
         try {
-            const res = await apiClient.patch(`/users/${id}`, updateData);
+            const res = await apiClient.patch(`/user/${id}/update/`, updateData); 
             return { id, data: res.data, status: res.status >= 200 && res.status < 300 };
         } catch (error) {
             throw new Error(error.response?.data || error.message);
@@ -42,7 +54,7 @@ export const deleteUser = createAsyncThunk(
     'users/deleteUser',
     async (id) => {
         try {
-            const res = await apiClient.delete(`/users/${id}`);
+            const res = await apiClient.delete(`/user/${id}/delete/`); 
             if (res.status >= 200 && res.status < 300) {
                 return id;
             }
@@ -57,6 +69,7 @@ const usersSlice = createSlice({
     name: 'users',
     initialState: {
         users: [],
+        customers: [],
         error: false
     },
     extraReducers: (builder) => {
@@ -69,6 +82,18 @@ const usersSlice = createSlice({
             if (error.name !== "AbortError") {
                 state.error = error.message;
                 state.users = [];
+            }
+        });
+
+        builder.addCase(fetchCustomers.fulfilled, (state, action) => {
+            state.error = false;
+            state.customers = action.payload;
+        });
+        builder.addCase(fetchCustomers.rejected, (state, action) => {
+            const error = action.error;
+            if (error.name !== "AbortError") {
+                state.error = error.message;
+                state.customers = [];
             }
         });
 
