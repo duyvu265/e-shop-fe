@@ -24,7 +24,7 @@ const CustomizeProducts = ({ productId, product_items }) => {
   };
 
   const isVariantInStock = (choices) => {
-    return product_items.some((variant) => {
+    return product_items?.some((variant) => {
       const variantChoices = {
         Color: variant.color,
         Size: variant.size,
@@ -41,17 +41,17 @@ const CustomizeProducts = ({ productId, product_items }) => {
   const productOptions = [
     {
       name: "Color",
-      choices: [...new Set(product_items.map(v => ({ description: v.color, value: v.product_images.image1.url })))],
+      choices: [...new Set(product_items?.map(v => ({ description: v.color, value: v.product_images.image1.url })))],
     },
     {
       name: "Size",
-      choices: [...new Set(product_items.map(v => v.size))].map(size => ({ description: size })),
+      choices: [...new Set(product_items?.map(v => v.size))].map(size => ({ description: size })),
     },
   ];
 
   return (
     <div className="flex flex-col gap-6">
-      <ProductImages items={product_items.map(item => item.product_images.image1.url)} />
+      <ProductImages items={product_items?.map(item => item.product_images.image1.url)} />
       {productOptions.map((option) => (
         <div className="flex flex-col gap-4" key={option.name}>
           <h4 className="font-medium">Choose a {option.name}</h4>

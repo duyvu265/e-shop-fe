@@ -19,6 +19,10 @@ const userSlice = createSlice({
     registerStart: (state) => {
       state.loading = true;
     },
+    setIsLoggedIn: (state, action) => {
+      state.isLoggedIn = action.payload;
+    },
+    
     registerSuccess: (state, action) => {
       state.loading = false;
       state.userInfo = action.payload;
@@ -53,7 +57,7 @@ const userSlice = createSlice({
       state.refreshToken = null;
       state.cart = [];
       state.likedList = [];
-      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
      
     },
@@ -121,7 +125,7 @@ export const {
   addToCart, removeFromCart, clearCart, setCart,
   addNotification, clearNotifications, setNotifications,
   updateCartItemQuantity, addToLikedList, removeFromLikedList,
-  updateUserInfo, fetchOrderHistorySuccess,
+  updateUserInfo, fetchOrderHistorySuccess,setIsLoggedIn
 } = userSlice.actions;
 
 export default userSlice.reducer;

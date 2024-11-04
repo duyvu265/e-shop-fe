@@ -1,39 +1,39 @@
-import { Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import Loadding from '../components/Loadding'
-import Dashboard from '../components/Pages/admin/AdminComponnent/Dashboard';
-import Banners from '../components/Pages/admin/AdminComponnent/Banners';
-import BannerAdd from '../components/Pages/admin/AdminComponnent/BannerAdd';
-import Category from '../components/Pages/admin/AdminComponnent/Category';
-import CategoryAdd from '../components/Pages/admin/AdminComponnent/CategoryAdd';
-import Coupon from '../components/Pages/admin/AdminComponnent/Coupon';
-import Products from '../components/Pages/admin/AdminComponnent/Products';
-import ProductAdd from '../components/Pages/admin/AdminComponnent/ProductAdd';
-import ProductView from '../components/Pages/admin/AdminComponnent/ProductView';
-import ProductEdit from '../components/Pages/admin/AdminComponnent/ProductEdit';
-import Orders from '../components/Pages/admin/AdminComponnent/Orders';
-import OrderView from '../components/Pages/admin/AdminComponnent/OrderView';
-import Users from '../components/Pages/admin/AdminComponnent/Users';
-import UserAdd from '../components/Pages/admin/AdminComponnent/UserAdd';
-import UserEdit from '../components/Pages/admin/AdminComponnent/UserEdit';
-import UserProfile from '../components/Pages/admin/AdminComponnent/UserProfile';
-import Customers from '../components/Pages/admin/AdminComponnent/Customers';
-import CustomerProfile from '../components/Pages/admin/AdminComponnent/CustomerProfile';
-import Profile from '../components/Pages/admin/AdminComponnent/Profile';
-import ProfileEdit from '../components/Pages/admin/AdminComponnent/ProfileEdit';
+import { Suspense, lazy } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import AdminLayout from '../Layout/Admin/AdminLayout';
-import Login from '../components/Pages/admin/AdminComponnent/Login';
 import ProtectedAdminRoutes from './Middleware';
+import Loadding from '../components/Loadding';
+
+const Login = lazy(() => import('../components/Pages/admin/AdminComponnent/Login'));
+const Banners = lazy(() => import('../components/Pages/admin/AdminComponnent/Banners'));
+const BannerAdd = lazy(() => import('../components/Pages/admin/AdminComponnent/BannerAdd'));
+const Category = lazy(() => import('../components/Pages/admin/AdminComponnent/Category'));
+const CategoryAdd = lazy(() => import('../components/Pages/admin/AdminComponnent/CategoryAdd'));
+const Coupon = lazy(() => import('../components/Pages/admin/AdminComponnent/Coupon'));
+const Products = lazy(() => import('../components/Pages/admin/AdminComponnent/Products'));
+const ProductAdd = lazy(() => import('../components/Pages/admin/AdminComponnent/ProductAdd'));
+const ProductView = lazy(() => import('../components/Pages/admin/AdminComponnent/ProductView'));
+const ProductEdit = lazy(() => import('../components/Pages/admin/AdminComponnent/ProductEdit'));
+const Orders = lazy(() => import('../components/Pages/admin/AdminComponnent/Orders'));
+const OrderView = lazy(() => import('../components/Pages/admin/AdminComponnent/OrderView'));
+const Users = lazy(() => import('../components/Pages/admin/AdminComponnent/Users'));
+const UserAdd = lazy(() => import('../components/Pages/admin/AdminComponnent/UserAdd'));
+const UserProfile = lazy(() => import('../components/Pages/admin/AdminComponnent/UserProfile'));
+const UserEdit = lazy(() => import('../components/Pages/admin/AdminComponnent/UserEdit'));
+const Customers = lazy(() => import('../components/Pages/admin/AdminComponnent/Customers'));
+const CustomerProfile = lazy(() => import('../components/Pages/admin/AdminComponnent/CustomerProfile'));
+const Profile = lazy(() => import('../components/Pages/admin/AdminComponnent/Profile'));
+const ProfileEdit = lazy(() => import('../components/Pages/admin/AdminComponnent/ProfileEdit'));
 
 const AdminRoutes = () => {
   return (
-    <>
+    <Suspense fallback={<Loadding />}>
       <Routes>
         <Route path='/login' element={<Login />} />
-        <Route element={<AdminLayout />} >
-          <Route element={<ProtectedAdminRoutes />} >
-            <Route path='/' element={<Navigate to={'/admin/dashboard'} />} />
-            <Route path='/dashboard' element={<Dashboard />} />
+        <Route element={<AdminLayout />}>
+          <Route element={<ProtectedAdminRoutes />}>
+            <Route path='/' element={<Navigate to='/admin/products' />} />
+            {/* <Route path='/dashboard' element={<Dashboard />} /> */}
             <Route path='/banners' element={<Banners />} />
             <Route path='/banner/add' element={<BannerAdd />} />
             <Route path='/category' element={<Category />} />
@@ -53,11 +53,11 @@ const AdminRoutes = () => {
             <Route path='/customers/:id' element={<CustomerProfile />} />
             <Route path='/profile' element={<Profile />} />
             <Route path='/profile/edit' element={<ProfileEdit />} />
-          </Route> 
-         </Route>
+          </Route>
+        </Route>
       </Routes>
-    </>
-  )
-}
+    </Suspense>
+  );
+};
 
-export default AdminRoutes
+export default AdminRoutes;

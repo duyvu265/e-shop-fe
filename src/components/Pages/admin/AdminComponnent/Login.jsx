@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { login } from '../../../../features/Admin/adminAuthSlice';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import jwtDecode from 'jwt-decode'; 
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -12,6 +13,24 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const isTokenValid = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+      console.log(decoded);
+      
+      return decoded.exp > Date.now() / 1000;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken'); 
+    if (token && isTokenValid(token)) {
+      navigate("/admin/products");
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +43,7 @@ const Login = () => {
       toast.error('Your account is deactivated by super admin');
     } else {
       dispatch(login(userInfo));
-      navigate("/admin/dashboard");
+      navigate("/admin/products");
     }
   };
 

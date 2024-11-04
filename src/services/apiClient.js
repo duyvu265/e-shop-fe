@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { logout } from '../features/user/userSlice/UserSlice';
-
+import * as jwt_decode from 'jwt-decode';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const apiClient = axios.create({
@@ -20,7 +20,7 @@ const refreshTokens = async () => {
 
       const { access, refresh } = response.data;
       if (access && refresh) {
-        localStorage.setItem('token', access);
+        localStorage.setItem('accessToken', access);
         return access;
       } else {
         console.log('Failed to refresh tokens, logging out...');
@@ -42,17 +42,21 @@ const refreshTokens = async () => {
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      let token = localStorage.getItem('token');
-      const tokenExpiry = localStorage.getItem('tokenExpiry');
-      const currentTime = new Date().getTime();
-
-      if (!token || (tokenExpiry && currentTime >= tokenExpiry)) {
+      let token = localStorage.getItem('accessToken');
+      if (!token) {
+        return config;
+      }
+      const decodedToken = jwt_decode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+      console.log('Decoded Token:', decodedToken);
+      console.log('Current Time:', currentTime);
+      if (decodedToken.exp <= currentTime) {
         token = await refreshTokens();
+        if (!token) {
+          return config;
+        }
       }
-
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+      config.headers.Authorization = `Bearer ${token}`;
     } catch (error) {
       console.error('Error accessing localStorage:', error);
     }
@@ -64,18 +68,5 @@ apiClient.interceptors.request.use(
   }
 );
 
-const startTokenRefreshInterval = () => {
-  const minute = 1000 * 60;
-  setInterval(async () => {
-    const tokenExpiry = localStorage.getItem('tokenExpiry');
-    const currentTime = new Date().getTime();
-    if (tokenExpiry && currentTime >= tokenExpiry - 5000) {
-      console.log("Token gần hết hạn, bắt đầu refresh...");
-      await refreshTokens();
-    }
-  }, minute * 3); 
-};
-
-startTokenRefreshInterval();
 
 export default apiClient;

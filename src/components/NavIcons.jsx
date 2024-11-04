@@ -13,7 +13,7 @@ function NavIcons() {
   const [isCartOpen, setCartOpen] = useState(false);
   const [isNotificationOpen, setNotificationOpen] = useState(false);
   const { isLoggedIn, userInfo, cart, notifications } = useSelector(state => state.user);
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -90,6 +90,10 @@ function NavIcons() {
         {isNotificationOpen && (
           <Notifications notifications={notifications} />
         )}
+      </div>
+      <div>
+        {/* <ChatComponent /> */}
+        {/* <ChatComponent /> */}
       </div>
 
       <div className="relative">

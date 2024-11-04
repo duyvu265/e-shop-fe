@@ -6,7 +6,7 @@ import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
-
+  console.log("ok ")
   return (
     <div className={`relative h-screen ${sidebarToggle ? "translate-x-0" : ""}`}>
       <Navbar toggle={sidebarToggle} setToggle={setSidebarToggle} />
@@ -21,7 +21,7 @@ const AdminLayout = () => {
         <div
           id="layoutSidenav_content"
           className="relative flex flex-col justify-between flex-grow h-full transition-[margin] duration-150 ease-in-out"
-          style={{ width: `calc(100vw - ${sidebarToggle ? '270px' : '270px'})` }} 
+          style={{ width: `calc(100vw - ${sidebarToggle ? '270px' : '270px'})` }}
         >
           <main className="flex-grow">
             <div className="px-4 h-full w-full">

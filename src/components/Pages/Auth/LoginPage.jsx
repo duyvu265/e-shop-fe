@@ -5,7 +5,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { GoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../../features/user/userSlice/UserSlice';
+import { loginSuccess, setIsLoggedIn } from '../../../features/user/userSlice/UserSlice';
+import * as jwt_decode from 'jwt-decode';
 
 const Login = () => {
   const [signState, setSignState] = useState("Sign In");
@@ -18,6 +19,31 @@ const Login = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      try {
+        const decodedToken = jwt_decode(accessToken);
+        console.log(decodedToken);      
+        const currentTime = Math.floor(Date.now() / 1000);
+        
+        if (decodedToken.exp > currentTime) {
+          dispatch(loginSuccess({ accessToken })); 
+          dispatch(setIsLoggedIn(true));
+          navigate('/'); 
+        } else {
+          console.log("Token đã hết hạn");
+          localStorage.removeItem('accessToken');
+        }
+      } catch (error) {
+        console.error("Token không hợp lệ:", error);
+        localStorage.removeItem('accessToken');
+      }
+    }
+  }, []);
+  
+
+
+  useEffect(() => {
     const savedEmail = localStorage.getItem('savedEmail');
     const savedPassword = localStorage.getItem('savedPassword');
     if (savedEmail) {
@@ -26,7 +52,6 @@ const Login = () => {
       setRememberMe(true);
     }
   }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (rememberMe) {
@@ -45,18 +70,18 @@ const Login = () => {
   
       const response = await axios.post(endpoint, data);
   
-      if (response.data.userInfo) {
+      if (response.data && response.data.userInfo) {
         dispatch(loginSuccess(response.data));
-        localStorage.setItem('token', response.data.access);
+        localStorage.setItem('accessToken', response.data.access);
         localStorage.setItem('refreshToken', response.data.refresh);
         toast.success(`${signState === "Sign In" ? "Đăng Nhập" : "Đăng Ký"} thành công!`);
-        if (response.data.userInfo.user_type === "admin") {         
-          navigate('admin/dashboard');
+        if (signState === "Sign Up") {
+          navigate('/login'); 
         } else {
-          navigate('/');
+          navigate('/'); 
         }
       } else {
-        toast.error("Thông tin người dùng không hợp lệ!");
+        toast.error("Dữ liệu phản hồi không hợp lệ.");
       }
     } catch (error) {
       console.error("Error during authentication:", error);
@@ -70,11 +95,9 @@ const Login = () => {
       const idToken = credentialResponse.credential;
       const response = await axios.post(`${apiUrl}/google-login/`, { idToken });
 
-      if (response.data.userInfo) {
+      if (response.data && response.data.userInfo) {
         dispatch(loginSuccess(response.data));
-        console.log(response.data);
-        
-        localStorage.setItem('token', response.data.access);
+        localStorage.setItem('accessToken', response.data.access);
         localStorage.setItem('refreshToken', response.data.refresh);
         toast.success("Đăng Nhập bằng Google thành công!");
         navigate('/');
@@ -82,7 +105,7 @@ const Login = () => {
         toast.error("Thông tin người dùng không hợp lệ!");
       }
     } catch (error) {
-      console.error("Error during Google Sign In:", error.response?.data || error.message);
+      console.error("Error during Google Sign In:", error);
       toast.error(error.response?.data?.error || "Có lỗi xảy ra khi đăng nhập bằng Google!");
     }
   };
@@ -116,40 +139,27 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button className="w-full h-12 bg-blue-500 text-white rounded mt-5 hover:bg-blue-600">
-            {signState === "Sign In" ? "Sign In" : "Sign Up"}
-          </button>
-          <div className="flex items-center justify-between text-gray-600 text-sm mt-4">
-            {signState === "Sign In" && (
-              <div className="flex items-center gap-1">
-                <input
-                  type='checkbox'
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4"
-                />
-                <label>Remember Me</label>
-              </div>
-            )}
-            <p>Need Help?</p>
-          </div>
+          <label className="inline-flex items-center mb-3">
+            <input
+              type="checkbox"
+              className="form-checkbox"
+              checked={rememberMe}
+              onChange={() => setRememberMe(!rememberMe)}
+            />
+            <span className="ml-2">Remember me</span>
+          </label>
+          <button type='submit' className="bg-blue-600 text-white w-full h-12 rounded-md mb-3">{signState}</button>
         </form>
-        <div className="mt-10 text-gray-700 text-center">
-          {signState === "Sign In" ? (
-            <p>Mới đến Shop? <span onClick={() => setSignState("Sign Up")} className="text-blue-600 cursor-pointer font-medium">Đăng Ký Ngay</span></p>
-          ) : (
-            <p>Đã có tài khoản? <span onClick={() => setSignState("Sign In")} className="text-blue-600 cursor-pointer font-medium">Đăng Nhập Ngay</span></p>
-          )}
-        </div>
-        <div className="mt-6">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => {
-              toast.error("Có lỗi xảy ra khi đăng nhập bằng Google!");
-            }}
-          />
-          <button className="w-full h-12 bg-blue-700 text-white rounded mt-2 hover:bg-blue-800">F...</button>
-        </div>
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => {
+            console.error("Google Sign In failed");
+            toast.error("Có lỗi xảy ra khi đăng nhập bằng Google!");
+          }}
+        />
+        <p className="mt-4 text-center cursor-pointer" onClick={() => setSignState(signState === "Sign In" ? "Sign Up" : "Sign In")}>
+          {signState === "Sign In" ? "Create an account" : "Already have an account?"}
+        </p>
       </div>
     </div>
   );

@@ -2,11 +2,12 @@ import React, { memo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaUser } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import { logout } from "../../features/user/userSlice/UserSlice";
+import { logout } from "../../features/Admin/adminAuthSlice";
+
 
 const Navbar = ({ toggle, setToggle }) => {
   const dispatch = useDispatch();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Trạng thái cho dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); 
 const navigate=useNavigate()
   const handleToggle = () => {
     setToggle(!toggle);
@@ -41,12 +42,12 @@ const navigate=useNavigate()
         <li className="relative">
           <span
             className="text-white cursor-pointer"
-            onClick={toggleDropdown} // Gọi hàm toggleDropdown khi nhấp
+            onClick={toggleDropdown} 
           >
             <FaUser />
           </span>
 
-          {isDropdownOpen && ( // Hiển thị dropdown nếu isDropdownOpen là true
+          {isDropdownOpen && ( 
             <ul
               className="absolute right-0 mt-2 w-48 bg-white text-gray-700 shadow-lg rounded-md z-10"
             >
