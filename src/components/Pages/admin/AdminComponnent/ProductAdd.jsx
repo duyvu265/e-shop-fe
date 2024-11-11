@@ -16,22 +16,42 @@ const ProductAdd = () => {
         brand: '',
         status: '',
         category: '',
-        price: '',
         image: '',
+        product_items: [
+            {
+                SKU: '',
+                qty_in_stock: 0,
+                price: '',
+                color: '',
+                size: '',
+                product_images: {
+                    image1: { url: '' }
+                }
+            }
+        ]
     });
     const [isUploading, setIsUploading] = useState(false);
+
     useEffect(() => {
-        apiClient.get('/category/')
+        apiClient.get('/categories/')
             .then(response => setCategory(response.data))
             .catch(error => console.log(error));
     }, []);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProductData(prev => ({ ...prev, [name]: value }));
+        const { name, value, dataset } = e.target;
+        const { index } = dataset;
+
+        if (index !== undefined) {
+            const updatedItems = [...productData.product_items];
+            updatedItems[index][name] = value;
+            setProductData(prev => ({ ...prev, product_items: updatedItems }));
+        } else {
+            setProductData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
-    const handleImageChange = async (e) => {
+    const handleImageChange = async (e, index) => {
         const file = e.target.files[0];
         const formData = new FormData();
         formData.append("file", file);
@@ -44,7 +64,11 @@ const ProductAdd = () => {
             const response = await apiClient.post('/upload-image/', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            setProductData(prev => ({ ...prev, image: response.data.imageUrl }));
+
+            const updatedItems = [...productData.product_items];
+            updatedItems[index].product_images.image1.url = response.data.imageUrl;
+            setProductData(prev => ({ ...prev, product_items: updatedItems }));
+
             toast.dismiss();
             toast.success('Image Uploaded');
         } catch (error) {
@@ -56,16 +80,33 @@ const ProductAdd = () => {
         }
     };
 
+    const addProductItem = () => {
+        setProductData(prev => ({
+            ...prev,
+            product_items: [...prev.product_items, { SKU: '', qty_in_stock: 0, price: '', color: '', size: '', product_images: { image1: { url: '' } } }]
+        }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const { price, image } = productData;
+        const { image } = productData;
         if (image) {
-            dispatch(addProduct({ productDetails: { ...productData, price: Number(price) } }))
+            dispatch(addProduct({ productDetails: productData }))
                 .unwrap(unwrapResult)
                 .then(res => {
                     if (res.status) {
-                        setProductData(initialState);
+                        setProductData({
+                            title: '',
+                            description: '',
+                            brand: '',
+                            status: '',
+                            category: '',
+                            image: '',
+                            product_items: [
+                                { SKU: '', qty_in_stock: 0, price: '', color: '', size: '', product_images: { image1: { url: '' } } }
+                            ]
+                        });
                         navigate(-1);
                     }
                 });
@@ -79,7 +120,7 @@ const ProductAdd = () => {
         <div className="container mx-auto max-w-md mt-5">
             <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
                 <div className="text-2xl text-center mb-4">Add Product</div>
-                {/* Form Fields */}
+                
                 <div className="mb-4">
                     <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">Title:</label>
                     <input
@@ -92,7 +133,6 @@ const ProductAdd = () => {
                         required
                     />
                 </div>
-                {/* Category Dropdown */}
                 <div className="mb-4">
                     <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
                     <select
@@ -105,14 +145,12 @@ const ProductAdd = () => {
                     >
                         <option value="">-- Select Category --</option>
                         {category && category.map(cat => {
-                            const { category, id, status } = cat;
-                            return status === "active" ? (
-                                <option key={id} value={category}>{category}</option>
-                            ) : null;
+                            return (
+                                <option key={cat.id} value={cat.category_name}>{cat.category_name}</option>
+                            );
                         })}
                     </select>
                 </div>
-                {/* Image Upload */}
                 <div className="mb-4">
                     <label htmlFor="image" className="block text-gray-700 text-sm font-bold mb-2">Image:</label>
                     <input
@@ -123,17 +161,81 @@ const ProductAdd = () => {
                         required
                     />
                 </div>
-                {/* Submit Button */}
-                <div className="flex justify-between">
-                    <button type="submit" className={`btn btn-primary ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isUploading}>
-                        {isUploading ? 'Adding...' : 'Add Product'}
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-danger"
-                        onClick={() => navigate(-1)}
-                    >
-                        Back
+
+                <div>
+                    {productData.product_items.map((item, index) => (
+                        <div key={index} className="mb-4">
+                            <div className="text-xl mb-2">Product Item {index + 1}</div>
+                            <div>
+                                <label className="block text-sm font-bold mb-2">SKU:</label>
+                                <input
+                                    type="text"
+                                    name="SKU"
+                                    value={item.SKU}
+                                    data-index={index}
+                                    onChange={handleChange}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold mb-2">Price:</label>
+                                <input
+                                    type="number"
+                                    name="price"
+                                    value={item.price}
+                                    data-index={index}
+                                    onChange={handleChange}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold mb-2">Quantity:</label>
+                                <input
+                                    type="number"
+                                    name="qty_in_stock"
+                                    value={item.qty_in_stock}
+                                    data-index={index}
+                                    onChange={handleChange}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold mb-2">Color:</label>
+                                <input
+                                    type="text"
+                                    name="color"
+                                    value={item.color}
+                                    data-index={index}
+                                    onChange={handleChange}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold mb-2">Size:</label>
+                                <input
+                                    type="text"
+                                    name="size"
+                                    value={item.size}
+                                    data-index={index}
+                                    onChange={handleChange}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold mb-2">Image for this item:</label>
+                                <input
+                                    type="file"
+                                    onChange={(e) => handleImageChange(e, index)}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                />
+                            </div>
+                        </div>
+                    ))}
+                    <button type="button" onClick={addProductItem} className="bg-blue-500 text-white py-2 px-4 rounded">Add Product Item</button>
+                </div>
+                <div className="mt-6 text-center">
+                    <button type="submit" disabled={isUploading} className="bg-blue-500 text-white py-2 px-4 rounded">
+                        {isUploading ? "Uploading..." : "Add Product"}
                     </button>
                 </div>
             </form>

@@ -43,7 +43,7 @@ const Products = () => {
             {products && (
                 <>
                     <div className="flex justify-between items-center mb-4">
-                        <AddLinkButton btntext="Add Product" />
+                        <AddLinkButton link={"/admin/products/add"} btntext="Add Product" />
                         <Search placeholder="Search Products..." handleSearch={handleSearch} />
                     </div>
                     <ProductsTable products={currentProducts} />
