@@ -19,7 +19,7 @@ export const updateProductInAPI = async (id, updateData) => {
 
 export const addProductToAPI = async (productDetails) => {
     try {
-        const response = await apiClient.post(`/products`, productDetails);
+        const response = await apiClient.post(`/products/`, productDetails);
         return { data: response.data, status: response.status >= 200 && response.status < 300 };
     } catch (error) {
         throw new Error(error.response?.data || error.message);

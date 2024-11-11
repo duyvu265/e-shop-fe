@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { logout } from '../features/user/userSlice/UserSlice';
-import  jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const apiClient = axios.create({
   baseURL: apiUrl,
 });
+
 const refreshTokens = async () => {
   const refreshToken = localStorage.getItem('refreshToken');
   if (refreshToken) {
@@ -40,6 +41,11 @@ const refreshTokens = async () => {
   }
 };
 
+const getCSRFToken = () => {
+  const csrfToken = document.cookie.split(';').find(cookie => cookie.trim().startsWith('csrftoken='));
+  return csrfToken ? csrfToken.split('=')[1] : null;
+};
+
 apiClient.interceptors.request.use(
   async (config) => {
     try {
@@ -47,6 +53,7 @@ apiClient.interceptors.request.use(
       if (!token) {
         return config;
       }
+
       const decodedToken = jwt_decode(token);
       const currentTime = Math.floor(Date.now() / 1000);
       if (decodedToken.exp <= currentTime) {
@@ -55,7 +62,13 @@ apiClient.interceptors.request.use(
           return config;
         }
       }
+
       config.headers.Authorization = `Bearer ${token}`;
+
+      const csrfToken = getCSRFToken();
+      if (csrfToken) {
+        config.headers['CSRFToken'] = csrfToken;  
+      }
     } catch (error) {
       console.error('Error accessing localStorage:', error);
     }
@@ -66,6 +79,5 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 
 export default apiClient;
