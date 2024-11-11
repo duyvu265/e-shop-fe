@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AdminLayout from '../Layout/Admin/AdminLayout';
 import ProtectedAdminRoutes from './Middleware';
 import Loadding from '../components/Loadding';
+import PublicRoutes from './PublicRoutes';
 
 const Login = lazy(() => import('../components/Pages/admin/AdminComponnent/Login'));
 const Banners = lazy(() => import('../components/Pages/admin/AdminComponnent/Banners'));
@@ -29,11 +30,14 @@ const AdminRoutes = () => {
   return (
     <Suspense fallback={<Loadding />}>
       <Routes>
-        <Route path='/login' element={<Login />} />
+        <Route element={<PublicRoutes />}>
+          <Route path='/login' element={<Login />} />
+        </Route>
         <Route element={<AdminLayout />}>
           <Route element={<ProtectedAdminRoutes />}>
             <Route path='/' element={<Navigate to='/admin/products' />} />
             {/* <Route path='/dashboard' element={<Dashboard />} /> */}
+            <Route path='*' element={<Navigate to='/admin/products' />} />
             <Route path='/banners' element={<Banners />} />
             <Route path='/banner/add' element={<BannerAdd />} />
             <Route path='/category' element={<Category />} />

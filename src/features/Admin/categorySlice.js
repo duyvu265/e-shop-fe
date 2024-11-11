@@ -1,13 +1,14 @@
+
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import apiClient from "../../services/apiClient";
+import { deleteCategoryById, fetchCategories, updateCategoryStatusById } from "../../services/categoryApi";
+
 
 export const fetchCategory = createAsyncThunk(
   "category/fetchCategory",
   async ({ signal }) => {
     try {
-      const response = await apiClient.get('/categories', { signal });
-      return response.data;
+      return await fetchCategories(signal);
     } catch (error) {
       throw new Error(error.response?.data || error.message || "An error occurred");
     }
@@ -18,8 +19,7 @@ export const deleteCategory = createAsyncThunk(
   "category/deleteCategory",
   async (id, { signal }) => {
     try {
-      await apiClient.delete(`/categories/${id}`, { signal });
-      return id;
+      return await deleteCategoryById(id, signal);
     } catch (error) {
       throw new Error(error.response?.data || error.message || "Delete failed");
     }
@@ -30,8 +30,7 @@ export const updateCategoryStatus = createAsyncThunk(
   "category/updateCategoryStatus",
   async ({ id, updateData }, { signal }) => {
     try {
-      const response = await apiClient.patch(`/categories/${id}`, updateData, { signal });
-      return { id, data: response.data };
+      return await updateCategoryStatusById(id, updateData, signal);
     } catch (error) {
       throw new Error(error.response?.data || error.message || "Update failed");
     }

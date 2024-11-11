@@ -9,37 +9,28 @@ import Pagination from "../../../Pagination";
 const Products = () => {
     const dispatch = useDispatch();
     const { products, error } = useSelector((state) => state.productsSlice);
+    
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
-
-        dispatch(fetchProducts({ signal }));
+        if (products.length===0) {
+            dispatch(fetchProducts({ signal }));
+        }
 
         return () => {
             controller.abort();
         };
-    }, [dispatch]);
-
-    const [productsData, setProductsData] = useState([]);
-
-    // Pagination
+    }, [dispatch, products.length,]);
     const [page, setPage] = useState(1);
     const dataLimit = 4;
     const lastIndex = page * dataLimit;
     const firstIndex = lastIndex - dataLimit;
-    const currentProducts = productsData?.slice(firstIndex, lastIndex) || [];
-
-    useEffect(() => {
-        setProductsData(products || []);
-        setPage(1);
-    }, [products]);
+    const currentProducts = products?.slice(firstIndex, lastIndex) || [];
 
     const handleSearch = (e) => {
         const searchText = e.target.value;
-        const filteredProducts = products?.filter(product =>
-            product?.title.toLowerCase().includes(searchText.toLowerCase())
-        );
-        setProductsData(filteredProducts || []);
+        // Filter products based on the search query
+        dispatch(fetchProducts({ signal: null, searchText }));
         setPage(1);
     };
 
@@ -58,7 +49,7 @@ const Products = () => {
                     <ProductsTable products={currentProducts} />
                     <Pagination
                         currentPage={page}
-                        totalCount={productsData?.length}
+                        totalCount={products?.length}
                         dataLimit={dataLimit}
                         setCurrentPage={setPage}
                     />

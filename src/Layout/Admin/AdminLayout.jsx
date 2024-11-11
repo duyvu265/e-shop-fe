@@ -6,7 +6,6 @@ import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
-  console.log("ok ")
   return (
     <div className={`relative h-screen ${sidebarToggle ? "translate-x-0" : ""}`}>
       <Navbar toggle={sidebarToggle} setToggle={setSidebarToggle} />

@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { login } from '../../../../features/Admin/adminAuthSlice';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import jwtDecode from 'jwt-decode'; 
+import * as jwtDecode from 'jwt-decode'; 
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -17,14 +17,13 @@ const Login = () => {
   const isTokenValid = (token) => {
     try {
       const decoded = jwtDecode(token);
-      console.log(decoded);
-      
+      console.log("decoded",decoded);
+     
       return decoded.exp > Date.now() / 1000;
     } catch (error) {
       return false;
     }
   };
-
   useEffect(() => {
     const token = localStorage.getItem('accessToken'); 
     if (token && isTokenValid(token)) {

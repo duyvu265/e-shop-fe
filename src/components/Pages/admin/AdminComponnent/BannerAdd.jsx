@@ -1,6 +1,5 @@
 import { unwrapResult } from "@reduxjs/toolkit";
-import axios from "axios";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -26,12 +25,11 @@ const BannerAdd = () => {
     toast.dismiss();
     toast.info('Uploading image....');
 
-    // Gửi yêu cầu tải lên hình ảnh đến server backend
-    axios.post(`${apiClient}/upload-image`, formData)
+    apiClient.post(`/upload-image`, formData)
       .then(res => {
         toast.dismiss();
         toast.success('Image Uploaded');
-        const image = res.data.url; // Giả sử server trả về URL hình ảnh
+        const image = res.data.url; 
         setBannerData(prev => ({ ...prev, image: image }));
       })
       .catch(error => {

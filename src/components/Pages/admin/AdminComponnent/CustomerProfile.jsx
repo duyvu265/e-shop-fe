@@ -1,12 +1,29 @@
-import React from "react";
+import  { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import image from "../../../../assets/profile.png"
+import image from "../../../../assets/profile.png";
 import apiClient from "../../../../services/apiClient";
 import Loadding from "../../../Loadding";
-import useFetch from './../../../../features/Admin/useFetch';
+
 const CustomerProfile = () => {
   const { id } = useParams();
-  const { data: user, error, loading } = useFetch(`${apiClient}/customers/${id}`);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await apiClient.get(`/customers/${id}`);
+        setUser(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [id]);
 
   if (loading) return <div className="mt-4 text-center"><Loadding /></div>;
   if (error) return <div className="mt-2 text-red-500 text-center">{error}</div>;

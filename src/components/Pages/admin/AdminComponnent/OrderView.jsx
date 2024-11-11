@@ -1,18 +1,35 @@
-import React, { useState } from "react";
+import  { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { unwrapResult } from "@reduxjs/toolkit";
 import apiClient from "../../../../services/apiClient";
-import useFetch from "../../../../features/Admin/useFetch";
 import { updateOrderStatus } from "../../../../features/Admin/ordersSlice";
 
 const OrderView = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-
-  const { data: order, error, loading } = useFetch(`${apiClient}/orders/${id}`);
+  
+  // States to manage order data, loading, and error
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currentStatus, setCurrentStatus] = useState("");
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        setLoading(true);
+        const response = await apiClient.get(`/orders/${id}`);
+        setOrder(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to load order data");
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }, [id]);
 
   const handleChange = (e) => {
     setCurrentStatus(e.target.value);
@@ -34,7 +51,7 @@ const OrderView = () => {
     }
   };
 
-  if (loading) return <div className="text-center my-5">load ding</div>;
+  if (loading) return <div className="text-center my-5">Loading...</div>;
   if (error) return <div className="text-center my-5 text-red-600">{error}</div>;
 
   return (

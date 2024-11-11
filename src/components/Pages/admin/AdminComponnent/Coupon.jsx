@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCoupon } from './../../../../features/Admin/couponSlice';
 import AddCoupon from './../Coupon/AddCoupon';

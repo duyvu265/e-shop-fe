@@ -4,7 +4,7 @@ import {
   FaGift,
   FaImages,
   FaShoppingBag,
-  FaTachometerAlt,
+  // FaTachometerAlt,
   FaTruck,
   FaUser,
   FaUsers,
@@ -20,10 +20,10 @@ const Sidebar = () => {
     <nav className="bg-gray-800 h-full flex flex-col justify-between">
       <div className="px-4 py-4">
         <div className="space-y-2">
-          <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/dashboard">
+          {/* <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/dashboard">
             <FaTachometerAlt className="mr-2" />
             Dashboard
-          </NavLink>
+          </NavLink> */}
 
           <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/banners">
             <FaImages className="mr-2" />

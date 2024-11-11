@@ -1,15 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import apiClient from "../../services/apiClient";
+import { addProductToAPI, deleteProductFromAPI, fetchProductsFromAPI, updateProductInAPI } from "../../services/productsServices";
+
 
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
     async ({ signal }) => {
         try {
-            const response = await apiClient.get(`/products`, { signal });
-            return response.data; 
+            const products = await fetchProductsFromAPI(signal);
+            return products;
         } catch (error) {
-            throw new Error(error.response?.data || error.message);
+            throw new Error(error.message);
         }
     }
 );
@@ -18,10 +19,10 @@ export const updateProduct = createAsyncThunk(
     'products/updateProduct',
     async ({ id, updateData }) => {
         try {
-            const response = await apiClient.patch(`/products/${id}`, updateData);
-            return { data: response.data, id, status: response.status >= 200 && response.status < 300 };
+            const response = await updateProductInAPI(id, updateData);
+            return response;
         } catch (error) {
-            throw new Error(error.response?.data || error.message);
+            throw new Error(error.message);
         }
     }
 );
@@ -30,10 +31,10 @@ export const addProduct = createAsyncThunk(
     'products/addProduct',
     async (productDetails) => {
         try {
-            const response = await apiClient.post(`/products`, productDetails);
-            return { data: response.data, status: response.status >= 200 && response.status < 300 };
+            const response = await addProductToAPI(productDetails);
+            return response;
         } catch (error) {
-            throw new Error(error.response?.data || error.message);
+            throw new Error(error.message);
         }
     }
 );
@@ -42,13 +43,10 @@ export const deleteProduct = createAsyncThunk(
     'products/deleteProduct',
     async (id) => {
         try {
-            const response = await apiClient.delete(`/products/${id}`);
-            if (response.status >= 200 && response.status < 300) {
-                return id;
-            }
-            throw new Error(response.statusText);
+            const deletedProductId = await deleteProductFromAPI(id);
+            return deletedProductId;
         } catch (error) {
-            throw new Error(error.response?.data || error.message);
+            throw new Error(error.message);
         }
     }
 );
@@ -57,12 +55,20 @@ const productsSlice = createSlice({
     name: 'products',
     initialState: {
         error: false,
-        products: []
+        products: JSON.parse(localStorage.getItem('products')) || [],
+    },
+    reducers: {
+        setProductsToLocalStorage(state, action) {
+            const products = action.payload;
+            state.products = products;
+            localStorage.setItem('products', JSON.stringify(products));
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
             state.error = false;
             state.products = action.payload;
+            localStorage.setItem('products', JSON.stringify(action.payload));
         });
         builder.addCase(fetchProducts.rejected, (state, action) => {
             const error = action.error;
@@ -82,6 +88,7 @@ const productsSlice = createSlice({
             const targetIndex = state.products.findIndex(product => product.id === Number(id));
             if (targetIndex >= 0) {
                 state.products[targetIndex] = { ...state.products[targetIndex], ...data };
+                localStorage.setItem('products', JSON.stringify(state.products));
             }
         });
         builder.addCase(updateProduct.rejected, (state, action) => {
@@ -124,4 +131,5 @@ const productsSlice = createSlice({
     }
 });
 
+export const { setProductsToLocalStorage } = productsSlice.actions;
 export default productsSlice.reducer;

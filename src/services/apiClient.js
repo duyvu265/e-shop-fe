@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { logout } from '../features/user/userSlice/UserSlice';
-import * as jwt_decode from 'jwt-decode';
+import  jwt_decode from 'jwt-decode';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const apiClient = axios.create({
@@ -21,6 +21,7 @@ const refreshTokens = async () => {
       const { access, refresh } = response.data;
       if (access && refresh) {
         localStorage.setItem('accessToken', access);
+        console.log('rf ok');
         return access;
       } else {
         console.log('Failed to refresh tokens, logging out...');
@@ -48,8 +49,6 @@ apiClient.interceptors.request.use(
       }
       const decodedToken = jwt_decode(token);
       const currentTime = Math.floor(Date.now() / 1000);
-      console.log('Decoded Token:', decodedToken);
-      console.log('Current Time:', currentTime);
       if (decodedToken.exp <= currentTime) {
         token = await refreshTokens();
         if (!token) {

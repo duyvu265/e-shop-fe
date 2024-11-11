@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import apiClient from "../../../../services/apiClient";
@@ -20,20 +20,19 @@ const CategoryAdd = () => {
     toast.dismiss();
     toast.info('Uploading category');
 
-    fetch(`${apiClient}/category`, )
+   
+    apiClient.post(`/category`, category)
       .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Error ${res.status}: ${res.statusText}`);
-        } else {
+        if (res.status === 200 || res.status === 201) {
           toast.dismiss();
           toast.success('Category uploaded');
-          setCategory({ category: '', status: '' });
-          navigate('/admin/category');
+          setCategory({ category: '', status: '' });  
+          navigate('/admin/category');  
         }
       })
       .catch((err) => {
         toast.dismiss();
-        toast.error(err.message);
+        toast.error(err.message);  
       });
   };
 

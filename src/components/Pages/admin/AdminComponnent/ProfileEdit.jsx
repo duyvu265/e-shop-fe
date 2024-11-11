@@ -28,7 +28,7 @@ const ProfileEdit = () => {
         setProfileData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
         const formData = new FormData();
         formData.append("file", file);
@@ -36,27 +36,21 @@ const ProfileEdit = () => {
         toast.dismiss();
         toast.info('Uploading image...');
 
-        fetch(`${apiClient}/upload-image/`, { 
-            method: 'POST',
-            body: formData,
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error(res.statusText);
-                } else {
-                    toast.dismiss();
-                    toast.success('Image Uploaded');
-                    return res.json();
-                }
-            })
-            .then(data => {
-                setProfileData(prev => ({ ...prev, image: data.url })); 
-            })
-            .catch(error => {
-                toast.dismiss();
-                toast.error('Image upload failed');
-                console.log(error);
+        try {
+            const response = await apiClient.post(`/upload-image/`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
+
+            setProfileData(prev => ({ ...prev, image: response.data.url }));
+            toast.dismiss();
+            toast.success('Image Uploaded');
+        } catch (error) {
+            toast.dismiss();
+            toast.error('Image upload failed');
+            console.log(error);
+        }
     };
 
     const handleSubmit = async (e) => {

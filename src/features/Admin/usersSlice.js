@@ -1,13 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from 'react-toastify';
-import apiClient from "../../services/apiClient";
+import { fetchAllUsers, fetchAllCustomers, createUser, updateUserById, deleteUserById } from "../../services/userApi";
 
 export const fetchUsers = createAsyncThunk(
     'users/fetchUsers',
     async ({ signal }) => {
         try {
-            const res = await apiClient.get(`/user/li-users`, { signal });
-            return res.data;
+            return await fetchAllUsers(signal);
         } catch (error) {
             throw new Error(error.response?.data || error.message);
         }
@@ -18,8 +17,7 @@ export const fetchCustomers = createAsyncThunk(
     'users/fetchCustomers',
     async ({ signal }) => {
         try {
-            const res = await apiClient.get(`/user/li-customers`, { signal });
-            return res.data;
+            return await fetchAllCustomers(signal);
         } catch (error) {
             throw new Error(error.response?.data || error.message);
         }
@@ -30,8 +28,7 @@ export const addUser = createAsyncThunk(
     'users/addUser',
     async (userData) => {
         try {
-            const res = await apiClient.post(`/user/create/`, userData); 
-            return { data: res.data, status: res.status >= 200 && res.status < 300 };
+            return await createUser(userData);
         } catch (error) {
             throw new Error(error.response?.data || error.message);
         }
@@ -42,8 +39,7 @@ export const updateUser = createAsyncThunk(
     'users/updateUser',
     async ({ id, updateData }) => {
         try {
-            const res = await apiClient.patch(`/user/${id}/update/`, updateData); 
-            return { id, data: res.data, status: res.status >= 200 && res.status < 300 };
+            return await updateUserById(id, updateData);
         } catch (error) {
             throw new Error(error.response?.data || error.message);
         }
@@ -54,11 +50,7 @@ export const deleteUser = createAsyncThunk(
     'users/deleteUser',
     async (id) => {
         try {
-            const res = await apiClient.delete(`/user/${id}/delete/`); 
-            if (res.status >= 200 && res.status < 300) {
-                return id;
-            }
-            throw new Error(res.statusText);
+            return await deleteUserById(id);
         } catch (error) {
             throw new Error(error.response?.data || error.message);
         }

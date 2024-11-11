@@ -1,43 +1,45 @@
+
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import apiClient from './../../services/apiClient';
+import { add_Banners, delete_Banner, get_BannerById, getBanners, update_Banner } from "../../services/bannerServices";
+
 
 export const getBanner = createAsyncThunk(
     'banner/fetchBanner',
     async ({ signal }) => {
-        const response = await apiClient.get('/banners', { signal });
-        console.log(response.data);
-        return response.data;
+        const data = await getBanners(signal);
+        return data;
     }
 );
 
 export const addBanner = createAsyncThunk(
     'banner/addBanner',
     async ({ bannerData }) => {
-        const response = await apiClient.post('/banners/', bannerData);
-        return { data: response.data, status: response.status };
+        const data = await add_Banners(bannerData);
+        return data;
     }
 );
 
 export const updateBanner = createAsyncThunk(
     'banner/updateBanner',
     async ({ id, updateData }) => {
-        const response = await apiClient.patch(`/banners/${id}/status/`, updateData);
-        return { data: response.data, id };
+        const data = await update_Banner(id, updateData);
+        return { data, id };
     }
 );
+
 export const getBannerById = createAsyncThunk(
-    'banner/updateBanner',
+    'banner/getBannerById',
     async ({ id }) => {
-        const response = await apiClient.get(`/banners/${id}/`);
-        return { data: response.data, id };
+        const data = await get_BannerById(id);
+        return { data, id };
     }
 );
 
 export const deleteBanner = createAsyncThunk(
     'banner/deleteBanner',
     async ({ id }) => {
-        await apiClient.delete(`/banners/${id}/`);
+        await delete_Banner(id);
         return { id };
     }
 );
