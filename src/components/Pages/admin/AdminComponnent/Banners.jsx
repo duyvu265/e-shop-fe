@@ -7,6 +7,7 @@ const Banners = () => {
   const dispatch = useDispatch();
   const { adminData } = useSelector((state) => state.adminAuth);
   const { banner, error } = useSelector(state => state.banner);
+
   const getListBanners = () => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -24,7 +25,6 @@ const Banners = () => {
   const handleStatus = ({ id, status }) => {
     const updateData = { status: status ? "False" : "True" };
     dispatch(updateBanner({ id, updateData })).then(() => {
-
       getListBanners();
     });
   };
@@ -33,7 +33,6 @@ const Banners = () => {
     const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa banner này không?");
     if (confirmDelete) {
       dispatch(deleteBanner({ id })).then(() => {
-
         getListBanners();
       });
     }
@@ -42,6 +41,7 @@ const Banners = () => {
   if (error) {
     return <div className="my-5 text-center text-3xl text-red-500">{error}</div>;
   }
+
   return (
     <>
       {banner && (
@@ -52,12 +52,12 @@ const Banners = () => {
               link={"/admin/banner/add"}
             />
           </div>
-          <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {banner.map(ban => {
               const { id, title, status, image, description, start_date, end_date } = ban;
               return (
                 <div key={id} className="mb-3">
-                  <div className="bg-white rounded shadow overflow-hidden">
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
                     <img className="w-full h-48 object-cover" src={image} alt={title} />
                     <div className="p-4">
                       <h5 className="text-lg font-bold">{title}</h5>

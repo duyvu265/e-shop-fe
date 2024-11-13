@@ -12,7 +12,10 @@ const CategoryTable = ({ currentCategory }) => {
   };
 
   const handleDelete = (id) => {
-    dispatch(deleteCategory(id));
+    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa danh mục này không?");
+    if (confirmDelete) {
+      dispatch(deleteCategory(id));
+    }
   };
 
   return (
@@ -34,12 +37,12 @@ const CategoryTable = ({ currentCategory }) => {
             const isDisabled = adminData.userType !== "super admin" && id <= 4;
 
             return (
-              <tr key={id} className="border-b">
+              <tr key={id} className="border-b hover:bg-gray-50 transition">
                 <td className="py-2 px-4">{id}</td>
                 <td className="py-2 px-4">{category}</td>
                 <td className="py-2 px-4">{category_name}</td>
                 <td className="py-2 px-4">
-                  <img src={image_url} alt={category_name} className="w-16 h-16 object-cover" />
+                  <img src={image_url} alt={category_name} className="w-16 h-16 object-cover rounded" />
                 </td>
                 <td className="py-2 px-4">
                   <div className="flex items-center justify-center">
@@ -61,7 +64,7 @@ const CategoryTable = ({ currentCategory }) => {
                   <div className="flex justify-center">
                     <button
                       type="button"
-                      className="bg-red-500 text-white py-1 px-3 rounded text-sm hover:bg-red-600 focus:outline-none disabled:bg-red-300"
+                      className={`bg-red-500 text-white py-1 px-3 rounded text-sm hover:bg-red-600 focus:outline-none ${isDisabled ? 'disabled:bg-red-300' : ''}`}
                       onClick={() => handleDelete(id)}
                       disabled={isDisabled}
                     >

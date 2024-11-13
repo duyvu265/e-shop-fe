@@ -1,4 +1,3 @@
-import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { deleteProduct, updateProduct } from "../../../../features/Admin/productsSlice";
@@ -17,8 +16,8 @@ const ProductsTable = ({ products }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-200 shadow-sm text-center">
+    <div className="overflow-x-auto shadow-lg rounded-lg">
+      <table className="min-w-full bg-white border border-gray-200 text-center">
         <thead>
           <tr className="bg-gray-100 text-gray-700 uppercase text-sm">
             <th className="py-3 px-6">Id</th>
@@ -35,7 +34,7 @@ const ProductsTable = ({ products }) => {
             const imageUrl = images.length > 0 ? images[0] : "default-image-url.jpg";
 
             return (
-              <tr key={id} className="border-b border-gray-200 hover:bg-gray-100">
+              <tr key={id} className="border-b border-gray-200 hover:bg-gray-50">
                 <td className="py-3 px-6 max-w-[50px] truncate">{id}</td>
                 <td className="py-3 px-6 flex items-center space-x-2">
                   <img className="w-8 h-8 rounded" src={imageUrl} alt={title} />

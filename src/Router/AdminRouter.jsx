@@ -1,67 +1,48 @@
-import { Suspense, lazy } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import AdminLayout from '../Layout/Admin/AdminLayout';
+// AdminRouter.jsx
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
+
+import Banners from "../components/Pages/admin/AdminComponnent/Banners";
+import Category from "../components/Pages/admin/AdminComponnent/Category";
+import Coupon from "../components/Pages/admin/AdminComponnent/Coupon";
+import Products from "../components/Pages/admin/AdminComponnent/Products";
+import Orders from "../components/Pages/admin/AdminComponnent/Orders";
+import Users from "../components/Pages/admin/AdminComponnent/Users";
+import Customers from "../components/Pages/admin/AdminComponnent/Customers";
+import Profile from "../components/Pages/admin/AdminComponnent/Profile";
+import Login from "../components/Pages/admin/AdminComponnent/Login";
+import AdminLayout from "../Layout/Admin/AdminLayout";
+import Dashboard from "../components/Pages/admin/AdminComponnent/Dashboard";
 import ProtectedAdminRoutes from './Middleware';
-import Loadding from '../components/Loadding';
-import PublicRoutes from './PublicRoutes';
+import ProductAddPage from "../components/Pages/admin/AdminComponnent/ProductAdd";
 
-const Login = lazy(() => import('../components/Pages/admin/AdminComponnent/Login'));
-const Banners = lazy(() => import('../components/Pages/admin/AdminComponnent/Banners'));
-const BannerAdd = lazy(() => import('../components/Pages/admin/AdminComponnent/BannerAdd'));
-const Category = lazy(() => import('../components/Pages/admin/AdminComponnent/Category'));
-const CategoryAdd = lazy(() => import('../components/Pages/admin/AdminComponnent/CategoryAdd'));
-const Coupon = lazy(() => import('../components/Pages/admin/AdminComponnent/Coupon'));
-const Products = lazy(() => import('../components/Pages/admin/AdminComponnent/Products'));
-const ProductAdd = lazy(() => import('../components/Pages/admin/AdminComponnent/ProductAdd'));
-const ProductView = lazy(() => import('../components/Pages/admin/AdminComponnent/ProductView'));
-const ProductEdit = lazy(() => import('../components/Pages/admin/AdminComponnent/ProductEdit'));
-const Orders = lazy(() => import('../components/Pages/admin/AdminComponnent/Orders'));
-const OrderView = lazy(() => import('../components/Pages/admin/AdminComponnent/OrderView'));
-const Users = lazy(() => import('../components/Pages/admin/AdminComponnent/Users'));
-const UserAdd = lazy(() => import('../components/Pages/admin/AdminComponnent/UserAdd'));
-const UserProfile = lazy(() => import('../components/Pages/admin/AdminComponnent/UserProfile'));
-const UserEdit = lazy(() => import('../components/Pages/admin/AdminComponnent/UserEdit'));
-const Customers = lazy(() => import('../components/Pages/admin/AdminComponnent/Customers'));
-const CustomerProfile = lazy(() => import('../components/Pages/admin/AdminComponnent/CustomerProfile'));
-const Profile = lazy(() => import('../components/Pages/admin/AdminComponnent/Profile'));
-const ProfileEdit = lazy(() => import('../components/Pages/admin/AdminComponnent/ProfileEdit'));
 
-const AdminRoutes = () => {
+const AdminRouter = () => {
+  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [searchTerm, setSearchTerm] = useState("");
+
   return (
-    <Suspense fallback={<Loadding />}>
-      <Routes>
-        <Route element={<PublicRoutes />}>
-          <Route path='/login' element={<Login />} />
+    <Routes>      
+        <Route path='/login' element={<Login />} />
+      <Route element={<ProtectedAdminRoutes />}>
+        <Route element={<AdminLayout activeTab={activeTab} setActiveTab={setActiveTab} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/banners" element={<Banners />} />
+          <Route path="/category" element={<Category />} />
+          <Route path="/coupon" element={<Coupon />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/add" element={<ProductAddPage />} />
+          <Route path="/products/product-items" element={<ProductAddPage />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
-        <Route element={<AdminLayout />}>
-          <Route element={<ProtectedAdminRoutes />}>
-            <Route path='/' element={<Navigate to='/admin/products' />} />
-            {/* <Route path='/dashboard' element={<Dashboard />} /> */}
-            <Route path='*' element={<Navigate to='/admin/products' />} />
-            <Route path='/banners' element={<Banners />} />
-            <Route path='/banner/add' element={<BannerAdd />} />
-            <Route path='/category' element={<Category />} />
-            <Route path='/category/add' element={<CategoryAdd />} />
-            <Route path='/coupon' element={<Coupon />} />
-            <Route path='/products' element={<Products />} />
-            <Route path='/products/add' element={<ProductAdd />} />
-            <Route path='/products/:id' element={<ProductView />} />
-            <Route path='/products/:id/edit' element={<ProductEdit />} />
-            <Route path='/orders' element={<Orders />} />
-            <Route path='/orders/:id' element={<OrderView />} />
-            <Route path='/users' element={<Users />} />
-            <Route path='/users/add' element={<UserAdd />} />
-            <Route path='/users/:id' element={<UserProfile />} />
-            <Route path='/users/:id/edit' element={<UserEdit />} />
-            <Route path='/customers' element={<Customers />} />
-            <Route path='/customers/:id' element={<CustomerProfile />} />
-            <Route path='/profile' element={<Profile />} />
-            <Route path='/profile/edit' element={<ProfileEdit />} />
-          </Route>
-        </Route>
-      </Routes>
-    </Suspense>
+      </Route>
+
+      <Route path="/admin/*" element={<Navigate to="/admin/dashboard" />} />
+    </Routes>
   );
 };
 
-export default AdminRoutes;
+export default AdminRouter;

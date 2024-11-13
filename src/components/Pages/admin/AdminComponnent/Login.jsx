@@ -17,17 +17,16 @@ const Login = () => {
   const isTokenValid = (token) => {
     try {
       const decoded = jwtDecode(token);
-      console.log("decoded",decoded);
-     
       return decoded.exp > Date.now() / 1000;
     } catch (error) {
       return false;
     }
   };
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken'); 
     if (token && isTokenValid(token)) {
-      navigate("/admin/products");
+       navigate("/admin/dashboard");     
     }
   }, [navigate]);
 
@@ -42,7 +41,7 @@ const Login = () => {
       toast.error('Your account is deactivated by super admin');
     } else {
       dispatch(login(userInfo));
-      navigate("/admin/products");
+      navigate("/admin/dashboard");
     }
   };
 
@@ -63,16 +62,16 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100 w-full h-full">
+    <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="w-full max-w-md">
         <div className="bg-white shadow-lg rounded-lg p-6">
-          <h3 className="text-center text-2xl font-bold mb-4">Login</h3>
+          <h3 className="text-center text-2xl font-bold text-gray-800 mb-4">Login</h3>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email:</label>
               <input
                 id="email"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="email"
                 placeholder="Enter email"
                 name="email"
@@ -85,7 +84,7 @@ const Login = () => {
               <label htmlFor="pwd" className="block text-sm font-medium text-gray-700">Password:</label>
               <input
                 id="pwd"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="password"
                 placeholder="Enter password"
                 name="password"

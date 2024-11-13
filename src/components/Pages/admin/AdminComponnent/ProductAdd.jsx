@@ -1,39 +1,29 @@
-import { unwrapResult } from "@reduxjs/toolkit";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import apiClient from "../../../../services/apiClient";
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import apiClient from '../../../../services/apiClient';
 import { addProduct } from './../../../../features/Admin/productsSlice';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import ProductItem from './ProductItem';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../../../firebase';
-import ProductItem from './ProductItem'; 
 
-const ProductAdd = () => {
+const ProductAddPage = () => {
     const dispatch = useDispatch();
     const [category, setCategory] = useState([]);
     const [productData, setProductData] = useState({
         title: '',
         description: '',
         brand: '',
-        status: '',
+        status: 'active',
         category: '',
         image: '',
-        name:""
+        name: '',
     });
     const [productItems, setProductItems] = useState([
-        {
-            SKU: '',
-            qty_in_stock: 0,
-            price: '',
-            color: '',
-            size: '',
-            product_images: {
-                image1: { url: '' }
-            }
-        }
+        { SKU: '', qty_in_stock: 0, price: '', color: '', size: '', product_images: { image1: { url: '' } } }
     ]);
     const [isUploading, setIsUploading] = useState(false);
-    const [isProductCreated, setIsProductCreated] = useState(false); 
+    const [currentStep, setCurrentStep] = useState(1);
 
     useEffect(() => {
         apiClient.get('/categories/')
@@ -95,18 +85,18 @@ const ProductAdd = () => {
         e.preventDefault();
         if (productData.image) {
             dispatch(addProduct({ productDetails: { ...productData, product_items: productItems } }))
-                .unwrap(unwrapResult)
+                .unwrap()
                 .then(res => {
                     if (res.status) {
-                        setIsProductCreated(true); 
+                        toast.success('Product created successfully');
                         setProductData({
                             title: '',
                             description: '',
                             brand: '',
-                            status: '',
+                            status: 'active',
                             category: '',
                             image: '',
-                            name:""
+                            name: '',
                         });
                         setProductItems([{
                             SKU: '',
@@ -117,6 +107,10 @@ const ProductAdd = () => {
                             product_images: { image1: { url: '' } }
                         }]);
                     }
+                })
+                .catch(error => {
+                    toast.error('Failed to create product');
+                    console.error(error);
                 });
         } else {
             toast.dismiss();
@@ -124,132 +118,172 @@ const ProductAdd = () => {
         }
     };
 
+    const handleNextStep = () => {
+        if (currentStep === 1) {
+            if (!productData.title || !productData.category || !productData.image) {
+                toast.error("Please complete the product details.");
+                return;
+            }
+        }
+        setCurrentStep(prevStep => prevStep + 1);
+    };
+
+    const handlePreviousStep = () => {
+        setCurrentStep(prevStep => prevStep - 1);
+    };
+
     return (
-        <div className="container mx-auto max-w-md mt-5">
-            <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
-                <div className="text-2xl text-center mb-4">Add Product</div>
-                <div className="mb-4">
-                    <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">Title:</label>
-                    <input
-                        type="text"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="title"
-                        name="title"
-                        value={productData.title}
-                        onChange={handleProductChange}
-                        required
-                    />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Name:</label>
-                    <input
-                        type="text"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="name"
-                        name="name"
-                        value={productData.name}
-                        onChange={handleProductChange}
-                    />
-                </div>
+        <div className="container mx-auto max-w-2xl mt-5">
+            <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+                <div className="text-2xl font-semibold text-center mb-4 text-gray-700">Add New Product</div>
 
-                <div className="mb-4">
-                    <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
-                    <select
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="category"
-                        name="category"
-                        value={productData.category}
-                        onChange={handleProductChange}
-                        required
-                    >
-                        <option value="">-- Select Category --</option>
-                        {category && category.map(cat => (
-                            <option key={cat.id} value={cat.category_name}>{cat.category_name}</option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">Description:</label>
-                    <textarea
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="description"
-                        name="description"
-                        value={productData.description}
-                        onChange={handleProductChange}
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="brand" className="block text-gray-700 text-sm font-bold mb-2">Brand:</label>
-                    <input
-                        type="text"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="brand"
-                        name="brand"
-                        value={productData.brand}
-                        onChange={handleProductChange}
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="status" className="block text-gray-700 text-sm font-bold mb-2">Status:</label>
-                    <select
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="status"
-                        name="status"
-                        value={productData.status}
-                        onChange={handleProductChange}
-                    >
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="deleted">Deleted</option>
-                    </select>
-                </div>
-
-                {/* Upload Image */}
-                <div className="mb-4">
-                    <label htmlFor="image" className="block text-sm font-bold mb-2">Image:</label>
-                    <input
-                        type="file"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        onChange={handleImageChange}
-                    />
-                </div>
-
-                {/* Add Product Item (only after product created) */}
-                {isProductCreated && (
+                {currentStep === 1 && (
                     <div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-sm font-semibold text-gray-700">Title:</label>
+                            <input
+                                type="text"
+                                className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                id="title"
+                                name="title"
+                                value={productData.title}
+                                onChange={handleProductChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="name" className="block text-sm font-semibold text-gray-700">Name:</label>
+                            <input
+                                type="text"
+                                className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                id="name"
+                                name="name"
+                                value={productData.name}
+                                onChange={handleProductChange}
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="category" className="block text-sm font-semibold text-gray-700">Category:</label>
+                            <select
+                                className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                id="category"
+                                name="category"
+                                value={productData.category}
+                                onChange={handleProductChange}
+                                required
+                            >
+                                <option value="">-- Select Category --</option>
+                                {category.map(cat => (
+                                    <option key={cat.id} value={cat.category_name}>{cat.category_name}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="description" className="block text-sm font-semibold text-gray-700">Description:</label>
+                            <textarea
+                                className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                id="description"
+                                name="description"
+                                value={productData.description}
+                                onChange={handleProductChange}
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="brand" className="block text-sm font-semibold text-gray-700">Brand:</label>
+                            <input
+                                type="text"
+                                className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                id="brand"
+                                name="brand"
+                                value={productData.brand}
+                                onChange={handleProductChange}
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="status" className="block text-sm font-semibold text-gray-700">Status:</label>
+                            <select
+                                className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                id="status"
+                                name="status"
+                                value={productData.status}
+                                onChange={handleProductChange}
+                            >
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="deleted">Deleted</option>
+                            </select>
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="image" className="block text-sm font-semibold text-gray-700">Product Image:</label>
+                            <input
+                                type="file"
+                                className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                id="image"
+                                name="image"
+                                onChange={handleImageChange}
+                            />
+                        </div>
+
+                        <div className="flex justify-between">
+                            <button
+                                type="button"
+                                className="bg-blue-500 text-white py-2 px-4 rounded"
+                                onClick={handleNextStep}
+                            >
+                                Next Step
+                            </button>
+                        </div>
+                    </div>
+                )}
+                {currentStep === 2 && (
+                    <div>
+                        <div className="text-xl font-semibold text-gray-700 mb-4">Product Variants</div>
                         {productItems.map((item, index) => (
                             <ProductItem
                                 key={index}
                                 index={index}
-                                item={item}
-                                onItemChange={handleItemChange}
+                                productItem={item}
+                                handleItemChange={handleItemChange}
                             />
                         ))}
-                        <button
-                            type="button"
-                            onClick={addProductItem}
-                            className="text-blue-500 mt-4"
-                        >
-                            Add Another Product Item
-                        </button>
+
+                        <div className="flex justify-between mb-4">
+                            <button
+                                type="button"
+                                className="bg-green-500 text-white py-2 px-4 rounded"
+                                onClick={addProductItem}
+                            >
+                                Add Variant
+                            </button>
+                            <button
+                                type="button"
+                                className="bg-blue-500 text-white py-2 px-4 rounded"
+                                onClick={handlePreviousStep}
+                            >
+                                Previous Step
+                            </button>
+                        </div>
+
+                        <div className="flex justify-between">
+                            <button
+                                type="button"
+                                className="bg-blue-500 text-white py-2 px-4 rounded"
+                                onClick={handleSubmit}
+                            >
+                                Submit Product
+                            </button>
+                        </div>
                     </div>
                 )}
-
-                <div className="flex justify-center mt-6">
-                    <button
-                        type="submit"
-                        className="px-4 py-2 text-white bg-blue-500 rounded focus:outline-none"
-                        disabled={isUploading}
-                    >
-                        {isUploading ? 'Uploading...' : 'Add Product'}
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     );
 };
 
-export default ProductAdd;
+export default ProductAddPage;

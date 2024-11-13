@@ -1,17 +1,16 @@
-import { Route, Routes } from 'react-router-dom'
-import AppRouter from './Router/UserRouter';
-import AdminRoutes from './Router/AdminRouter';
+
+import { Route, Routes } from "react-router-dom";
+import UserRouter from "./Router/UserRouter";
+import AdminRouter from "./Router/AdminRouter";
+
+
 const App = () => {
-
-
   return (
     <Routes>
-      <Route path='/*' element={<AppRouter />} />
-      <Route path='/admin/*' element={<AdminRoutes />} />
+      <Route path="/*" element={<UserRouter />} />
+      <Route path="/admin/*" element={<AdminRouter />} />
     </Routes>
   );
 };
 
 export default App;
-
-

@@ -1,81 +1,44 @@
+import { Link } from "react-router-dom";
+import { FiGrid, FiTag, FiPackage, FiShoppingBag, FiShoppingCart, FiUsers, FiUser,FiImage      } from "react-icons/fi";
 import { memo } from "react";
-import {
-  FaFolderPlus,
-  FaGift,
-  FaImages,
-  FaShoppingBag,
-  // FaTachometerAlt,
-  FaTruck,
-  FaUser,
-  FaUsers,
-  FaUserSecret,
-} from "react-icons/fa";
-import { useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
-import dummyImage from '../../Assets/profile.png';
+const Sidebar = ({ activeTab, setActiveTab }) => {
+  const tabs = [
+    { name: "Dashboard", icon: FiGrid, path: "/admin/dashboard" },
+    { name: "Banners", icon: FiImage    , path: "/admin/banners" },
+    { name: "Category", icon: FiPackage, path: "/admin/category" },
+    { name: "Coupon", icon: FiTag, path: "/admin/coupon" },
+    { name: "Products", icon: FiShoppingBag, path: "/admin/products" },
+    { name: "Orders", icon: FiShoppingCart, path: "/admin/orders" },
+    { name: "Users", icon: FiUsers, path: "/admin/users" },
+    { name: "Profile", icon: FiUser, path: "/admin/profile" },
+  ];
 
-const Sidebar = () => {
-  const { adminData } = useSelector(state => state?.adminAuth);
   return (
-    <nav className="bg-gray-800 h-full flex flex-col justify-between">
-      <div className="px-4 py-4">
-        <div className="space-y-2">
-          {/* <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/dashboard">
-            <FaTachometerAlt className="mr-2" />
-            Dashboard
-          </NavLink> */}
-
-          <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/banners">
-            <FaImages className="mr-2" />
-            Banners
-          </NavLink>
-
-          <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/category">
-            <FaFolderPlus className="mr-2" />
-            Category
-          </NavLink>
-
-          <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/coupon">
-            <FaGift className="mr-2" />
-            Coupon
-          </NavLink>
-
-          <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/products">
-            <FaShoppingBag className="mr-2" />
-            Products
-          </NavLink>
-
-          <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/orders">
-            <FaTruck className="mr-2" />
-            Orders
-          </NavLink>
-
-          <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/users">
-            <FaUserSecret className="mr-2" />
-            Users
-          </NavLink>
-
-          <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/customers">
-            <FaUsers className="mr-2" />
-            Customers
-          </NavLink>
-
-          <NavLink className="flex items-center text-gray-200 py-2 hover:bg-gray-700 rounded-md" to="/admin/profile">
-            <FaUser className="mr-2" />
-            Profile
-          </NavLink>
-        </div>
+    <div className="w-64 bg-white h-screen fixed left-0 top-0 shadow-sm">
+      <div className="p-4 border-b">
+        <h1 className="text-xl font-bold text-gray-800">Admin Panel</h1>
       </div>
-
-      <div className="bg-gray-900 text-gray-200 px-4 py-4 flex items-center space-x-2">
-        <img
-          className="h-8 w-8 rounded-full"
-          src={adminData.image ? adminData.image : dummyImage}
-          alt=""
-        />
-        <span>{adminData.username}</span>
-      </div>
-    </nav>
+      <nav className="mt-4">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <Link
+              key={tab.name}
+              to={tab.path}
+              onClick={() => setActiveTab(tab.name)}
+              className={`w-full flex items-center px-4 py-3 text-sm ${
+                activeTab === tab.name
+                  ? "text-blue-600 bg-blue-50"
+                  : "text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              <Icon className="h-5 w-5 mr-3" />
+              {tab.name}
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
   );
 };
 
