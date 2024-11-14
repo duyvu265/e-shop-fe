@@ -11,6 +11,7 @@ import ProfilePage from "../components/Pages/ProfilePage/ProfilePage";
 import ProductPage from "../components/Pages/Product/ProductPage";
 import OrderHistory from "../components/Pages/OrderPage/OrderHistory";
 import OrderDetails from "../components/Pages/OrderPage/OrderDetails";
+import UserManagement from "../components/Pages/admin/AdminComponnent/UserManagement";
 
 
 const AppCustom = () => (

@@ -7,7 +7,7 @@ import Notifications from './NavbarIcon/Notification';
 import profileIcon from '../assets/profile.png';
 import notificationIcon from '../assets/notification.png';
 import cartIcon from '../assets/cart.png';
-// import orderHistoryIcon from '../assets/order-history.png'; 
+import orderHistoryIcon from '../assets/orderHistoryIcon.png';
 
 function NavIcons() {
   const [isProfileOpen, setProfileOpen] = useState(false);
@@ -56,7 +56,7 @@ function NavIcons() {
 
   const handleOrderHistoryClick = () => {
     if (isLoggedIn) {
-      navigate("/order-history"); 
+      navigate("/order-history");
     } else {
       navigate("/login");
     }
@@ -64,43 +64,16 @@ function NavIcons() {
 
   return (
     <div className="flex items-center gap-4 xl:gap-6">
-      <div className="relative z-20">
-        <img
-          src={profileIcon}
-          alt="Profile"
-          width={22}
-          height={22}
-          className="cursor-pointer"
-          onClick={toggleProfileMenu}
-        />
-        {isProfileOpen && (
-          <div className="absolute bg-white shadow-lg p-2">
-            <p>Xin chào, {userInfo?.username}</p>
-            <a href="/profilePage" className="text-blue-500 hover:underline">Xem hồ sơ</a>
-            <button onClick={handleLogout}>Đăng xuất</button>
-          </div>
-        )}
-      </div>
-
       <div className="relative">
         <img
-          src={notificationIcon}
-          alt="Notifications"
+          src={orderHistoryIcon}
+          alt="Order History"
           width={22}
           height={22}
           className="cursor-pointer"
-          onClick={toggleNotificationMenu}
+          onClick={handleOrderHistoryClick}
         />
-        {notifications.length > 0 && isLoggedIn && (
-          <div className='absolute -top-4 -right-4 w-6 h-6 bg-[#F35C7A] rounded-full text-white text-sm flex items-center justify-center'>
-            {notifications.length}
-          </div>
-        )}
-        {isNotificationOpen && (
-          <Notifications notifications={notifications} />
-        )}
       </div>
-
       <div className="relative">
         <img
           src={cartIcon}
@@ -119,16 +92,45 @@ function NavIcons() {
           <CartModal lineItems={cart || {}} />
         )}
       </div>
-      {/* <div className="relative">
+      <div className="relative">
         <img
-          src={orderHistoryIcon} 
-          alt="Order History"
+          src={notificationIcon}
+          alt="Notifications"
           width={22}
           height={22}
           className="cursor-pointer"
-          onClick={handleOrderHistoryClick} 
+          onClick={toggleNotificationMenu}
         />
-      </div> */}
+        {notifications.length > 0 && isLoggedIn && (
+          <div className='absolute -top-4 -right-4 w-6 h-6 bg-[#F35C7A] rounded-full text-white text-sm flex items-center justify-center'>
+            {notifications.length}
+          </div>
+        )}
+        {isNotificationOpen && (
+          <Notifications notifications={notifications} />
+        )}
+      </div>
+      <div className="relative z-20">
+        <img
+          src={profileIcon}
+          alt="Profile"
+          width={22}
+          height={22}
+          className="cursor-pointer"
+          onClick={toggleProfileMenu}
+        />
+        {isProfileOpen && (
+          <div className="absolute bg-white shadow-lg p-2">
+            <p>Xin chào, {userInfo?.username}</p>
+            <a href="/profilePage" className="text-blue-500 hover:underline">Xem hồ sơ</a>
+            <button onClick={handleLogout}>Đăng xuất</button>
+          </div>
+        )}
+      </div>
+
+
+
+
     </div>
   );
 }

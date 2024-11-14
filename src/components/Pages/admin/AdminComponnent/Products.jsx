@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../../../../features/Admin/productsSlice";
 import Search from "./Search";
-import ProductsTable from './../Products/ProductsTable';
+import ProductsTable from "../Products/ProductsTable";
 import Pagination from "../../../Pagination";
-import { Link } from "react-router-dom"; // Import Link từ react-router-dom
+import { Link } from "react-router-dom";
 
 const Products = () => {
     const dispatch = useDispatch();
     const { products, error } = useSelector((state) => state.productsSlice);
-
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
@@ -39,13 +38,13 @@ const Products = () => {
     }
 
     return (
-        <div className="container mx-auto my-5 p-4 bg-white rounded-lg shadow-md">
+        <div className="container mx-auto my-5 p-6 bg-white rounded-lg shadow-md">
             {products && products.length > 0 ? (
                 <>
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex flex-col md:flex-row md:justify-between items-center mb-6 gap-4">
                         <Link to="/admin/products/add"> 
                             <button
-                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300"
                             >
                                 Add Product
                             </button>

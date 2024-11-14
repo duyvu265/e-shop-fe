@@ -1,33 +1,37 @@
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
-const Pagination = ({ currentPage, hasPrev, hasNext, onPageChange }) => {
-  const location = useLocation(); 
-  const [searchParams, setSearchParams] = useSearchParams(); 
-  const navigate = useNavigate(); 
 
-  const createPageUrl = (pageNumber) => {
-    searchParams.set("page", pageNumber.toString());
-    setSearchParams(searchParams); 
-    navigate(`${location.pathname}?${searchParams.toString()}`);
-    onPageChange(pageNumber);
+const Pagination = ({ currentPage, totalCount, dataLimit, setCurrentPage }) => {
+  const totalPages = Math.ceil(totalCount / dataLimit);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   return (
-    <div className="mt-12 flex justify-between w-full">
-      <button
-        className="rounded-md bg-pink-600 text-white p-2 text-sm w-24 cursor-pointer disabled:cursor-not-allowed disabled:bg-pink-200"
-        disabled={!hasPrev}
-        onClick={() => createPageUrl(currentPage - 1)}
-      >
-        Previous
-      </button>
-      <button
-        className="rounded-md bg-pink-600 text-white p-2 text-sm w-24 cursor-pointer disabled:cursor-not-allowed disabled:bg-pink-200"
-        disabled={!hasNext}
-        onClick={() => createPageUrl(currentPage + 1)}
-      >
-        Next
-      </button>
+    <div className="flex justify-center mt-6">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 disabled:opacity-50 transition`}
+        >
+          Prev
+        </button>
+
+        <span className="text-sm text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 disabled:opacity-50 transition`}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

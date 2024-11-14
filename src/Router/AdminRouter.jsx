@@ -7,7 +7,6 @@ import Category from "../components/Pages/admin/AdminComponnent/Category";
 import Coupon from "../components/Pages/admin/AdminComponnent/Coupon";
 import Products from "../components/Pages/admin/AdminComponnent/Products";
 import Orders from "../components/Pages/admin/AdminComponnent/Orders";
-import Users from "../components/Pages/admin/AdminComponnent/Users";
 import Customers from "../components/Pages/admin/AdminComponnent/Customers";
 import Profile from "../components/Pages/admin/AdminComponnent/Profile";
 import Login from "../components/Pages/admin/AdminComponnent/Login";
@@ -15,6 +14,7 @@ import AdminLayout from "../Layout/Admin/AdminLayout";
 import Dashboard from "../components/Pages/admin/AdminComponnent/Dashboard";
 import ProtectedAdminRoutes from './Middleware';
 import ProductAddPage from "../components/Pages/admin/AdminComponnent/ProductAdd";
+import UserManagement from "../components/Pages/admin/AdminComponnent/UserManagement";
 
 
 const AdminRouter = () => {
@@ -22,8 +22,8 @@ const AdminRouter = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   return (
-    <Routes>      
-        <Route path='/login' element={<Login />} />
+    <Routes>
+      <Route path='/login' element={<Login />} />
       <Route element={<ProtectedAdminRoutes />}>
         <Route element={<AdminLayout activeTab={activeTab} setActiveTab={setActiveTab} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}>
           <Route path="/dashboard" element={<Dashboard />} />
@@ -34,7 +34,7 @@ const AdminRouter = () => {
           <Route path="/products/add" element={<ProductAddPage />} />
           <Route path="/products/product-items" element={<ProductAddPage />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/users" element={<Users />} />
+          <Route path="/users" element={<UserManagement />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
