@@ -28,7 +28,7 @@ const UserRouter = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/list" element={<ListPages />} />
         <Route path="/order-history" element={<OrderHistory />} />
-        <Route path="/order/" element={<OrderDetails />} />
+        <Route path="/order/:id" element={<OrderDetails />} />
         <Route path="/profilePage" element={<ProfilePage />} />
         <Route path="/products/:id" element={<ProductPage />} />
       </Route>

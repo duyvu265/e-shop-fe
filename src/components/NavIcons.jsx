@@ -7,7 +7,7 @@ import Notifications from './NavbarIcon/Notification';
 import profileIcon from '../assets/profile.png';
 import notificationIcon from '../assets/notification.png';
 import cartIcon from '../assets/cart.png';
-// import orderHistoryIcon from '../assets/order-history.png'; // Thêm icon lịch sử đơn hàng
+// import orderHistoryIcon from '../assets/order-history.png'; 
 
 function NavIcons() {
   const [isProfileOpen, setProfileOpen] = useState(false);
