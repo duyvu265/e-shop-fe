@@ -1,12 +1,13 @@
-import profileIcon from '../assets/profile.png';
-import notificationIcon from '../assets/notification.png';
-import cartIcon from '../assets/cart.png';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../features/user/userSlice/UserSlice';
 import { useNavigate } from 'react-router-dom';
 import CartModal from './NavbarIcon/CartModal';
 import Notifications from './NavbarIcon/Notification';
+import profileIcon from '../assets/profile.png';
+import notificationIcon from '../assets/notification.png';
+import cartIcon from '../assets/cart.png';
+// import orderHistoryIcon from '../assets/order-history.png'; // Thêm icon lịch sử đơn hàng
 
 function NavIcons() {
   const [isProfileOpen, setProfileOpen] = useState(false);
@@ -53,6 +54,14 @@ function NavIcons() {
     navigate("/login");
   };
 
+  const handleOrderHistoryClick = () => {
+    if (isLoggedIn) {
+      navigate("/order-history"); 
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <div className="flex items-center gap-4 xl:gap-6">
       <div className="relative z-20">
@@ -91,10 +100,6 @@ function NavIcons() {
           <Notifications notifications={notifications} />
         )}
       </div>
-      <div>
-        {/* <ChatComponent /> */}
-        {/* <ChatComponent /> */}
-      </div>
 
       <div className="relative">
         <img
@@ -114,6 +119,16 @@ function NavIcons() {
           <CartModal lineItems={cart || {}} />
         )}
       </div>
+      {/* <div className="relative">
+        <img
+          src={orderHistoryIcon} 
+          alt="Order History"
+          width={22}
+          height={22}
+          className="cursor-pointer"
+          onClick={handleOrderHistoryClick} 
+        />
+      </div> */}
     </div>
   );
 }

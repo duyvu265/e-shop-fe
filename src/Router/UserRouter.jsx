@@ -7,9 +7,11 @@ import ListPages from "../components/Pages/ListPages";
 import LoginPage from "../components/Pages/Auth/LoginPage";
 import RegisterPage from "../components/Pages/Auth/RegisterPage";
 import ForgetPasswordPage from "../components/Pages/Auth/ForgetPasswordPage";
-import OrderPage from "../components/Pages/OrderPage/OrderPage";
 import ProfilePage from "../components/Pages/ProfilePage/ProfilePage";
 import ProductPage from "../components/Pages/Product/ProductPage";
+import OrderHistory from "../components/Pages/OrderPage/OrderHistory";
+import OrderDetails from "../components/Pages/OrderPage/OrderDetails";
+
 
 const AppCustom = () => (
   <>
@@ -25,7 +27,8 @@ const UserRouter = () => {
       <Route element={<AppCustom />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/list" element={<ListPages />} />
-        <Route path="/orderPage/:id" element={<OrderPage />} />
+        <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/order/" element={<OrderDetails />} />
         <Route path="/profilePage" element={<ProfilePage />} />
         <Route path="/products/:id" element={<ProductPage />} />
       </Route>

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import Add from "./Add";
-import ProductImages from "./ProductImages";
+import ProductImages from './ProductImages';
 
 const CustomizeProducts = ({ productId, product_items }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedVariant, setSelectedVariant] = useState();
 
   useEffect(() => {
-    const variant = product_items.find((v) => {
+    const variant = product_items?.find((v) => {
       const variantChoices = {
         Color: v.color,
         Size: v.size,
@@ -88,7 +88,7 @@ const CustomizeProducts = ({ productId, product_items }) => {
                 </li>
               ) : (
                 <li
-                  className="ring-1 ring-lama text-lama rounded-md py-1 px-4 text-sm"
+                  className="ring-1 ring-pink-500 text-pink-500 rounded-md py-1 px-4 text-sm"
                   style={{
                     cursor: disabled ? "not-allowed" : "pointer",
                     backgroundColor: selected
