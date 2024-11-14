@@ -4,11 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addToLikedList } from "../../../features/user/userSlice/UserSlice";
 import apiClient from "../../../services/apiClient";
-
+import ChatBox from "../messages/ChatBox";
 
 const Add = ({ productId, variantId, stockNumber }) => {
   const [quantity, setQuantity] = useState(1);
   const [liked, setLiked] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const { isLoggedIn } = useSelector((state) => state.user);
   const likedProducts = useSelector((state) => state.user.likedList);
   const navigate = useNavigate();
@@ -44,8 +45,11 @@ const Add = ({ productId, variantId, stockNumber }) => {
       navigate("/login");
       return;
     }
-    navigate("/chat/");
-    alert("Chức năng chat với người bán đang phát triển!");
+    setIsChatOpen(true); 
+  };
+
+  const handleCloseChat = () => {
+    setIsChatOpen(false); 
   };
 
   return (
@@ -70,6 +74,7 @@ const Add = ({ productId, variantId, stockNumber }) => {
           <span>Chat với người bán</span>
         </button>
       </div>
+
       <h4 className="font-medium text-lg">Chọn Số lượng</h4>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -102,12 +107,18 @@ const Add = ({ productId, variantId, stockNumber }) => {
         </div>
         <button
           className="px-6 py-2 text-sm font-medium rounded-lg bg-orange-500 text-white hover:bg-orange-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
-          // onClick={() => addItem(variantId, quantity)}
-          // disabled={isLoading}
+        // onClick={() => addItem(variantId, quantity)}
+        // disabled={isLoading}
         >
           Thêm vào giỏ hàng
         </button>
       </div>
+      {isChatOpen && (
+        <div className="fixed bottom-6 right-6 bg-white w-[450px] max-h-[600px] p-1 rounded-lg shadow-xl z-100">
+          <ChatBox onClose={handleCloseChat}  />
+        </div>
+      )}
+
     </div>
   );
 };

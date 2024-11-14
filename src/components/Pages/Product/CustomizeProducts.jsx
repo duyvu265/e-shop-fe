@@ -41,7 +41,7 @@ const CustomizeProducts = ({ productId, product_items }) => {
   const productOptions = [
     {
       name: "Color",
-      choices: [...new Set(product_items?.map(v => ({ description: v.color, value: v.product_images.image1.url })))],
+      choices: [...new Set(product_items?.map(v => ({ description: v.color, value: v.product_images?.image1?.url })))],
     },
     {
       name: "Size",
@@ -51,7 +51,7 @@ const CustomizeProducts = ({ productId, product_items }) => {
 
   return (
     <div className="flex flex-col gap-6">
-      <ProductImages items={product_items?.map(item => item.product_images.image1.url)} />
+      <ProductImages items={product_items?.map(item => item?.product_images?.image1?.url)} />
       {productOptions.map((option) => (
         <div className="flex flex-col gap-4" key={option.name}>
           <h4 className="font-medium">Choose a {option.name}</h4>
