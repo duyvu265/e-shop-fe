@@ -4,10 +4,11 @@ import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { FaTrashAlt } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const CartModal = ({ lineItems }) => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate()
   const handleRemoveItem = (productId) => {
     dispatch(removeFromCart(productId));
     toast.success('Sản phẩm đã được xóa khỏi giỏ hàng');
@@ -110,6 +111,7 @@ const CartModal = ({ lineItems }) => {
           </div>
           <div className="space-y-2">
             <button
+              onClick={() => (navigate("/checkout"))}
               className="w-full py-2 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
               Tiến hành thanh toán

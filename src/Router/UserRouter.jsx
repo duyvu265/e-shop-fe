@@ -14,6 +14,7 @@ import SignUpPage from "../components/Pages/Auth/SignUpPage";
 import ContractPage from "../components/Pages/Contract/ContractPage";
 import HelpCenter from "../components/Pages/HelpCenter/HelpCenter";
 import PrivacyPolicy from "../components/Pages/PrivacyPolicy/PrivacyPolicy";
+import CheckoutPage from "../components/Pages/CheckOut/CheckOut";
 
 
 const AppCustom = () => (
@@ -34,6 +35,7 @@ const UserRouter = () => {
         <Route path="/order/:id" element={<OrderDetails />} />
         <Route path="/profilePage" element={<ProfilePage />} />
         <Route path="/products/:id" element={<ProductPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<SignUpPage />} />
