@@ -51,7 +51,7 @@ const CustomizeProducts = ({ productId, product_items }) => {
 
   return (
     <div className="flex flex-col gap-6">
-      <ProductImages items={product_items?.map(item => item?.product_images?.image1?.url)} />
+      <ProductImages items={product_items} />
       {productOptions.map((option) => (
         <div className="flex flex-col gap-4" key={option.name}>
           <h4 className="font-medium">Choose a {option.name}</h4>
