@@ -5,13 +5,12 @@ import Footer from "../components/Footer";
 import HomePage from "../components/Pages/HomePage";
 import ListPages from "../components/Pages/ListPages";
 import LoginPage from "../components/Pages/Auth/LoginPage";
-import RegisterPage from "../components/Pages/Auth/RegisterPage";
 import ForgetPasswordPage from "../components/Pages/Auth/ForgetPasswordPage";
 import ProfilePage from "../components/Pages/ProfilePage/ProfilePage";
 import ProductPage from "../components/Pages/Product/ProductPage";
 import OrderHistory from "../components/Pages/OrderPage/OrderHistory";
 import OrderDetails from "../components/Pages/OrderPage/OrderDetails";
-import UserManagement from "../components/Pages/admin/AdminComponnent/UserManagement";
+import SignUpPage from "../components/Pages/Auth/SignUpPage";
 
 
 const AppCustom = () => (
@@ -34,7 +33,7 @@ const UserRouter = () => {
         <Route path="/products/:id" element={<ProductPage />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/register" element={<SignUpPage />} />
       <Route path="/forget-password" element={<ForgetPasswordPage />} />
     </Routes>
   );
