@@ -10,7 +10,6 @@ const ProductPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
-
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -47,7 +46,7 @@ const ProductPage = () => {
 
   return (
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16">
-      <div className="w-full lg:w-1/2 lg:sticky top-20 h-max">
+      <div className="hidden lg:block w-full lg:w-1/2 lg:sticky top-20 h-max">
         <ProductImages image_url={product?.image_url} items={product?.product_items} />
       </div>
       <div className="w-full lg:w-1/2 flex flex-col gap-6">

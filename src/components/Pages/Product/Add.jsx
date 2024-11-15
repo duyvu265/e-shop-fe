@@ -114,7 +114,7 @@ const Add = ({ productId, variantId, stockNumber }) => {
         </button>
       </div>
       {isChatOpen && (
-        <div className="fixed bottom-6 right-6 bg-white w-[450px] max-h-[600px] p-1 rounded-lg shadow-xl z-100">
+        <div className="fixed bottom-6 right-6 w-[450px] max-h-[600px]  rounded-lg shadow-xl z-100">
           <ChatBox onClose={handleCloseChat}  />
         </div>
       )}
