@@ -199,7 +199,7 @@ const SignUpPage = () => {
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center bg-transparent p-0 border-0 focus:outline-none hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <FaEyeSlash className="text-gray-400" /> : <FaEye className="text-gray-400" />}
@@ -223,7 +223,7 @@ const SignUpPage = () => {
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center bg-transparent p-0 border-0 focus:outline-none hover:bg-transparent"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? <FaEyeSlash className="text-gray-400" /> : <FaEye className="text-gray-400" />}
@@ -293,11 +293,11 @@ const SignUpPage = () => {
         </div>
 
         <div className="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500">
-          <a href="#" className="hover:text-gray-900 flex items-center">
+          <a href="/Help-Center" className="hover:text-gray-900 flex items-center">
             <FaQuestionCircle className="mr-1" /> Help Center
           </a>
           <span>•</span>
-          <a href="#" className="hover:text-gray-900">
+          <a href="/Privacy-Policy" className="hover:text-gray-900">
             Privacy Policy
           </a>
           <span>•</span>

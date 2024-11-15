@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGoogle, FaQuestionCircle } from "react-icons/fa";
 import { BiLoader } from "react-icons/bi";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -142,12 +142,19 @@ const LoginPage = () => {
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center bg-transparent p-0 border-0 focus:outline-none hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <FaEyeSlash className="text-gray-500" /> : <FaEye className="text-gray-500" />}
+                {showPassword ? (
+                  <FaEyeSlash className="text-gray-700" />
+                ) : (
+                  <FaEye className="text-gray-700" />
+                )}
               </button>
+
+
+
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
           </div>
@@ -165,7 +172,7 @@ const LoginPage = () => {
               <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-900">Remember me</label>
             </div>
             <div className="text-sm">
-              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">Forgot your password?</a>
+              <a href="/forget-password" className="font-medium text-indigo-600 hover:text-indigo-500">Forgot your password?</a>
             </div>
           </div>
 
@@ -196,6 +203,19 @@ const LoginPage = () => {
               Create an account
             </button>
           </p>
+        </div>
+        <div className="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500">
+          <a href="/Help-Center" className="hover:text-gray-900 flex items-center">
+            <FaQuestionCircle className="mr-1" /> Help Center
+          </a>
+          <span>•</span>
+          <a href="/Privacy-Policy" className="hover:text-gray-900">
+            Privacy Policy
+          </a>
+          <span>•</span>
+          <a href="#" className="hover:text-gray-900">
+            Terms
+          </a>
         </div>
       </div>
     </div>

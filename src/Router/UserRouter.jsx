@@ -11,6 +11,9 @@ import ProductPage from "../components/Pages/Product/ProductPage";
 import OrderHistory from "../components/Pages/OrderPage/OrderHistory";
 import OrderDetails from "../components/Pages/OrderPage/OrderDetails";
 import SignUpPage from "../components/Pages/Auth/SignUpPage";
+import ContractPage from "../components/Pages/Contract/ContractPage";
+import HelpCenter from "../components/Pages/HelpCenter/HelpCenter";
+import PrivacyPolicy from "../components/Pages/PrivacyPolicy/PrivacyPolicy";
 
 
 const AppCustom = () => (
@@ -35,6 +38,9 @@ const UserRouter = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<SignUpPage />} />
       <Route path="/forget-password" element={<ForgetPasswordPage />} />
+      <Route path="/contract-page" element={<ContractPage />} />
+      <Route path="/Help-Center" element={<HelpCenter />} />
+      <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
     </Routes>
   );
 };
