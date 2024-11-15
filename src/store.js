@@ -10,20 +10,61 @@ import customersSlice from './features/Admin/customersSlice';
 import CategorySlice from './features/Admin/categorySlice';
 import productsSlice from './features/Admin/productsSlice';
 import couponSlice from './features/Admin/couponSlice';
+import CryptoJS from 'crypto-js';
+
+
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
+const getDecryptedToken = (encryptedToken) => {
+  try {
+    const bytes = CryptoJS.AES.decrypt(encryptedToken, SECRET_KEY);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch (error) {
+    console.error('Error decrypting token:', error);
+    return null;
+  }
+};
+
+const loadInitialState = () => {
+  try {
+    const encryptedAccessToken = localStorage.getItem('accessToken');
+    const encryptedRefreshToken = localStorage.getItem('refreshToken');
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+    return {
+      user: {
+        userInfo: userInfo || null,
+        isLoggedIn: !!encryptedAccessToken,
+        accessToken: encryptedAccessToken ? getDecryptedToken(encryptedAccessToken) : null,
+        refreshToken: encryptedRefreshToken ? getDecryptedToken(encryptedRefreshToken) : null,
+        cart: userInfo?.cart_items || [],
+        likedList: userInfo?.liked_products || [],
+        loading: false,
+        error: null,
+      },
+    };
+  } catch (error) {
+    console.error('Error loading initial state:', error);
+    return {};
+  }
+};
+
+const preloadedState = loadInitialState();
+
 const store = configureStore({
   reducer: {
     user: UserSlice,
     cart: cartSlice,
     search: SearchSlice,
     category: CategorySlice,
-    adminAuth:adminAuthSlice,
-    banner:bannerSlice,
-    usersSlice:usersSlice,
-    orders:ordersSlice,
-    customersSlice:customersSlice,
-    productsSlice:productsSlice,
-    couponSlice:couponSlice
+    adminAuth: adminAuthSlice,
+    banner: bannerSlice,
+    usersSlice: usersSlice,
+    orders: ordersSlice,
+    customersSlice: customersSlice,
+    productsSlice: productsSlice,
+    couponSlice: couponSlice,
   },
+  preloadedState, 
 });
 
 export default store;

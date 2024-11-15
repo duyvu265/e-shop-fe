@@ -101,9 +101,9 @@ function NavIcons() {
           className="cursor-pointer"
           onClick={toggleNotificationMenu}
         />
-        {notifications.length > 0 && isLoggedIn && (
+        {notifications?.length > 0 && isLoggedIn && (
           <div className='absolute -top-4 -right-4 w-6 h-6 bg-[#F35C7A] rounded-full text-white text-sm flex items-center justify-center'>
-            {notifications.length}
+            {notifications?.length}
           </div>
         )}
         {isNotificationOpen && (
