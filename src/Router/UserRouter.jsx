@@ -15,6 +15,7 @@ import ContractPage from "../components/Pages/Contract/ContractPage";
 import HelpCenter from "../components/Pages/HelpCenter/HelpCenter";
 import PrivacyPolicy from "../components/Pages/PrivacyPolicy/PrivacyPolicy";
 import CheckoutPage from "../components/Pages/CheckOut/CheckOut";
+import NewProducts from "../components/NewProducts";
 
 
 const AppCustom = () => (
@@ -28,13 +29,14 @@ const AppCustom = () => (
 const UserRouter = () => {
   return (
     <Routes>
-      <Route element={<AppCustom />}>
+      <Route element={<AppCustom/>}>
         <Route path="/" element={<HomePage />} />
         <Route path="/list" element={<ListPages />} />
         <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/order/:id" element={<OrderDetails />} />
         <Route path="/profilePage" element={<ProfilePage />} />
         <Route path="/products/:id" element={<ProductPage />} />
+        <Route path="/new-products" element={<NewProducts />} />
         <Route path="/checkout" element={<CheckoutPage />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />

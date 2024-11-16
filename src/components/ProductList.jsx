@@ -64,57 +64,77 @@ const ProductList = () => {
   }
 
   return (
-    <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
-    {Array.isArray(sortedProducts) && sortedProducts.length > 0 ? (
-      sortedProducts.map((product) => {
-        const productImages = product.images;
-        const defaultImage = product.image_url;
-        return (
-          <div
-            className="flex flex-col w-full sm:w-[40%] lg:w-[18%] relative group border border-transparent transition duration-300"
-            key={product.id}
-          >
-       <Link to={`/products/${product.id}`} className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 group">
-  <div className="relative w-full h-full">
-    <img
-      src={defaultImage}
-      alt={product.name}
-      className="absolute object-cover rounded-md z-10 w-full h-full transition-opacity duration-500 group-hover:opacity-0"
-    />
-    {productImages.length > 0 && (
-      <img
-        src={productImages[0]}
-        alt={product.name}
-        className="absolute object-cover rounded-md w-full h-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-      />
-    )}
-  </div>
-</Link>
-            <div className="flex justify-between mt-4">
-              <span className="font-medium">{product.name}</span>
-              <span className="font-semibold">${product.price}</span>
-            </div>
-            <div className="text-sm text-gray-500">
-              {product.description || ""}
-            </div>
-            <div className="mt-4 flex justify-between items-center">
-              <span className="text-sm text-gray-600">{product.discountCode || "Không có mã giảm giá"}</span>
-            </div>
-          </div>
-        );
-      })
-    ) : (
-      <p>No products found.</p>
-    )}
-    {(searchQuery || categoryId) ? (
-      <Pagination
-        currentPage={pagination.currentPage}
-        hasPrev={pagination.hasPrev}
-        hasNext={pagination.hasNext}
-      />
-    ) : null}
-  </div>
-  
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-3xl font-bold mb-8 text-center">Danh Sách Sản Phẩm</h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {Array.isArray(sortedProducts) && sortedProducts.length > 0 ? (
+          sortedProducts.map((product) => {
+            const productImages = product.images;
+            const defaultImage = product.image_url;
+            return (
+              <div
+                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl"
+                key={product.id}
+              >
+                <Link to={`/products/${product.id}`} className="relative group">
+                  <img
+                    src={defaultImage}
+                    alt={product.name}
+                    className="w-full h-64 object-cover transition-opacity group-hover:opacity-90"
+                    loading="lazy"
+                  />
+                  {productImages.length > 0 && (
+                    <img
+                      src={productImages[0]}
+                      alt={product.name}
+                      className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity group-hover:opacity-100"
+                      loading="lazy"
+                    />
+                  )}
+                </Link>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
+                  <p className="text-gray-600 mb-4">{product.description || "Không có mô tả"}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-bold text-red-600">
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(product.price)}
+                    </span>
+                    <Link
+                      to={`/products/${product.id}`}
+                      className="px-4 py-2 bg-[#ef4444] text-white rounded-lg hover:bg-[#dc2626] transition-colors focus:outline-none focus:ring-2 focus:ring-[#ef4444] focus:ring-offset-2"
+                    >
+                      Xem Chi Tiết
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <p>Không tìm thấy sản phẩm nào.</p>
+        )}
+      </div>
+      <div className="text-center my-8">
+        <Link
+          to="/products"
+          className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors" 
+        >
+          Xem Tất Cả Sản Phẩm
+        </Link>
+      </div>
+
+      {(searchQuery || categoryId) && (
+        <Pagination
+          currentPage={pagination.currentPage}
+          hasPrev={pagination.hasPrev}
+          hasNext={pagination.hasNext}
+        />
+      )}
+    </div>
   );
 };
 
