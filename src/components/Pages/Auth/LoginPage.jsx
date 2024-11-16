@@ -30,7 +30,7 @@ const LoginPage = () => {
         if (decodedToken.exp > currentTime) {
           dispatch(loginSuccess({ accessToken }));
           dispatch(setIsLoggedIn(true));
-          navigate("/"); // Redirect to home if already logged in
+          navigate("/"); 
         } else {
           localStorage.removeItem("accessToken");
         }
@@ -43,7 +43,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (rememberMe) {
       localStorage.setItem("savedEmail", email);
       localStorage.setItem("savedPassword", password);
@@ -51,53 +51,56 @@ const LoginPage = () => {
       localStorage.removeItem("savedEmail");
       localStorage.removeItem("savedPassword");
     }
-
+  
     if (!validateEmail(email) || password.length < 8) {
+      setErrors({
+        email: !validateEmail(email) ? "Email không hợp lệ." : "",
+        password: password.length < 8 ? "Mật khẩu phải có ít nhất 8 ký tự." : "",
+      });
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     try {
       const response = await axios.post(`${apiUrl}/login/`, { email, password });
-
+  
       if (response.data && response.data.userInfo) {
         dispatch(loginSuccess(response.data));
         localStorage.setItem("accessToken", response.data.access);
         localStorage.setItem("refreshToken", response.data.refresh);
         toast.success("Đăng Nhập thành công!");
-        navigate("/"); // Redirect to home after successful login
+        navigate("/"); 
       } else {
         toast.error("Dữ liệu phản hồi không hợp lệ.");
       }
     } catch (error) {
-      console.error("Error during authentication:", error);
+      console.error("Lỗi trong quá trình xác thực:", error);
       toast.error(error.response?.data?.error || "Có lỗi xảy ra! Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const idToken = credentialResponse.credential;
       const response = await axios.post(`${apiUrl}/google-login/`, { idToken });
-
+  
       if (response.data && response.data.userInfo) {
         dispatch(loginSuccess(response.data));
         localStorage.setItem("accessToken", response.data.access);
         localStorage.setItem("refreshToken", response.data.refresh);
         toast.success("Đăng Nhập bằng Google thành công!");
-        navigate("/"); // Redirect to home after successful login
+        navigate("/"); 
       } else {
         toast.error("Thông tin người dùng không hợp lệ!");
       }
     } catch (error) {
-      console.error("Error during Google Sign In:", error);
+      console.error("Lỗi trong quá trình đăng nhập bằng Google:", error);
       toast.error(error.response?.data?.error || "Có lỗi xảy ra khi đăng nhập bằng Google!");
     }
   };
-
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -198,7 +201,7 @@ const LoginPage = () => {
             <button
               type="button"
               className="text-indigo-600 hover:text-indigo-500"
-              onClick={() => navigate("/register")} // Điều hướng đến trang đăng ký
+              onClick={() => navigate("/register")} 
             >
               Create an account
             </button>
