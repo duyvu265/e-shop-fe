@@ -29,15 +29,8 @@ const NewProducts = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-3xl font-bold text-gray-800">Sản Phẩm Mới</h2>
-        <Link
-          to="/products/new"
-          className="px-3 py-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2"
-        >
-          Xem Tất Cả Sản Phẩm Mới
-        </Link>
-      </div>
+      <h2 className="text-3xl font-bold mb-8 text-center">Sản Phẩm Mới</h2>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {Array.isArray(newProducts) && newProducts.length > 0 ? (
           newProducts.map((product) => {
@@ -45,7 +38,7 @@ const NewProducts = () => {
             const defaultImage = product.image_url;
             return (
               <div
-                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105"
+                className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transform transition-transform hover:scale-105 hover:shadow-xl"
                 key={product.id}
               >
                 <Link to={`/products/${product.id}`} className="relative group">
@@ -65,12 +58,12 @@ const NewProducts = () => {
                     />
                   )}
                 </Link>
-                <div className="p-6">
+                <div className="p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-semibold mb-2 text-gray-800">{product.name}</h3>
-                  <p className="text-gray-600 mb-4 line-clamp-3">
+                  <p className="text-gray-600 mb-4 flex-grow line-clamp-3">
                     {product.title || "Không có mô tả"}
                   </p>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mt-4">
                     <span className="text-2xl font-bold text-red-600">
                       {new Intl.NumberFormat("vi-VN", {
                         style: "currency",
@@ -79,7 +72,7 @@ const NewProducts = () => {
                     </span>
                     <Link
                       to={`/products/${product.id}`}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2"
                     >
                       Xem Chi Tiết
                     </Link>

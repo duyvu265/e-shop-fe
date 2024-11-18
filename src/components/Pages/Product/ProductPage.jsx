@@ -75,6 +75,8 @@ const ProductPage = () => {
         <div className="h-[2px] bg-gray-100" />
         <h2 className="font-medium text-2xl">${minPrice}</h2>
         <div className="h-[2px] bg-gray-100" />
+        <h2 className="font-medium text-2xl">${product.title}</h2>
+
         {product.product_items.length > 0 ? (
           <CustomizeProducts
             productId={product.id}
