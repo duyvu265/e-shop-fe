@@ -14,7 +14,6 @@ function NavIcons() {
   const [isCartOpen, setCartOpen] = useState(false);
   const [isNotificationOpen, setNotificationOpen] = useState(false);
   const { isLoggedIn, userInfo, cart, notifications } = useSelector(state => state.user);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

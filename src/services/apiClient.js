@@ -54,12 +54,20 @@ apiClient.interceptors.request.use(
         return config;
       }
 
-      const decodedToken = jwt_decode(token);
+      let decodedToken = null;
+      try {
+        decodedToken = jwt_decode(token);
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        logout();  
+        return config;
+      }
+
       const currentTime = Math.floor(Date.now() / 1000);
-      if (decodedToken.exp <= currentTime) {
+      if (decodedToken && decodedToken.exp <= currentTime) {
         token = await refreshTokens();
         if (!token) {
-          return config;
+          return config; 
         }
       }
 
@@ -70,7 +78,7 @@ apiClient.interceptors.request.use(
         config.headers['CSRFToken'] = csrfToken;  
       }
     } catch (error) {
-      console.error('Error accessing localStorage:', error);
+      console.error('Error accessing localStorage or request interceptor:', error);
     }
 
     return config;
@@ -79,5 +87,6 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 
 export default apiClient;

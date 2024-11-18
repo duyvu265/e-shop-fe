@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaEye, FaEyeSlash, FaGoogle, FaQuestionCircle } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaQuestionCircle } from "react-icons/fa";
 import { BiLoader } from "react-icons/bi";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ const LoginPage = () => {
         if (decodedToken.exp > currentTime) {
           dispatch(loginSuccess({ accessToken }));
           dispatch(setIsLoggedIn(true));
-          navigate("/"); 
+          navigate("/");
         } else {
           localStorage.removeItem("accessToken");
         }
@@ -43,7 +43,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (rememberMe) {
       localStorage.setItem("savedEmail", email);
       localStorage.setItem("savedPassword", password);
@@ -51,7 +51,7 @@ const LoginPage = () => {
       localStorage.removeItem("savedEmail");
       localStorage.removeItem("savedPassword");
     }
-  
+
     if (!validateEmail(email) || password.length < 8) {
       setErrors({
         email: !validateEmail(email) ? "Email không hợp lệ." : "",
@@ -59,18 +59,16 @@ const LoginPage = () => {
       });
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     try {
       const response = await axios.post(`${apiUrl}/login/`, { email, password });
-  
+
       if (response.data && response.data.userInfo) {
         dispatch(loginSuccess(response.data));
-        localStorage.setItem("accessToken", response.data.access);
-        localStorage.setItem("refreshToken", response.data.refresh);
         toast.success("Đăng Nhập thành công!");
-        navigate("/"); 
+        navigate("/");
       } else {
         toast.error("Dữ liệu phản hồi không hợp lệ.");
       }
@@ -81,18 +79,16 @@ const LoginPage = () => {
       setIsLoading(false);
     }
   };
-  
+
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const idToken = credentialResponse.credential;
       const response = await axios.post(`${apiUrl}/google-login/`, { idToken });
-  
+
       if (response.data && response.data.userInfo) {
         dispatch(loginSuccess(response.data));
-        localStorage.setItem("accessToken", response.data.access);
-        localStorage.setItem("refreshToken", response.data.refresh);
         toast.success("Đăng Nhập bằng Google thành công!");
-        navigate("/"); 
+        navigate("/");
       } else {
         toast.error("Thông tin người dùng không hợp lệ!");
       }
@@ -101,6 +97,7 @@ const LoginPage = () => {
       toast.error(error.response?.data?.error || "Có lỗi xảy ra khi đăng nhập bằng Google!");
     }
   };
+
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -110,12 +107,12 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Đăng nhập vào tài khoản của bạn</h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md -space-y-px">
             <div className="relative mb-4">
-              <label htmlFor="email" className="sr-only">Email address</label>
+              <label htmlFor="email" className="sr-only">Địa chỉ email</label>
               <input
                 id="email"
                 name="email"
@@ -125,13 +122,13 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-                placeholder="Email address"
+                placeholder="Địa chỉ email"
               />
               {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
 
             <div className="relative mb-4">
-              <label htmlFor="password" className="sr-only">Password</label>
+              <label htmlFor="password" className="sr-only">Mật khẩu</label>
               <input
                 id="password"
                 name="password"
@@ -141,13 +138,13 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm pr-10`}
-                placeholder="Password"
+                placeholder="Mật khẩu"
               />
               <button
                 type="button"
                 className="absolute inset-y-0 right-0 pr-3 flex items-center bg-transparent p-0 border-0 focus:outline-none hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
               >
                 {showPassword ? (
                   <FaEyeSlash className="text-gray-700" />
@@ -155,9 +152,6 @@ const LoginPage = () => {
                   <FaEye className="text-gray-700" />
                 )}
               </button>
-
-
-
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
           </div>
@@ -172,10 +166,10 @@ const LoginPage = () => {
                 onChange={() => setRememberMe(!rememberMe)}
                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-              <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-900">Remember me</label>
+              <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-900">Ghi nhớ tôi</label>
             </div>
             <div className="text-sm">
-              <a href="/forget-password" className="font-medium text-indigo-600 hover:text-indigo-500">Forgot your password?</a>
+              <a href="/forget-password" className="font-medium text-indigo-600 hover:text-indigo-500">Quên mật khẩu?</a>
             </div>
           </div>
 
@@ -185,7 +179,7 @@ const LoginPage = () => {
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={isLoading}
             >
-              {isLoading ? <BiLoader className="animate-spin w-5 h-5 mr-3" /> : "Sign In"}
+              {isLoading ? <BiLoader className="animate-spin w-5 h-5 mr-3" /> : "Đăng Nhập"}
             </button>
           </div>
         </form>
@@ -197,27 +191,27 @@ const LoginPage = () => {
         </div>
         <div className="mt-6 text-center">
           <p className="text-sm font-medium text-gray-600">
-            Don't have an account?{" "}
+            Chưa có tài khoản?{" "}
             <button
               type="button"
               className="text-indigo-600 hover:text-indigo-500"
-              onClick={() => navigate("/register")} 
+              onClick={() => navigate("/register")}
             >
-              Create an account
+              Tạo tài khoản
             </button>
           </p>
         </div>
         <div className="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500">
           <a href="/Help-Center" className="hover:text-gray-900 flex items-center">
-            <FaQuestionCircle className="mr-1" /> Help Center
+            <FaQuestionCircle className="mr-1" /> Trung tâm trợ giúp
           </a>
           <span>•</span>
           <a href="/Privacy-Policy" className="hover:text-gray-900">
-            Privacy Policy
+            Chính sách bảo mật
           </a>
           <span>•</span>
           <a href="#" className="hover:text-gray-900">
-            Terms
+            Điều khoản
           </a>
         </div>
       </div>

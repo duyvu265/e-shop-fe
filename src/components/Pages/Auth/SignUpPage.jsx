@@ -5,11 +5,14 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../../../features/user/userSlice/UserSlice";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: ""
@@ -20,6 +23,7 @@ const SignUpPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_URL;
+  const dispatch = useDispatch();
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,33 +42,40 @@ const SignUpPage = () => {
     switch (name) {
       case "email":
         if (!validateEmail(value) && value) {
-          newErrors.email = "Invalid email format";
+          newErrors.email = "Định dạng email không hợp lệ";
         } else {
           delete newErrors.email;
         }
         break;
       case "password":
         if (value.length < 8 && value) {
-          newErrors.password = "Password must be at least 8 characters";
+          newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự";
         } else {
           delete newErrors.password;
         }
         if (formData.confirmPassword && value !== formData.confirmPassword) {
-          newErrors.confirmPassword = "Passwords do not match";
+          newErrors.confirmPassword = "Mật khẩu không khớp";
         } else if (formData.confirmPassword) {
           delete newErrors.confirmPassword;
         }
         break;
       case "confirmPassword":
         if (value !== formData.password) {
-          newErrors.confirmPassword = "Passwords do not match";
+          newErrors.confirmPassword = "Mật khẩu không khớp";
         } else {
           delete newErrors.confirmPassword;
         }
         break;
+      case "username":
+        if (!value.trim()) {
+          newErrors.username = "Tên người dùng là bắt buộc";
+        } else {
+          delete newErrors.username;
+        }
+        break;
       default:
         if (!value.trim()) {
-          newErrors[name] = "This field is required";
+          newErrors[name] = "Trường này là bắt buộc";
         } else {
           delete newErrors[name];
         }
@@ -77,19 +88,20 @@ const SignUpPage = () => {
     if (Object.keys(errors).length > 0) return;
 
     setIsLoading(true);
-    const { firstName, lastName, email, password } = formData;
+    const { firstName, lastName, username, email, password } = formData;
 
     try {
       const response = await axios.post(`${apiUrl}/register/`, {
         firstName,
         lastName,
+        username,
         email,
         password
       });
 
       if (response.data && response.data.userInfo) {
         toast.success("Đăng ký thành công!");
-        navigate("/login"); 
+        navigate("/login");
       } else {
         toast.error("Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.");
       }
@@ -100,27 +112,26 @@ const SignUpPage = () => {
       setIsLoading(false);
     }
   };
-
-  // Xử lý đăng nhập qua Google
-  const handleGoogleLoginSuccess = async (response) => {
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
-      const { credential } = response;
-      const googleUser = await axios.post(`${apiUrl}/google-login`, { token: credential });
+      const idToken = credentialResponse.credential;
+      const response = await axios.post(`${apiUrl}/google-login/`, { idToken });
 
-      if (googleUser.data && googleUser.data.userInfo) {
-        toast.success("Đăng nhập qua Google thành công!");
-        navigate("/dashboard"); // Chuyển hướng đến trang chính sau khi đăng nhập
+      if (response.data && response.data.userInfo) {
+        dispatch(loginSuccess(response.data));
+        toast.success("Đăng Nhập bằng Google thành công!");
+        navigate("/");
       } else {
-        toast.error("Có lỗi xảy ra khi đăng nhập với Google.");
+        toast.error("Thông tin người dùng không hợp lệ!");
       }
     } catch (error) {
-      console.error("Google login error:", error);
-      toast.error("Có lỗi xảy ra khi đăng nhập qua Google.");
+      console.error("Lỗi trong quá trình đăng nhập bằng Google:", error);
+      toast.error(error.response?.data?.error || "Có lỗi xảy ra khi đăng nhập bằng Google!");
     }
   };
 
   const handleGoogleLoginFailure = (error) => {
-    console.error("Google login failed:", error);
+    console.error("Đăng nhập Google thất bại:", error);
     toast.error("Đăng nhập qua Google thất bại.");
   };
 
@@ -128,13 +139,13 @@ const SignUpPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Tạo tài khoản của bạn</h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md -space-y-px">
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label htmlFor="firstName" className="sr-only">First Name</label>
+                <label htmlFor="firstName" className="sr-only">Tên</label>
                 <input
                   id="firstName"
                   name="firstName"
@@ -143,14 +154,14 @@ const SignUpPage = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-                  placeholder="First Name"
+                  placeholder="Tên"
                 />
                 {errors.firstName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
+                  <p className="text-red-500 text-xs mt-1 mb-2">{errors.firstName}</p>
                 )}
               </div>
               <div>
-                <label htmlFor="lastName" className="sr-only">Last Name</label>
+                <label htmlFor="lastName" className="sr-only">Họ</label>
                 <input
                   id="lastName"
                   name="lastName"
@@ -159,16 +170,33 @@ const SignUpPage = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-                  placeholder="Last Name"
+                  placeholder="Họ"
                 />
                 {errors.lastName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
+                  <p className="text-red-500 text-xs mt-1 mb-2">{errors.lastName}</p>
                 )}
               </div>
             </div>
 
             <div className="mb-4">
-              <label htmlFor="email" className="sr-only">Email address</label>
+              <label htmlFor="username" className="sr-only">Tên người dùng</label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                value={formData.username}
+                onChange={handleChange}
+                className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.username ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+                placeholder="Tên người dùng"
+              />
+              {errors.username && (
+                <p className="text-red-500 text-xs mt-1 mb-2">{errors.username}</p>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="email" className="sr-only">Địa chỉ email</label>
               <input
                 id="email"
                 name="email"
@@ -178,15 +206,15 @@ const SignUpPage = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-                placeholder="Email address"
+                placeholder="Địa chỉ email"
               />
               {errors.email && (
-                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                <p className="text-red-500 text-xs mt-1 mb-2">{errors.email}</p>
               )}
             </div>
 
             <div className="relative mb-4">
-              <label htmlFor="password" className="sr-only">Password</label>
+              <label htmlFor="password" className="sr-only">Mật khẩu</label>
               <input
                 id="password"
                 name="password"
@@ -195,7 +223,7 @@ const SignUpPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-                placeholder="Password"
+                placeholder="Mật khẩu"
               />
               <button
                 type="button"
@@ -205,12 +233,12 @@ const SignUpPage = () => {
                 {showPassword ? <FaEyeSlash className="text-gray-400" /> : <FaEye className="text-gray-400" />}
               </button>
               {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                <p className="text-red-500 text-xs mt-1 mb-2">{errors.password}</p>
               )}
             </div>
 
             <div className="relative mb-4">
-              <label htmlFor="confirmPassword" className="sr-only">Confirm Password</label>
+              <label htmlFor="confirmPassword" className="sr-only">Xác nhận mật khẩu</label>
               <input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -219,7 +247,7 @@ const SignUpPage = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
-                placeholder="Confirm Password"
+                placeholder="Xác nhận mật khẩu"
               />
               <button
                 type="button"
@@ -229,7 +257,7 @@ const SignUpPage = () => {
                 {showConfirmPassword ? <FaEyeSlash className="text-gray-400" /> : <FaEye className="text-gray-400" />}
               </button>
               {errors.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+                <p className="text-red-500 text-xs mt-1 mb-2">{errors.confirmPassword}</p>
               )}
             </div>
           </div>
@@ -243,7 +271,7 @@ const SignUpPage = () => {
               {isLoading ? (
                 <BiLoader className="animate-spin h-5 w-5" />
               ) : (
-                "Sign up"
+                "Đăng ký"
               )}
             </button>
           </div>
@@ -254,7 +282,7 @@ const SignUpPage = () => {
                 <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                <span className="px-2 bg-white text-gray-500">Hoặc tiếp tục với</span>
               </div>
             </div>
 
@@ -285,24 +313,24 @@ const SignUpPage = () => {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{" "}
+            Đã có tài khoản?{" "}
             <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Sign in
+              Đăng nhập
             </a>
           </p>
         </div>
 
         <div className="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500">
           <a href="/Help-Center" className="hover:text-gray-900 flex items-center">
-            <FaQuestionCircle className="mr-1" /> Help Center
+            <FaQuestionCircle className="mr-1" /> Trung tâm trợ giúp
           </a>
           <span>•</span>
           <a href="/Privacy-Policy" className="hover:text-gray-900">
-            Privacy Policy
+            Chính sách bảo mật
           </a>
           <span>•</span>
           <a href="#" className="hover:text-gray-900">
-            Terms
+            Điều khoản
           </a>
         </div>
       </div>

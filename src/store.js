@@ -12,11 +12,10 @@ import productsSlice from './features/Admin/productsSlice';
 import couponSlice from './features/Admin/couponSlice';
 import CryptoJS from 'crypto-js';
 
-
 const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
 const getDecryptedToken = (encryptedToken) => {
   try {
-    const bytes = CryptoJS.AES.decrypt(encryptedToken, SECRET_KEY);
+    const bytes = CryptoJS.AES.decrypt(encryptedToken, SECRET_KEY);    
     return bytes.toString(CryptoJS.enc.Utf8);
   } catch (error) {
     console.error('Error decrypting token:', error);
@@ -28,23 +27,39 @@ const loadInitialState = () => {
   try {
     const encryptedAccessToken = localStorage.getItem('accessToken');
     const encryptedRefreshToken = localStorage.getItem('refreshToken');
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    let userInfo = null;
+    try {
+      userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    } catch (error) {
+      console.error('Error parsing userInfo from localStorage:', error);
+    }
 
     return {
       user: {
         userInfo: userInfo || null,
-        isLoggedIn: !!encryptedAccessToken,
+        isLoggedIn: !!encryptedAccessToken, 
         accessToken: encryptedAccessToken ? getDecryptedToken(encryptedAccessToken) : null,
         refreshToken: encryptedRefreshToken ? getDecryptedToken(encryptedRefreshToken) : null,
-        cart: userInfo?.cart_items || [],
-        likedList: userInfo?.liked_products || [],
+        cart: userInfo?.cart_items || [], 
+        likedList: userInfo?.liked_products || [], 
         loading: false,
         error: null,
       },
     };
   } catch (error) {
     console.error('Error loading initial state:', error);
-    return {};
+    return {
+      user: {
+        userInfo: null,
+        isLoggedIn: false,
+        accessToken: null,
+        refreshToken: null,
+        cart: [],
+        likedList: [],
+        loading: false,
+        error: null,
+      },
+    };
   }
 };
 
@@ -64,7 +79,7 @@ const store = configureStore({
     productsSlice: productsSlice,
     couponSlice: couponSlice,
   },
-  preloadedState, 
+  preloadedState,
 });
 
 export default store;

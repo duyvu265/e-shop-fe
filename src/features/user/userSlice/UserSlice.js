@@ -48,7 +48,6 @@ const userSlice = createSlice({
       state.refreshToken = action.payload.refresh;
       const encryptedAccessToken = CryptoJS.AES.encrypt(action.payload.access, SECRET_KEY).toString();
       const encryptedRefreshToken = CryptoJS.AES.encrypt(action.payload.refresh, SECRET_KEY).toString();
-      console.log(action.payload.userInfo)
       localStorage.setItem('accessToken', encryptedAccessToken);
       localStorage.setItem('refreshToken', encryptedRefreshToken);
       localStorage.setItem('userInfo', JSON.stringify(action.payload.userInfo));
