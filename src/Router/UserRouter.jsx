@@ -7,11 +7,11 @@ import ListPages from "../components/Pages/ListPages";
 import LoginPage from "../components/Pages/Auth/LoginPage";
 import RegisterPage from "../components/Pages/Auth/RegisterPage";
 import ForgetPasswordPage from "../components/Pages/Auth/ForgetPasswordPage";
-import ProfilePage from "../components/Pages/ProfilePage/ProfilePage";
+// import ProfilePage from "../components/Pages/ProfilePage/ProfilePage";
 import ProductPage from "../components/Pages/Product/ProductPage";
 import OrderHistory from "../components/Pages/OrderPage/OrderHistory";
 import OrderDetails from "../components/Pages/OrderPage/OrderDetails";
-import UserManagement from "../components/Pages/admin/AdminComponnent/UserManagement";
+import ProfilePage from "../components/Pages/ProfilePage/UserProfilePage";
 
 
 const AppCustom = () => (

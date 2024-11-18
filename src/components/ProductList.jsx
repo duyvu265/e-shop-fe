@@ -11,6 +11,9 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const searchQuery = useSelector((state) => state.search.query);
   const categoryId = useSelector((state) => state.category.id);
+  const  {isLoggedIn,userInfo}  = useSelector(state => state.user);
+  console.log(isLoggedIn);
+  console.log(userInfo);
 
   const [pagination, setPagination] = useState({
     currentPage: 0,
