@@ -10,6 +10,7 @@ const ProductReview = ({ productId }) => {
   const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
   const { userInfo, isLoggedIn } = useSelector((state) => state.user);
   const navigate = useNavigate();
+console.log(userInfo.id);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -104,7 +105,7 @@ const ProductReview = ({ productId }) => {
             >
               <div className="flex items-center gap-4 mb-4">
                 <img
-                  src={review.user.avatar || "https://images.unsplash.com/photo-1599566150163-29194dcaad36"} 
+                  src={review?.user?.avatar || "https://images.unsplash.com/photo-1599566150163-29194dcaad36"} 
                   alt="User Avatar"
                   className="w-12 h-12 rounded-full object-cover"
                 />
@@ -125,7 +126,7 @@ const ProductReview = ({ productId }) => {
               </div>
               <p className="text-gray-600">{review.comment}</p>
 
-              {review.user === userInfo.id && (
+              {review.user.id === userInfo.id && (
                 <button
                   className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-800 transition-opacity"
                   title="Chỉnh sửa đánh giá"
