@@ -9,7 +9,7 @@ function Notifications({notifications,loading}) {
       <div className="max-h-60 overflow-y-auto">
         {loading ? ( 
           <p className="p-2 text-gray-500">Đang tải thông báo...</p>
-        ) : notifications.length > 0 ? ( 
+        ) : notifications?.length > 0 ? ( 
           notifications.map((notification) => (
             <div key={notification.id} className="p-2 border-b hover:bg-gray-100">
               <p>{notification.message}</p>
