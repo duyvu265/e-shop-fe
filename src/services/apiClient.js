@@ -4,13 +4,12 @@ import jwt_decode from 'jwt-decode';
 import CryptoJS from 'crypto-js';
 
 const apiUrl = import.meta.env.VITE_API_URL;
-const SECRET_KEY = import.meta.env.VITE_SECRET_KEY; // Lấy SECRET_KEY từ .env
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY; 
 
 const apiClient = axios.create({
   baseURL: apiUrl,
 });
 
-// Hàm mã hóa và lưu token vào localStorage
 const saveTokens = (access, refresh) => {
   const encryptedAccessToken = CryptoJS.AES.encrypt(access, SECRET_KEY).toString();
   const encryptedRefreshToken = CryptoJS.AES.encrypt(refresh, SECRET_KEY).toString();
@@ -18,7 +17,6 @@ const saveTokens = (access, refresh) => {
   localStorage.setItem('refreshToken', encryptedRefreshToken);
 };
 
-// Hàm giải mã token từ localStorage
 const getDecryptedToken = (key) => {
   const encryptedToken = localStorage.getItem(key);
   if (!encryptedToken) return null;
@@ -26,16 +24,15 @@ const getDecryptedToken = (key) => {
   try {
     const bytes = CryptoJS.AES.decrypt(encryptedToken, SECRET_KEY);
     const decryptedToken = bytes.toString(CryptoJS.enc.Utf8);
-    return decryptedToken; // Trả về token đã giải mã
+    return decryptedToken;
   } catch (error) {
     console.error(`Error decrypting token (${key}):`, error);
     return null;
   }
 };
 
-// Hàm refresh token
 const refreshTokens = async () => {
-  const refreshToken = getDecryptedToken('refreshToken'); // Lấy refresh token đã giải mã
+  const refreshToken = getDecryptedToken('refreshToken');
   if (refreshToken) {
     try {
       const response = await axios.post(
@@ -50,9 +47,9 @@ const refreshTokens = async () => {
 
       const { access, refresh } = response.data;
       if (access && refresh) {
-        saveTokens(access, refresh); // Lưu lại token mới (mã hóa)
+        saveTokens(access, refresh); 
         console.log('Token refreshed successfully');
-        return access; // Trả về access token mới
+        return access; 
       } else {
         console.log('Failed to refresh tokens, logging out...');
         logout();
@@ -70,24 +67,22 @@ const refreshTokens = async () => {
   }
 };
 
-// Lấy CSRF token từ cookie
 const getCSRFToken = () => {
   const csrfToken = document.cookie.split(';').find(cookie => cookie.trim().startsWith('csrf-token='));
   return csrfToken ? csrfToken.split('=')[1] : null;
 };
 
-// Interceptor cho axios
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      let token = getDecryptedToken('accessToken'); // Lấy access token đã giải mã
+      let token = getDecryptedToken('accessToken'); 
       if (!token) {
         return config;
       }
 
       let decodedToken = null;
       try {
-        decodedToken = jwt_decode(token); // Decode token để kiểm tra thời hạn
+        decodedToken = jwt_decode(token); 
       } catch (error) {
         console.error('Error decoding token:', error);
         logout();  
@@ -96,7 +91,7 @@ apiClient.interceptors.request.use(
 
       const currentTime = Math.floor(Date.now() / 1000);
       if (decodedToken && decodedToken.exp <= currentTime) {
-        token = await refreshTokens(); // Làm mới token nếu hết hạn
+        token = await refreshTokens();
         if (!token) {
           return config;
         }

@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import UserSlice from './features/user/userSlice/UserSlice';
+import chatReducer from './features/user/Chat/chatSlice';
 import SearchSlice from './features/user/SearchSlice/SearchSlice';
 import adminAuthSlice from './features/Admin/adminAuthSlice';
 import cartSlice from './features/Admin/cartSlice';
@@ -78,6 +79,7 @@ const store = configureStore({
     customersSlice: customersSlice,
     productsSlice: productsSlice,
     couponSlice: couponSlice,
+    chat: chatReducer,
   },
   preloadedState,
 });

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaStar } from "react-icons/fa";
+import { FaImage, FaStar } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   addReviewToProduct,
@@ -9,23 +9,29 @@ import {
 } from "../../../services/reviewsApi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { storage } from "../../../firebase";  // Import firebase config
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ProductReview = ({ productId }) => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
+  const [imageFile, setImageFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
   const [editingReview, setEditingReview] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState(null);
   const { userInfo, isLoggedIn } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
+  // Kiểm tra xem người dùng đã đăng nhập hay chưa
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/login");
     }
   }, [isLoggedIn, navigate]);
 
+  // Tải các đánh giá sản phẩm khi component mount hoặc productId thay đổi
   useEffect(() => {
     const loadReviews = async () => {
       try {
@@ -39,6 +45,7 @@ const ProductReview = ({ productId }) => {
     loadReviews();
   }, [productId]);
 
+  // Thêm hoặc cập nhật đánh giá
   const handleAddReview = async (e) => {
     e.preventDefault();
     if (!newReview.comment.trim()) {
@@ -50,6 +57,7 @@ const ProductReview = ({ productId }) => {
       rating: newReview.rating,
       comment: newReview.comment,
       user_id: userInfo.id,
+      image: imageUrl,
     };
 
     try {
@@ -63,22 +71,30 @@ const ProductReview = ({ productId }) => {
       const data = await fetchReviewsByProductId(productId);
       setReviews(data);
       setNewReview({ rating: 5, comment: "" });
+      setImageFile(null);
+      setImageUrl("");
       setEditingReview(null);
     } catch (error) {
       toast.error("Không thể thêm hoặc cập nhật đánh giá. Vui lòng thử lại!");
     }
   };
 
+  // Chỉnh sửa đánh giá
   const handleEditReview = (review) => {
     setEditingReview(review);
     setNewReview({ rating: review.rating, comment: review.comment });
+    setImageUrl(review.image || "");
   };
 
+  // Hủy chỉnh sửa
   const handleCancelEdit = () => {
     setEditingReview(null);
     setNewReview({ rating: 5, comment: "" });
+    setImageFile(null);
+    setImageUrl("");
   };
 
+  // Xóa đánh giá
   const handleDeleteReview = async () => {
     if (!reviewToDelete) return;
 
@@ -95,6 +111,37 @@ const ProductReview = ({ productId }) => {
     }
   };
 
+  // Xử lý khi người dùng chọn ảnh
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      uploadImage(file);
+    }
+  };
+
+  // Tải ảnh lên Firebase
+  const uploadImage = (file) => {
+    const storageRef = ref(storage, `reviews/${Date.now()}_${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Có thể hiển thị tiến trình tải lên ở đây
+      },
+      (error) => {
+        toast.error("Có lỗi xảy ra khi tải ảnh lên. Vui lòng thử lại.");
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setImageUrl(downloadURL);
+        });
+      }
+    );
+  };
+
+  // Các biến động của hộp thoại xóa
   const dialogVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1 },
@@ -121,11 +168,7 @@ const ProductReview = ({ productId }) => {
                 className="focus:outline-none"
               >
                 <FaStar
-                  className={
-                    star <= newReview.rating
-                      ? "text-yellow-400"
-                      : "text-gray-300"
-                  }
+                  className={star <= newReview.rating ? "text-yellow-400" : "text-gray-300"}
                 />
               </button>
             ))}
@@ -142,10 +185,28 @@ const ProductReview = ({ productId }) => {
             rows="4"
           ></textarea>
         </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2"></label>
+          <div className="relative">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              id="file-input"
+              className="hidden"
+            />
+            <label
+              htmlFor="file-input"
+              className="cursor-pointer inline-flex items-center justify-center bg-black text-white p-3 rounded-full hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            >
+              <FaImage className="text-white" size={20} />
+            </label>
+          </div>
+        </div>
         <div className="flex gap-4">
           <button
             type="submit"
-            className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            className="px-6 py-2 text-sm font-medium rounded-lg bg-orange-500 text-white hover:bg-orange-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
           >
             {editingReview ? "Cập nhật đánh giá" : "Gửi đánh giá"}
           </button>
@@ -167,63 +228,60 @@ const ProductReview = ({ productId }) => {
             <p>Chưa có đánh giá nào, hãy là người đầu tiên đánh giá!</p>
           </div>
         ) : (
-          reviews.map((review, index) => (
+          reviews.map((review) => (
             <div
-              key={review.id || index}
+              key={review.id}
               className="relative bg-white p-6 rounded-lg shadow-sm group hover:bg-gray-50 transition-colors"
             >
-              <div className="flex items-center gap-4 mb-4">
-                <img
-                  src={review?.user?.avatar || "https://via.placeholder.com/48"}
-                  alt="User Avatar"
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <h4 className="font-semibold text-gray-900">
-                    {review.user.username || "Người dùng"}
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
+              <div className="flex justify-between">
+                <div className="flex items-center gap-2">
+                  <img
+                    src={review.user.avatar || "/default-avatar.jpg"}
+                    alt="User Avatar"
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <div>
+                    <div className="font-semibold text-gray-800">{review.user_name}</div>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
                         <FaStar
-                          key={i}
-                          className={
-                            i < review.rating
-                              ? "text-yellow-400"
-                              : "text-gray-300"
-                          }
+                          key={star}
+                          className={star <= review.rating ? "text-yellow-400" : "text-gray-300"}
                         />
                       ))}
                     </div>
-                    <span className="text-gray-500 text-sm">
-                      {new Date(review.created_at).toLocaleDateString()}
-                    </span>
                   </div>
                 </div>
-              </div>
-              <p className="text-gray-600">{review.comment}</p>
-
-              {review.user.id === userInfo.id && (
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex gap-2">
+                <div className="flex gap-2">
                   <button
-                    className="text-gray-500 hover:text-gray-800 transition-opacity"
-                    title="Chỉnh sửa đánh giá"
                     onClick={() => handleEditReview(review)}
+                    className="text-blue-600 hover:text-blue-800"
                   >
-                    ✏️
+                    Chỉnh sửa
                   </button>
                   <button
-                    className="text-red-500 hover:text-red-800 transition-opacity"
-                    title="Xóa đánh giá"
                     onClick={() => {
-                      setReviewToDelete(review);
                       setIsDeleteDialogOpen(true);
+                      setReviewToDelete(review);
                     }}
+                    className="text-red-600 hover:text-red-800"
                   >
-                    🗑️
+                    Xóa
                   </button>
                 </div>
+              </div>
+              <div className="mt-4">{review.comment}</div>
+              {review.image_url && (
+                <div className="mt-4">
+                  <img
+                    src={review.image_url}
+                    alt="Review Image"
+                    className="w-24 h-24 object-cover rounded-lg"
+                  />
+                </div>
               )}
+
+
             </div>
           ))
         )}
@@ -232,31 +290,29 @@ const ProductReview = ({ productId }) => {
       <AnimatePresence>
         {isDeleteDialogOpen && (
           <motion.div
-            className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
             initial="hidden"
             animate="visible"
             exit="exit"
-            onClick={() => setIsDeleteDialogOpen(false)}
+            variants={dialogVariants}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
           >
             <motion.div
-              className="bg-white rounded-lg shadow-xl p-6 max-w-md mx-auto"
-              variants={dialogVariants}
-              onClick={(e) => e.stopPropagation()}
+              className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
             >
-              <h2 className="text-lg font-bold text-gray-800">Xác nhận xóa</h2>
-              <p className="text-gray-600 mt-2">
-                Bạn có chắc chắn muốn xóa đánh giá này không?
-              </p>
+              <h3 className="text-lg font-semibold">Bạn có chắc chắn muốn xóa đánh giá này?</h3>
               <div className="flex gap-4 mt-4">
                 <button
-                  className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600"
                   onClick={handleDeleteReview}
+                  className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
                 >
                   Xóa
                 </button>
                 <button
-                  className="bg-gray-300 text-black px-6 py-2 rounded-md hover:bg-gray-400"
                   onClick={() => setIsDeleteDialogOpen(false)}
+                  className="bg-gray-300 text-black px-6 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 >
                   Hủy
                 </button>
