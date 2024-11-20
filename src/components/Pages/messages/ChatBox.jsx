@@ -1,83 +1,87 @@
 import { useState, useRef, useEffect } from "react";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import ChatHeader from "./ChatHeader";
 import Message from "./Message";
 import AttachmentPreview from "./AttachmentPreview";
 import ErrorMessage from "./ErrorMessage";
 import InputArea from "./InputArea";
-import axios from "axios"; // Đảm bảo đã cài axios để xử lý upload file
+import useWebSocket from "./WebSocket";
+import { storage } from "../../../firebase";
+import apiClient from "../../../services/apiClient";
 
-const ChatBox = ({ onClose, chatSessionId }) => {
+const ChatBox = ({ onClose }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [attachment, setAttachment] = useState(null);
+  const [ChatSession, setChatSession] = useState(null);
   const [error, setError] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(null);
-  const lastLoginTime = 0;
   const messageEndRef = useRef(null);
   const fileInputRef = useRef(null);
-  const socketRef = useRef(null);
-
   useEffect(() => {
-    const socket = new WebSocket(`ws://localhost:8000/ws/chat/${chatSessionId}/`);
-    socketRef.current = socket;
+    apiClient.get('/chat/sessions/')
+      .then(response => {
+        const session = response.data.find(session => session.id === ChatSession);
+        console.log(session);
+        
+        setChatSession(session);
+      });
+  }, [ChatSession]);
+  const { sendMessage } = useWebSocket(ChatSession, (data) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: data.message, sender: "admin", timestamp: new Date().toLocaleTimeString() },
+    ]);
+  });
 
-    socket.onopen = () => {
-      console.log('Connected to WebSocket');
-    };
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('New message from WebSocket:', data.message);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: data.message, sender: "admin", timestamp: new Date().toLocaleTimeString() },
-      ]);
-    };
-
-    socket.onclose = () => {
-      console.log('Disconnected from WebSocket');
-    };
-
-    return () => {
-      socket.close();
-    };
-  }, [chatSessionId]);
-
-  const handleSend = async (attachmentUrl) => {
-    if (newMessage.trim() === "" && !attachment) return;
-
-    let attachmentToSend = null;
-
-    // Nếu có attachment, thực hiện upload
-    if (attachment) {
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
       try {
-        const formData = new FormData();
-        formData.append("file", attachment);
-        const uploadResponse = await axios.post('/api/upload', formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        const storageRef = ref(storage, `uploads/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
             setUploadProgress(progress);
           },
-        });
+          (error) => {
+            setError("Error uploading file");
+            console.error("Error uploading file", error);
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              setAttachment({ name: file.name, url: downloadURL, type: file.type });
+            });
+          }
+        );
+      } catch (error) {
+        setError("Error uploading file");
+        console.error("Error uploading file", error);
+      }
+    }
+  };
 
-        attachmentToSend = uploadResponse.data.url; // Giả sử API trả về URL file đã upload
-      } catch (err) {
-        setError("Failed to upload attachment");
+  const handleSend = async () => {
+    if (newMessage.trim() === "" && !attachment) return;
+
+    let attachmentUrl = null;
+    if (attachment) {
+      try {
+        attachmentUrl = attachment.url;
+      } catch {
         return;
       }
     }
 
     const newMsg = {
-      id: messages.length + 1,
       text: newMessage,
       sender: "self",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       status: "sending",
-      avatar: "images.unsplash.com/photo-1494790108377-be9c29b29330",
-      attachment: attachmentToSend ? { url: attachmentToSend } : null,
+      attachment: attachmentUrl ? { url: attachmentUrl } : null,
     };
 
     setMessages([...messages, newMsg]);
@@ -85,16 +89,20 @@ const ChatBox = ({ onClose, chatSessionId }) => {
     setAttachment(null);
     setUploadProgress(null);
 
-    if (socketRef.current) {
-      socketRef.current.send(JSON.stringify({ message: newMessage, attachment: attachmentToSend }));
+    try {
+
+      const response = await apiClient.post(`/chat/${ChatSession}/messages/`, newMsg);
+      const savedMessage = response.data;
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === newMsg.id ? { ...msg, status: "delivered", id: savedMessage.id } : msg))
+      );
+    } catch (error) {
+      setError("Error sending message");
     }
 
-    setTimeout(() => {
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === newMsg.id ? { ...msg, status: "delivered" } : msg))
-      );
-    }, 1000);
+    sendMessage({ message: newMessage, attachment: attachmentUrl });
   };
+
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -102,7 +110,7 @@ const ChatBox = ({ onClose, chatSessionId }) => {
 
   return (
     <div className="w-[350px] h-[500px] sm:w-[450px] max-h-[500px] bg-white shadow-lg rounded-lg flex flex-col space-y-6 p-4">
-      <ChatHeader onlineStatus="online" onClose={onClose} lastLoginTime={lastLoginTime ? lastLoginTime : ""} />
+      <ChatHeader onlineStatus="online" onClose={onClose} />
       <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[300px]">
         {messages.map((message) => (
           <Message key={message.id} message={message} />
@@ -120,16 +128,12 @@ const ChatBox = ({ onClose, chatSessionId }) => {
       {error && <ErrorMessage error={error} onRetry={() => setError(null)} />}
       {attachment && <AttachmentPreview attachment={attachment} onRemove={() => setAttachment(null)} />}
       <InputArea
-        className="p-1"
         newMessage={newMessage}
         onMessageChange={(e) => setNewMessage(e.target.value)}
         onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-        onFileSelect={(file) => setAttachment(file)}
+        onFileSelect={handleFileSelect}
         onSend={handleSend}
         fileInputRef={fileInputRef}
-        setUploadProgress={setUploadProgress}
-        setError={setError}
-        setAttachment={setAttachment}
       />
     </div>
   );

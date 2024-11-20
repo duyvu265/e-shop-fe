@@ -99,7 +99,7 @@ const SignUpPage = () => {
         password
       });
 
-      if (response.data && response.data.userInfo) {
+      if (response.data && response.status===201) {
         toast.success("Đăng ký thành công!");
         navigate("/login");
       } else {

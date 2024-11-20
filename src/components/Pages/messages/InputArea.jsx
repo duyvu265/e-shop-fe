@@ -1,7 +1,5 @@
 import React from "react";
 import { FiPaperclip, FiSend } from "react-icons/fi";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../../../firebase";
 
 const InputArea = ({
   newMessage,
@@ -10,44 +8,14 @@ const InputArea = ({
   onFileSelect,
   onSend,
   fileInputRef,
-  setAttachment,
 }) => {
-
-  const handleFileSelect = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const storageRef = ref(storage, `attachments/${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Upload is " + progress + "% done");
-          },
-          (error) => {
-            console.error("Error uploading file", error);
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              setAttachment({ name: file.name, url: downloadURL, type: file.type });
-              console.log("File available at", downloadURL);
-            });
-          }
-        );
-      } catch (error) {
-        console.error("Error uploading file", error);
-      }
-    }
-  };
-
   return (
     <div className="border-t">
       <div className="flex items-center space-x-4 pt-3">
         <input
           type="file"
           ref={fileInputRef}
-          onChange={handleFileSelect}
+          onChange={onFileSelect}
           className="hidden"
           accept="image/*,.pdf,.doc,.docx"
         />
