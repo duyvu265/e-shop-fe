@@ -10,8 +10,8 @@ import { loginSuccess } from "../../../features/user/userSlice/UserSlice";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     username: "",
     email: "",
     password: "",
@@ -88,18 +88,18 @@ const SignUpPage = () => {
     if (Object.keys(errors).length > 0) return;
 
     setIsLoading(true);
-    const { firstName, lastName, username, email, password } = formData;
+    const { first_name, last_name, username, email, password } = formData;
 
     try {
       const response = await axios.post(`${apiUrl}/register/`, {
-        firstName,
-        lastName,
+        first_name,
+        last_name,
         username,
         email,
         password
       });
 
-      if (response.data && response.status===201) {
+      if (response.data && response.status === 201) {
         toast.success("Đăng ký thành công!");
         navigate("/login");
       } else {
@@ -112,6 +112,7 @@ const SignUpPage = () => {
       setIsLoading(false);
     }
   };
+
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
       const idToken = credentialResponse.credential;
@@ -136,7 +137,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Tạo tài khoản của bạn</h2>
@@ -145,35 +146,35 @@ const SignUpPage = () => {
           <div className="rounded-md -space-y-px">
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label htmlFor="firstName" className="sr-only">Tên</label>
+                <label htmlFor="first_name" className="sr-only">Tên</label>
                 <input
-                  id="firstName"
-                  name="firstName"
+                  id="first_name"
+                  name="first_name"
                   type="text"
                   required
-                  value={formData.firstName}
+                  value={formData.first_name}
                   onChange={handleChange}
-                  className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+                  className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.first_name ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
                   placeholder="Tên"
                 />
-                {errors.firstName && (
-                  <p className="text-red-500 text-xs mt-1 mb-2">{errors.firstName}</p>
+                {errors.first_name && (
+                  <p className="text-red-500 text-xs mt-1 mb-2">{errors.first_name}</p>
                 )}
               </div>
               <div>
-                <label htmlFor="lastName" className="sr-only">Họ</label>
+                <label htmlFor="last_name" className="sr-only">Họ</label>
                 <input
-                  id="lastName"
-                  name="lastName"
+                  id="last_name"
+                  name="last_name"
                   type="text"
                   required
-                  value={formData.lastName}
+                  value={formData.last_name}
                   onChange={handleChange}
-                  className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+                  className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${errors.last_name ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
                   placeholder="Họ"
                 />
-                {errors.lastName && (
-                  <p className="text-red-500 text-xs mt-1 mb-2">{errors.lastName}</p>
+                {errors.last_name && (
+                  <p className="text-red-500 text-xs mt-1 mb-2">{errors.last_name}</p>
                 )}
               </div>
             </div>

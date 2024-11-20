@@ -1,12 +1,15 @@
 import { useEffect, useRef } from "react";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const useWebSocket = (chatSessionId, onMessage) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
+
     const socket = new WebSocket(
-      `ws://localhost:8000/ws/chat/${chatSessionId}/?token=${token}`
+      `${apiUrl}/ws/chat/${chatSessionId}/?token=${token}`
     );
 
     socketRef.current = socket;
