@@ -1,9 +1,9 @@
-import CategoryList from "../CategoryList";
-import NewProducts from "../NewProducts";
-import ProductList from "../ProductList";
-import Slider from "../Slider";
-import DiscountCodesSection from "./DiscountCode/DistCountCode";
 
+import Slider from './../Slider';
+import CategoryList from './../CategoryList';
+import NewProducts from '../NewProducts';
+import DiscountCodesSection from '../DiscountCode/DistCountCode';
+import ProductList from '../ProductList';
 const HomePage = () => {
   return (
     <div className="overflow-hidden bg-gradient-to-br ">

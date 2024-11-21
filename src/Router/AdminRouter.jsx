@@ -1,20 +1,19 @@
 // AdminRouter.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
+import ProtectedAdminRoutes from "./Middleware";
+import Login from '../components/admin/AdminComponnent/Login';
+import Dashboard from './../components/admin/AdminComponnent/Dashboard';
+import Banners from './../components/admin/AdminComponnent/Banners';
+import Category from './../components/admin/AdminComponnent/Category';
+import Coupon from './../components/admin/AdminComponnent/Coupon';
+import Products from './../components/admin/AdminComponnent/Products';
+import ProductAddPage from './../components/admin/AdminComponnent/ProductAdd';
+import Orders from './../components/admin/AdminComponnent/Orders';
+import UserManagement from './../components/admin/AdminComponnent/UserManagement';
+import Customers from './../components/admin/AdminComponnent/Customers';
+import Profile from './../components/admin/AdminComponnent/Profile';
 
-import Banners from "../components/Pages/admin/AdminComponnent/Banners";
-import Category from "../components/Pages/admin/AdminComponnent/Category";
-import Coupon from "../components/Pages/admin/AdminComponnent/Coupon";
-import Products from "../components/Pages/admin/AdminComponnent/Products";
-import Orders from "../components/Pages/admin/AdminComponnent/Orders";
-import Customers from "../components/Pages/admin/AdminComponnent/Customers";
-import Profile from "../components/Pages/admin/AdminComponnent/Profile";
-import Login from "../components/Pages/admin/AdminComponnent/Login";
-import AdminLayout from "../Layout/Admin/AdminLayout";
-import Dashboard from "../components/Pages/admin/AdminComponnent/Dashboard";
-import ProtectedAdminRoutes from './Middleware';
-import ProductAddPage from "../components/Pages/admin/AdminComponnent/ProductAdd";
-import UserManagement from "../components/Pages/admin/AdminComponnent/UserManagement";
 
 
 const AdminRouter = () => {
@@ -30,7 +29,7 @@ const AdminRouter = () => {
           <Route path="/banners" element={<Banners />} />
           <Route path="/category" element={<Category />} />
           <Route path="/coupon" element={<Coupon />} />
-          <Route path="/products" element={<Products />} />
+          <Route path="/products" element={<Products/>} />
           <Route path="/products/add" element={<ProductAddPage />} />
           <Route path="/products/product-items" element={<ProductAddPage />} />
           <Route path="/orders" element={<Orders />} />

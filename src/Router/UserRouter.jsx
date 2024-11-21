@@ -4,19 +4,20 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HomePage from "../components/Pages/HomePage";
 import ListPages from "../components/Pages/ListPages";
-import LoginPage from "../components/Pages/Auth/LoginPage";
-import ForgetPasswordPage from "../components/Pages/Auth/ForgetPasswordPage";
+import ForgetPasswordPage from "../components/Auth/ForgetPasswordPage";
 // import ProfilePage from "../components/Pages/ProfilePage/ProfilePage";
-import ProductPage from "../components/Pages/Product/ProductPage";
-import OrderHistory from "../components/Pages/OrderPage/OrderHistory";
-import OrderDetails from "../components/Pages/OrderPage/OrderDetails";
-import ProfilePage from "../components/Pages/ProfilePage/UserProfilePage";
-import SignUpPage from "../components/Pages/Auth/SignUpPage";
-import ContractPage from "../components/Pages/Contract/ContractPage";
-import HelpCenter from "../components/Pages/HelpCenter/HelpCenter";
-import PrivacyPolicy from "../components/Pages/PrivacyPolicy/PrivacyPolicy";
-import CheckoutPage from "../components/Pages/CheckOut/CheckOut";
+
+import LoginPage from './../components/Auth/LoginPage';
+import OrderHistory from './../components/OrderPage/OrderHistory';
+import OrderDetails from './../components/OrderPage/OrderDetails';
+import ProfilePage from './../components/ProfilePage/UserProfilePage';
+import ProductPage from './../components/Product/ProductPage';
 import NewProducts from "../components/NewProducts";
+import CheckoutPage from './../components/CheckOut/CheckOut';
+import SignUpPage from "../components/Auth/SignUpPage";
+import ContractPage from './../components/Contract/ContractPage';
+import HelpCenter from './../components/HelpCenter/HelpCenter';
+import PrivacyPolicy from './../components/PrivacyPolicy/PrivacyPolicy';
 
 
 const AppCustom = () => (
