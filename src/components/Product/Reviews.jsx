@@ -9,7 +9,7 @@ import {
 } from "../../services/reviewsApi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { storage } from "../../firebase";  // Import firebase config
+import { storage } from "../../firebase"; 
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -24,14 +24,12 @@ const ProductReview = ({ productId }) => {
   const { userInfo, isLoggedIn } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
-  // Kiểm tra xem người dùng đã đăng nhập hay chưa
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/login");
     }
   }, [isLoggedIn, navigate]);
 
-  // Tải các đánh giá sản phẩm khi component mount hoặc productId thay đổi
   useEffect(() => {
     const loadReviews = async () => {
       try {
@@ -45,7 +43,6 @@ const ProductReview = ({ productId }) => {
     loadReviews();
   }, [productId]);
 
-  // Thêm hoặc cập nhật đánh giá
   const handleAddReview = async (e) => {
     e.preventDefault();
     if (!newReview.comment.trim()) {
@@ -57,7 +54,7 @@ const ProductReview = ({ productId }) => {
       rating: newReview.rating,
       comment: newReview.comment,
       user_id: userInfo.id,
-      image: imageUrl,
+      image_url: imageUrl,
     };
 
     try {
@@ -79,14 +76,12 @@ const ProductReview = ({ productId }) => {
     }
   };
 
-  // Chỉnh sửa đánh giá
   const handleEditReview = (review) => {
     setEditingReview(review);
     setNewReview({ rating: review.rating, comment: review.comment });
     setImageUrl(review.image || "");
   };
 
-  // Hủy chỉnh sửa
   const handleCancelEdit = () => {
     setEditingReview(null);
     setNewReview({ rating: 5, comment: "" });
@@ -94,7 +89,6 @@ const ProductReview = ({ productId }) => {
     setImageUrl("");
   };
 
-  // Xóa đánh giá
   const handleDeleteReview = async () => {
     if (!reviewToDelete) return;
 
@@ -111,37 +105,44 @@ const ProductReview = ({ productId }) => {
     }
   };
 
-  // Xử lý khi người dùng chọn ảnh
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log("File được chọn:", file); 
       setImageFile(file);
       uploadImage(file);
+    } else {
+      toast.error("Không có file được chọn");
     }
   };
-
-  // Tải ảnh lên Firebase
+  
   const uploadImage = (file) => {
     const storageRef = ref(storage, `reviews/${Date.now()}_${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
-
+  
     uploadTask.on(
       "state_changed",
       (snapshot) => {
-        // Có thể hiển thị tiến trình tải lên ở đây
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload đang thực hiện: ${progress}%`);
       },
       (error) => {
+        console.error("Lỗi khi tải ảnh:", error); 
         toast.error("Có lỗi xảy ra khi tải ảnh lên. Vui lòng thử lại.");
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setImageUrl(downloadURL);
-        });
+        getDownloadURL(uploadTask.snapshot.ref)
+          .then((downloadURL) => {
+            console.log("URL ảnh đã tải:", downloadURL); 
+            setImageUrl(downloadURL);
+          })
+          .catch((error) => {
+            console.error("Không thể lấy URL ảnh:", error); 
+          });
       }
     );
   };
-
-  // Các biến động của hộp thoại xóa
+  
   const dialogVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1 },
