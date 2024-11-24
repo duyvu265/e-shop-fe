@@ -30,6 +30,7 @@ const adminAuthSlice = createSlice({
             localStorage.removeItem('adminAuthData');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('userInfo');
             state.isLogedIn = false;
             state.adminData = {};
         },

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import Add from "./Add";
 import ProductImages from './ProductImages';
+import ProductLikeButton from "./useLikeProduct";
 
-const CustomizeProducts = ({ productId, product_items }) => {
+const CustomizeProducts = ({ productId, product_items  }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedVariant, setSelectedVariant] = useState();
 
@@ -52,6 +53,7 @@ const CustomizeProducts = ({ productId, product_items }) => {
   return (
     <div className="flex flex-col gap-6">
       <ProductImages items={product_items} />
+
       {productOptions.map((option) => (
         <div className="flex flex-col gap-4" key={option.name}>
           <h4 className="font-medium">Choose a {option.name}</h4>
@@ -107,8 +109,12 @@ const CustomizeProducts = ({ productId, product_items }) => {
               );
             })}
           </ul>
+
         </div>
       ))}
+      <div className="max-w-15">
+        <ProductLikeButton productId={productId}  />
+      </div>
       <Add
         productId={productId || ""}
         variantId={selectedVariant?._id}

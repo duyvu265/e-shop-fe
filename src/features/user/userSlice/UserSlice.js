@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import CryptoJS from 'crypto-js';
 
 const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
+const savedLikedList = JSON.parse(localStorage.getItem('likedList')) || [];
 
 const initialState = {
   userInfo: null,
@@ -9,7 +10,7 @@ const initialState = {
   accessToken: null,
   refreshToken: null,
   cart: [],
-  likedList: [],
+  likedList: savedLikedList,
   orderHistory: [],
   notifications: [],
   loading: false,
@@ -51,6 +52,7 @@ const userSlice = createSlice({
       localStorage.setItem('accessToken', encryptedAccessToken);
       localStorage.setItem('refreshToken', encryptedRefreshToken);
       localStorage.setItem('userInfo', JSON.stringify(action.payload.userInfo));
+      localStorage.setItem('likedList', JSON.stringify(action.payload.userInfo.liked_products || []));
     },
     loginFailure: (state, action) => {
       state.loading = false;
@@ -63,9 +65,10 @@ const userSlice = createSlice({
       state.refreshToken = null;
       state.cart = [];
       state.likedList = [];
-      
+      localStorage.removeItem('userInfo');
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('likedList');
     },
     addNotification: (state, action) => {
       state.notifications.push(action.payload);
