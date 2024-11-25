@@ -6,7 +6,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { name: "Dashboard", icon: FiGrid, path: "/admin/dashboard" },
     { name: "Banners", icon: FiImage    , path: "/admin/banners" },
     { name: "Category", icon: FiPackage, path: "/admin/category" },
-    { name: "Coupon", icon: FiTag, path: "/admin/coupon" },
+    { name: "Discount", icon: FiTag, path: "/admin/discount" },
     { name: "Products", icon: FiShoppingBag, path: "/admin/products" },
     { name: "Orders", icon: FiShoppingCart, path: "/admin/orders" },
     { name: "Users", icon: FiUsers, path: "/admin/users" },

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getBanner, updateBanner } from './../../../features/Admin/bannerSlice';
+import { deleteBanner, getBanner, updateBanner } from './../../../features/Admin/bannerSlice';
+import AddLinkButton from "./AddLinkButton";
 
 const Banners = () => {
   const dispatch = useDispatch();

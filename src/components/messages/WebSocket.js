@@ -1,16 +1,35 @@
 import { useEffect, useRef } from "react";
+import CryptoJS from 'crypto-js';
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
 
 const useWebSocket = (chatSessionId, onMessage) => {
   const socketRef = useRef(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+  // Giải mã token từ localStorage
+  const getDecryptedToken = (key) => {
+    const encryptedToken = localStorage.getItem(key);
+    if (!encryptedToken) return null;
 
-    const socket = new WebSocket(
-      `${apiUrl}/ws/chat/${chatSessionId}/?token=${token}`
-    );
+    try {
+      const bytes = CryptoJS.AES.decrypt(encryptedToken, SECRET_KEY);
+      const decryptedToken = bytes.toString(CryptoJS.enc.Utf8);
+      return decryptedToken;
+    } catch (error) {
+      console.error(`Error decrypting token (${key}):`, error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const token = getDecryptedToken('accessToken');
+    if (!token) {
+      console.error('No token available');
+      return;
+    }
+
+    const socket = new WebSocket(`${apiUrl}/ws/chat/${chatSessionId}/?token=${token}`);
 
     socketRef.current = socket;
 

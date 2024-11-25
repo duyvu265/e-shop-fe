@@ -1,27 +1,27 @@
+import { unwrapResult } from '@reduxjs/toolkit';
 import React from 'react'
-import { toast } from 'react-toastify'
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addCoupon } from '../../../features/Admin/couponSlice';
+import { toast } from 'react-toastify'
+import { updateCoupon } from '../../../features/Admin/couponSlice';
 
-
-const AddCoupon = ({coupon}) => {
+const EditDiscount = ({setIsEdit, editData, coupon}) => {
 
     const dispatch = useDispatch()
 
-    const [ couponData, setCouponData ] = useState({coupon:'', discount: '', status: ''})
+    const [ couponData, setCoupon ] = useState({id:editData.id, coupon:editData.coupon, discount: editData.discount, status: editData.status})
 
     const handleChange = (e) => {
         const name = e.target.name;
         const value = e.target.value;
 
-        setCouponData(prev => ({ ...prev, [name]: value }))
+        setCoupon(prev => ({ ...prev, [name]: value }))
     }
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        const alreadyExists = coupon.find(coup => coup.coupon === couponData.coupon)
+        const alreadyExists = coupon.find(coup => coup.coupon === couponData.coupon && coup.id !== couponData.id)
 
         if (alreadyExists){
             toast.dismiss()
@@ -30,9 +30,16 @@ const AddCoupon = ({coupon}) => {
             toast.dismiss()
             toast.error('percent range should be 1 to 99')
         } else {
-            const postData = {coupon:couponData.coupon, discount: Number(couponData.discount), status: couponData.status}
-            dispatch(addCoupon({postData}))
-            setCouponData({coupon:'', discount: '', status: ''})
+            const id = couponData.id;
+            const updateData = {coupon:couponData.coupon, discount: Number(couponData.discount), status: couponData.status}
+            
+            dispatch(updateCoupon({id, updateData}))
+             .unwrap(unwrapResult)
+             .then(res => {
+                if (res.status){
+                    setIsEdit(false)
+                }
+             })
         }
     }
 
@@ -40,13 +47,20 @@ const AddCoupon = ({coupon}) => {
     <>
         <div className="card  my-5 mx-auto" >
           <div className="card-header py-1 ">
-            <h4 className="fw-bold">Add Coupon</h4>
+            <h5 className="fw-bold">Edit Coupon</h5>
           </div>
           <div className="card-body">
-          <form onSubmit={handleSubmit} className={'row row-cols-lg-auto g-3 align-items-center justify-content-start'}>
+          <form onSubmit={handleSubmit} className={'row row-cols-lg-auto g-3 align-items-end justify-content-center'}>
             <div className="col-12">
+                <label
+                 htmlFor="coupon" 
+                 className="form-label fw-bold"
+                >
+                    Coupon :
+                </label>
                 <input
                  type="text" 
+                 id="coupon" 
                  className="form-control" 
                  placeholder="enter coupon name" 
                  name="coupon" 
@@ -56,8 +70,15 @@ const AddCoupon = ({coupon}) => {
                 />
             </div>
             <div className="col-12">
+                <label
+                 htmlFor="coupon" 
+                 className="form-label fw-bold"
+                >
+                    Discount :
+                </label>
                 <input
                  type="number" 
+                 id="coupon" 
                  className="form-control" 
                  placeholder="enter discount percent" 
                  name="discount" 
@@ -67,10 +88,17 @@ const AddCoupon = ({coupon}) => {
                 />
             </div>
             <div className="col-12">
+                <label
+                 className="form-label fw-bold" 
+                 htmlFor="status"
+                >
+                    Status :
+                </label>
                 <select
                  className="form-select" 
-                 name="status"
+                 id="status"
                  value={couponData.status}
+                 name="status"
                  onChange={handleChange}
                  required
                 >
@@ -81,10 +109,17 @@ const AddCoupon = ({coupon}) => {
             </div>
             <div className='col-12'>
                 <button
-                type="submit" 
-                className="btn btn-success"
+                 type="submit" 
+                 className="btn btn-sm btn-primary me-1"
                 >
-                    Add Coupon
+                    Update
+                </button>
+                <button
+                 type="button" 
+                 className="btn btn-sm btn-danger ms-1"
+                 onClick={() => setIsEdit(false)}
+                >
+                    Cancel
                 </button>
             </div>
             </form>
@@ -94,4 +129,4 @@ const AddCoupon = ({coupon}) => {
   )
 }
 
-export default AddCoupon
+export default EditDiscount

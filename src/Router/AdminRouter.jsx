@@ -6,13 +6,15 @@ import Login from '../components/admin/AdminComponnent/Login';
 import Dashboard from './../components/admin/AdminComponnent/Dashboard';
 import Banners from './../components/admin/AdminComponnent/Banners';
 import Category from './../components/admin/AdminComponnent/Category';
-import Coupon from './../components/admin/AdminComponnent/Coupon';
+import Discount from '../components/admin/AdminComponnent/Discount';
 import Products from './../components/admin/AdminComponnent/Products';
 import ProductAddPage from './../components/admin/AdminComponnent/ProductAdd';
 import Orders from './../components/admin/AdminComponnent/Orders';
 import UserManagement from './../components/admin/AdminComponnent/UserManagement';
 import Customers from './../components/admin/AdminComponnent/Customers';
 import Profile from './../components/admin/AdminComponnent/Profile';
+import AdminLayout from '../Layout/Admin/AdminLayout';
+import DiscountManager from "../components/admin/AdminComponnent/Discount";
 
 
 
@@ -28,8 +30,8 @@ const AdminRouter = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/banners" element={<Banners />} />
           <Route path="/category" element={<Category />} />
-          <Route path="/coupon" element={<Coupon />} />
-          <Route path="/products" element={<Products/>} />
+          <Route path="/discount" element={<DiscountManager />} />
+          <Route path="/products" element={<Products />} />
           <Route path="/products/add" element={<ProductAddPage />} />
           <Route path="/products/product-items" element={<ProductAddPage />} />
           <Route path="/orders" element={<Orders />} />
